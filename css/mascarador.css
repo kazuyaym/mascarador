@@ -1,0 +1,60 @@
+/*
+body {
+        background: PeachPuff;
+        font-family: Sans-serif;
+}
+
+table {
+    font-family: Sans-serif;
+    border-collapse: collapse;
+}
+
+td, th, .th {
+    border: 1px solid black;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: Azure;
+}
+
+tr:nth-child(odd) {
+    background-color: LightGreen ;
+}
+
+th {
+    background-color: DarkSlateGrey ;
+    color: white;
+}
+
+fieldset {
+    border: 0;
+}
+*/
+.aparece {
+    display: inline;
+    visibility: visible;
+}
+
+.desaparece {
+    display: none;
+}
+
+.noshow {
+	visibility: hidden;
+}
+
+.show {
+	visibility: visible;
+	font-weight: bold;
+}
+
+.sred {
+	color: red;
+}
+
+.sgreen {
+	color: green;
+	font-weight: bold;
+}
