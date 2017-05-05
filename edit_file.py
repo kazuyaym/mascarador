@@ -151,7 +151,7 @@ print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
 print('<input type="text" name="filename" value="' + str(form.getvalue("filename")) + '" class="desaparece noshow"/>\n')
 print('<input type="text" name="header" value="' + str(form.getvalue("header")) + '" class="desaparece noshow"/>\n')
 
-print('<table>\n')
+print('<table class="table table-striped table-bordered">\n')
 col = 1
 print('<tr class="sucess">\n')
 for element in row:
