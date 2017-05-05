@@ -82,9 +82,9 @@ print('Content-type:text/html\r\n\r\n')
 print("""<head>
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
-<link rel="stylesheet" type="text/css" href="css/mascarador.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="css/mascarador.css">
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/edit_file.js"></script>
 </head>""")
@@ -156,7 +156,7 @@ print('<table class="table table-striped table-bordered table-condensed">\n')
 col = 1
 print('<tr>\n')
 for element in row:
-	print('<th>\n')
+	print('<th style="white-space:nowrap;">\n')
 	print('<input id="chek' + str(col) + '" type="checkbox" name="chek' + str(col) + '" onclick="show_modo(' + str(col) + ')">\n')
 	print('<select id="sel' + str(col) + '" name="mask'+str(col)+'" class="desaparece" onchange="change_modo(' + str(col) + ')">\n')
 	print('		<option value="m1">Hash MD5</option>\n')

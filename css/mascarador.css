@@ -32,6 +32,15 @@ fieldset {
     border: 0;
 }
 */
+
+.table-striped>tbody>tr:nth-child(odd)>td {
+   background-color: #f2dede;
+ }
+
+.table-striped>tbody>tr:nth-child(odd)>th {
+    background-color: #ebccd1;
+}
+
 .aparece {
     display: inline;
     visibility: visible;
