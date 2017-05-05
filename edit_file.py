@@ -91,7 +91,7 @@ print("""<head>
 
 ############## Body ##############
 print('<body>\n')
-
+print('<div class="container">\n')
 form = cgi.FieldStorage()
 
 a_quo = str(form.getvalue("quoting"))
@@ -151,9 +151,10 @@ print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
 print('<input type="text" name="filename" value="' + str(form.getvalue("filename")) + '" class="desaparece noshow"/>\n')
 print('<input type="text" name="header" value="' + str(form.getvalue("header")) + '" class="desaparece noshow"/>\n')
 
-print('<table class="table table-striped table-bordered">\n')
+print('<div style="overflow:auto">\n')
+print('<table class="table table-striped table-bordered table-condensed">\n')
 col = 1
-print('<tr class="sucess">\n')
+print('<tr>\n')
 for element in row:
 	print('<th>\n')
 	print('<input id="chek' + str(col) + '" type="checkbox" name="chek' + str(col) + '" onclick="show_modo(' + str(col) + ')">\n')
@@ -193,6 +194,7 @@ for row in reader:
 	if lin > 10: break
 
 print('</table>\n')
+print('</div>')
 print('<input type="hidden" value="' + str(row_count) + '" name="numeroLinhas" />\n')
 
 print(
@@ -226,6 +228,7 @@ print(
 
 <p><input type="submit" name="start" value="Save file" disabled /></p>
 </form>
+</div>
 </body>
 </html>""")
 
