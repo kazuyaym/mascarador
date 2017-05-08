@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Branches, Part I</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="branches-part-i">Branches, Part I</h1>
+
+<p>Branches are the final component of Git version control. This gives us four
+core elements to work with throughout the rest of this tutorial:</p>
+
+<ul>
+    <li>The Working Directory</li>
+    <li>The Staged Snapshot</li>
+    <li>Committed Snapshots</li>
+    <li>Development Branches</li>
+</ul>
+
+<p>In Git, a <strong>branch</strong> is an independent line of development. For
+example, if you wanted to experiment with a new idea <em>without</em> using
+Git, you might copy all of your project files into another directory and start
+making your changes. If you liked the result, you could copy the affected files
+back into the original project. Otherwise, you would simply delete the entire
+experiment and forget about it.</p>
+
+<p>This is the exact functionality offered by Git branches—with some key
+improvements. First, branches present an error-proof method for incorporating
+changes from an experiment. Second, they let you store all of your experiments
+in a single directory, which makes it much easier to keep track of them and to
+share them with others. Branches also lend themselves to several standardized
+workflows for both individual and collaborative development, which will be
+explored in the latter half of the tutorial.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/branches-1.zip">Download the repository
+    for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="view-existing-branches">View Existing Branches</h2>
+
+<p>Let’s start our exploration by listing the existing branches for our
+project.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code>
+</pre>
+
+
+<p>This will display our one and only branch: <code>* master</code>. The
+<code>master</code> branch is Git’s default branch, and the asterisk next
+to it tells us that it’s currently checked out. This means that the most
+recent snapshot in the <code>master</code> branch resides in the working
+directory:</p>
+
+<figure>
+    <img src="media/3-1.png"/>
+
+    <figcaption>The <code>master</code> branch</figcaption>
+
+</figure>
+
+<p>Notice that since there’s only one working directory for each project,
+only one branch can be checked out at a time.</p>
+
+
+<h2 id="checkout-the-crazy-experiment">Checkout the Crazy Experiment</h2>
+
+<p>The previous module left out some details about how checking out previous
+commits actually works. We’re now ready to tackle this topic in depth.
+First, we need the checksums of our committed snapshots.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>This outputs the following history.</p>
+
+<pre><code class="s">506bb9b</code> Revert &quot;Add a crazzzy experiment&quot;
+<code class="s">514fbe7</code> Add a crazzzy experiment
+<code class="s">1c310d2</code> Add navigation links
+<code class="s">54650a3</code> Create blue and orange pages
+<code class="s">b650e4b</code> Create index page
+</pre>
+
+    
+<p>Check out the crazy experiment from the last module, remembering to change
+<code>514fbe7</code> to the ID of your fourth commit.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">514fbe7</code>
+</pre>
+
+
+<p>This command returns a message that says we’re in a <code>detached
+HEAD state</code> and that the <code>HEAD</code> is now at
+<code>514fbe7</code>. The <strong>HEAD</strong> is Git’s internal way of
+indicating the snapshot that is currently checked out. This means the red
+circle in each of our history diagrams actually represents Git’s
+<code>HEAD</code>. The following figure shows the state of our repository
+before and after we checked out an old commit.</p>
+
+<figure>
+    <img src="media/3-2.png"/>
+
+    <figcaption>Checking out the 4th commit</figcaption>
+
+</figure>
+
+<p>As shown in the “before” diagram, the <code>HEAD</code> normally
+resides on the tip of a development branch. But when we checked out the
+previous commit, the <code>HEAD</code> moved to the middle of the branch. We
+can no longer say we’re on the <code>master</code> branch since it
+contains more recent snapshots than the <code>HEAD</code>. This is reflected in
+the <code>git branch</code> output, which tells us that we’re currently
+on <code>(no branch)</code>.</p>
+
+
+<h2 id="create-a-new-branch">Create a New Branch</h2>
+
+<p>We can’t add new commits when we’re not on a branch, so
+let’s create one now.  This will take our current working directory and
+fork it into a new branch.</p>
+    
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="n">crazy</code>
+</pre>
+
+
+<p>Note that <code>git branch</code> is a versatile command that can be used to
+either list branches or create them. However, the above command only
+<em>creates</em> the <code>crazy</code> branch—it doesn’t check it
+out.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">crazy</code>
+</pre>
+
+
+<p>We’re now free to experiment in the working directory without
+disturbing anything in the <code>master</code> branch. The <code>crazy</code>
+branch is a <em>completely isolated</em> development environment that can be
+visualized as the following.</p>
+
+<figure>
+    <img src="media/3-3.png"/>
+
+    <figcaption>Creating a new branch</figcaption>
+
+</figure>
+
+<p>Right now, the <code>crazy</code> branch, <code>HEAD</code>, and working
+directory are the exact same as the fourth commit. But as soon as we add
+another snapshot, we’ll see a fork in our project history.</p>
+
+
+<h2 id="make-a-rainbow">Make a Rainbow</h2>
+
+<p>We’ll continue developing our crazy experiment by changing
+<code>crazy.html</code> to the following.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>A Crazy Experiment<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1&gt;</code>A Crazy Experiment<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Look! A Rainbow!<code class="nt">&lt;/p&gt;</code>
+
+  <code class="nt">&lt;ul&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: red&quot;</code><code class="nt">&gt;</code>Red<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: orange&quot;</code><code class="nt">&gt;</code>Orange<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: yellow&quot;</code><code class="nt">&gt;</code>Yellow<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: green&quot;</code><code class="nt">&gt;</code>Green<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: blue&quot;</code><code class="nt">&gt;</code>Blue<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: indigo&quot;</code><code class="nt">&gt;</code>Indigo<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: violet&quot;</code><code class="nt">&gt;</code>Violet<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;/ul&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+
+<h2 id="stage-and-commit-the-rainbow">Stage and Commit the Rainbow</h2>
+
+<p>Hopefully, you’re relatively familiar with staging and committing
+snapshots by now:</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">crazy.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add a rainbow to crazy.html&quot;</code>
+</pre>
+
+
+<p>After committing on the <code>crazy</code> branch, we can see two
+independent lines of development in our project:</p>
+
+<figure>
+    <img src="media/3-4.png"/>
+
+    <figcaption>Forked project history</figcaption>
+
+</figure>
+
+<p>Also notice that the <code>HEAD</code> (designated by the red circle)
+automatically moved forward to the new commit, which is intuitively what we
+would expect when developing a project.</p>
+
+<p>The above diagram represents the complete state of our repository, but
+<code>git log</code> only displays the history of the current branch:</p>
+
+<pre><code class="s">677e0e0</code> Add a rainbow to crazy.html
+<code class="s">514fbe7</code> Add a crazzzy experiment
+<code class="s">*1c310d2</code> Add navigation links
+<code class="s">*54650a3</code> Create blue and orange pages
+<code class="s">*b650e4b</code> Create index page
+</pre>
+
+
+<p>Note that the history <em>before</em> the fork is considered part of the new
+branch (marked with asterisks above). That is to say, the <code>crazy</code>
+history spans all the way back to the first commit:</p>
+
+<figure>
+    <img src="media/3-5.png"/>
+
+    <figcaption>History of the <code>crazy</code> branch</figcaption>
+
+</figure>
+
+<p>The project as a whole now has a complex history; however, each individual
+branch still has a <em>linear</em> history (snapshots occur one after another). This
+means that we can interact with branches in the exact same way as we learned in
+the first two modules.</p>
+
+
+<h2 id="rename-the-rainbow">Rename the Rainbow</h2>
+
+<p>Let’s add one more snapshot to the <code>crazy</code> branch. Rename
+<code>crazy.html</code> to <code>rainbow.html</code>, then use the following
+Git commands to update the repository.</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">rm</code> <code class="n">crazy.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">add</code> <code class="n">rainbow.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>The <code>git rm</code> command tells Git to stop tracking
+<code>crazy.html</code> (and delete it if necessary), and <code>git add</code>
+starts tracking <code>rainbow.html</code>. The <code>renamed: crazy.html -&gt;
+rainbow.html</code> message in the final status output shows us that Git is
+smart enough to figure out when we’re renaming a file.</p>
+
+<p>Our snapshot is staged and ready to be committed:</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Rename crazy.html to rainbow.html&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>After this addition, our complete repository history looks like the
+following.  Remember that the <code>crazy</code> branch doesn’t include
+any commits in <code>master</code> after the fork.</p>
+
+<figure>
+    <img src="media/3-6.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+
+<h2 id="return-to-the-master-branch">Return to the Master Branch</h2>
+
+<p>Let’s switch back to the <code>master</code> branch:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">branch</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>After the checkout, <code>crazy.html</code> doesn’t exist in the
+working directory, and the commits from the last few steps don’t appear
+in the history. These two branches became <em>completely independent</em>
+development environments after they forked. You can think of them as separate
+project folders that you switch between with <code>git checkout</code>. They
+do, however, share their first four commits.</p>
+
+<figure>
+    <img src="media/3-7.png"/>
+
+    <figcaption>Shared branch history</figcaption>
+
+</figure>
+
+
+<h2 id="create-a-css-branch">Create a CSS Branch</h2>
+
+<p>We’re going to put our crazy experiment on the backburner for now and
+turn our attention to formatting the HTML pages with a cascading stylesheet
+(CSS). Again, if you’re not all that comfortable with HTML and CSS, the
+content of the upcoming files isn’t nearly as important as the Git
+commands used to manage them.</p>
+
+<p>Let’s create and check out a new branch called <code>css</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="n">css</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">css</code>
+</pre>
+
+
+<p>The new branch points to the currently checked out snapshot, which happens to
+coincide with the <code>master</code> branch:</p>
+
+<figure>
+    <img src="media/3-8.png"/>
+
+    <figcaption>Creating the <code>css</code> branch</figcaption>
+
+</figure>
+
+
+<h2 id="add-a-css-stylesheet">Add a CSS Stylesheet</h2>
+
+<p>Next, create a file called <code>style.css</code> with the following
+content. This CSS is used to apply formatting to the HTML in our other
+files.</p>
+    
+<pre><code class="nt">body</code> <code class="p">{</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">20px</code><code class="p">;</code>
+  <code class="k">font-family</code><code class="o">:</code> <code class="n">Verdana</code><code class="o">,</code> <code class="n">Arial</code><code class="o">,</code> <code class="n">Helvetica</code><code class="o">,</code> <code class="k">sans-serif</code><code class="p">;</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">14px</code><code class="p">;</code>
+  <code class="k">color</code><code class="o">:</code> <code class="m">#111</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nt">p</code><code class="o">,</code> <code class="nt">ul</code> <code class="p">{</code>
+  <code class="k">margin-bottom</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nt">ul</code> <code class="p">{</code>
+  <code class="k">margin-left</code><code class="o">:</code> <code class="m">20px</code><code class="p">;</code>
+<code class="p">}</code>
+</pre>
+
+
+<p>Commit the stylesheet in the usual fashion.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">style.css</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add CSS stylesheet&quot;</code>
+</pre>
+
+
+
+<h2 id="link-the-stylesheet">Link the Stylesheet</h2>
+
+<p>We still need to tell the HTML pages to use the formatting in
+<code>style.css</code>. Add the following text on a separate line after the
+<code>&lt;title&gt;</code> element in <code>index.html</code>,
+<code>blue.html</code>, and <code>orange.html</code> (remember that
+<code>rainbow.html</code> only exists in the <code>crazy</code> branch). You
+should be able to see the CSS formatting by opening <code>index.html</code> in
+a web browser.</p>
+    
+<pre><code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+</pre>
+
+
+<p>Commit the changes.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">index.html</code> <code class="n">blue.html</code> <code class="n">orange.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Link HTML pages to stylesheet&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>This results in a repository history that looks like:</p>
+
+<figure>
+    <img src="media/3-9.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+
+<h2 id="return-to-the-master-branch-again">Return to the Master Branch (Again)</h2>
+
+<p>The <code>css</code> branch let us create and test our formatting without
+threatening the stability of the <code>master</code> branch. But, now we need
+to merge these changes into the main project. Before we attempt the merge, we
+need to return to the <code>master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+</pre>
+
+
+<p>Verify that <code>style.css</code> doesn’t exist and that HTML pages
+aren’t linked to it. Our repository history remains unchanged, but the
+working directory now matches the snapshot pointed to by the
+<code>master</code> branch.</p>
+
+<figure>
+    <img src="media/3-10.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+<p>Take a look at the <code>git log --oneline</code> output as well.</p>
+
+<pre><code class="s">af23ff4</code> Revert &quot;Add a crazzzy experiment&quot;
+<code class="s">a50819f</code> Add a crazzzy experiment
+<code class="s">4cd95d9</code> Add navigation links
+<code class="s">dcb9e07</code> Create blue and orange pages
+<code class="s">f757eb3</code> Create index page
+</pre>
+
+
+<p>As expected, there is no mention of the CSS additions in the history of
+<code>master</code>, but we’re about to change that.</p>
+
+
+<h2 id="merge-the-css-branch">Merge the CSS Branch</h2>
+
+<p>Use the <code>git merge</code> command to take the snapshots from the
+<code>css</code> branch and add them to the <code>master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">merge</code> <code class="n">css</code>
+</pre>
+
+
+<p>Notice that this command always merges into the current branch:
+<code>css</code> remains unchanged. Check the history to make sure that the
+<code>css</code> history has been added to <code>master</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>The following diagram visualizes the merge.</p>
+
+<figure>
+    <img src="media/3-11.png"/>
+
+    <figcaption>Merging the <code>css</code> branch into
+<code>master</code></figcaption>
+
+</figure>
+
+<p>Instead of re-creating the commits in <code>css</code> and adding them to
+the history of <code>master</code>, Git reuses the existing snapshots and
+simply moves the tip of <code>master</code> to match the tip of
+<code>css</code>. This kind of merge is called a <strong>fast-forward
+merge</strong>, since Git is “fast-forwarding” through the new
+commits in the <code>css</code> branch.</p>
+
+<p>After the merge, both branches have the exact same history, which makes them
+redundant. Unless we wanted to keep developing on the <code>css</code> branch,
+we’re free to get rid of it.</p>
+
+
+<h2 id="delete-the-css-branch">Delete the CSS Branch</h2>
+
+<p>We can safely delete a branch by passing the <code>-d</code> flag to
+<code>git branch</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">css</code>
+<code class="k">git</code> <code class="k">branch</code>
+</pre>
+
+
+<p>Since <code>css</code> and <code>master</code> represent the same branch,
+our history looks the same, though the <code>css</code> branch has been
+removed. I’ve also put the <code>master</code> branch’s commits in
+a straight line in the following visualization, making it easier to track
+during the upcoming modules.</p>
+
+<figure>
+    <img src="media/3-12.png"/>
+
+    <figcaption>Deleting the <code>css</code> branch</figcaption>
+
+</figure>
+
+<p>Deleting branches is a relatively “safe” operation in the sense
+that Git will warn you if you’re deleting an unmerged branch. This is
+just another example of Git’s commitment to never losing your work.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This module used two branches to experiment with new additions. In both
+cases, branches gave us an environment that was completely isolated from the
+“stable” version of our website (the <code>master</code> branch).
+One of our experiments is waiting for us in the next module, while our CSS
+changes have been merged into the stable project, and its branch is thus
+obsolete. Using branches to develop small features like these is one of the
+hallmarks of Git-based software management.</p>
+
+<p>While this module relied heavily on branch diagrams to show the complete
+state of the repository, you don’t need to keep this high-level overview
+in mind during your everyday development. Creating a new branch is really just
+a way to request an independent working directory, staging snapshot, and
+history. You can think of branches as a way to multiply the functionality
+presented in the first two module.</p>
+
+<p>Next, we’ll practice our branch management skills by examining the
+typical workflow of veteran Git users. We’ll also discover more
+complicated merges than the fast-forward merge introduced above.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git branch</code></dt>
+    <dd>List all branches.</dd>
+
+    <dt><code>git branch &lt;branch-name&gt;</code></dt>
+    <dd>Create a new branch using the current working directory as its
+    base.</dd>
+
+    <dt><code>git checkout &lt;branch-name&gt;</code></dt>
+    <dd>Make the working directory and the <code>HEAD</code> match the specified
+    branch.</dd>
+
+    <dt><code>git merge &lt;branch-name&gt;</code></dt>
+    <dd>Merge a branch into the checked-out branch.</dd>
+
+    <dt><code>git branch -d &lt;branch-name&gt;</code></dt>
+    <dd>Delete a branch.</dd>
+
+    <dt><code>git rm &lt;file&gt;</code></dt>
+    <dd>Remove a file from the working directory (if applicable) and stop
+    tracking the file.</dd>
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

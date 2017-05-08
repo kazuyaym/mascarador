@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Rewriting History</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="rewriting-history">Rewriting History</h1>
+
+<p>The previous module on rebasing taught us how to move commits around and
+perform some basic edits while doing so, but now we’re going to really
+get our hands dirty. We’ll learn how to split up commits, revive lost
+snapshots, and completely rewrite a repository’s history to our exact
+specifications.</p>
+
+<p>Hopefully, this module will get you much more comfortable with the core Git
+components, as we’ll be inspecting and editing the internal makeup of our
+project.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/rewriting-history.zip">Download the repository
+    for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="create-the-red-page">Create the Red Page</h2>
+
+<p>First, let’s create a new branch and add a few more HTML pages.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">new-pages</code>
+<code class="k">git</code> <code class="k">branch</code>
+</pre>
+
+
+<p>Notice that we created a new branch and checked it out in a single step by
+passing the <code>-b</code> flag to the <code>git checkout</code> command.</p>
+
+<p>Next, create the file <code>red.html</code> and add the following content:</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Red Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>The Red Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Red is the color of <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>passion<code class="nt">&lt;/span&gt;</code>!<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>We’ll hold off on committing this page for the moment.</p>
+
+
+<h2 id="create-the-yellow-page">Create the Yellow Page</h2>
+
+<p>Create a file called <code>yellow.html</code>, which should look like the
+following.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Yellow Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #FF0&quot;</code><code class="nt">&gt;</code>The Yellow Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Yellow is the color of <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #FF0&quot;</code><code class="nt">&gt;</code>the sun<code class="nt">&lt;/span&gt;</code>!<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+
+<h2 id="link-and-commit-the-new-pages">Link and Commit the New Pages</h2>
+
+<p>Next, we’ll link both new pages to the home page. Add the following
+items to the “Navigation” section in <code>index.html</code>:</p>
+
+<pre><code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;red.html&quot;</code><code class="nt">&gt;</code>The Red Page<code class="nt">&lt;/a&gt;</code>
+<code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #FF0&quot;</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;yellow.html&quot;</code><code class="nt">&gt;</code>The Yellow Page<code class="nt">&lt;/a&gt;</code>
+<code class="nt">&lt;/li&gt;</code>
+</pre>
+
+
+<p>Then, commit all of these changes in a single snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">red.html</code> <code class="n">yellow.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add new HTML pages&quot;</code>
+</pre>
+
+
+<p>This is an example of a <em>bad</em> commit. It performed multiple,
+unrelated tasks, and it has a relatively generic commit message. Thus far, we
+haven’t really specified when it’s appropriate to commit changes,
+but the general rules are essentially the same as for branch creation:</p>
+
+<ul>
+    <li>Commit a snapshot for each significant addition to your project.</li>
+    <li><em>Don’t</em> commit a snapshot if you can’t come up with
+    a single, specific message for it.</li>
+</ul>
+
+<p>This will ensure that your project has a meaningful commit history, which
+gives you the ability to see exactly when and where a feature was added or a
+piece of functionality was broken. However, in practice, you’ll often
+wind up committing several changes in a single snapshot, since you won’t
+always know what constitutes a “well-defined” addition as
+you’re developing a project. Fortunately, Git lets us go back and fix up
+these problem commits after the fact.</p>
+
+
+<h2 id="create-and-commit-the-green-page">Create and Commit the Green Page</h2>
+
+<p>Let’s create one more page before splitting that “bad”
+commit: Add the following HTML to a file called <code>green.html</code>.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Green Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #0C0&quot;</code><code class="nt">&gt;</code>The Green Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #0C0&quot;</code><code class="nt">&gt;</code>Green<code class="nt">&lt;/span&gt;</code> is the color of earth.<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Add a link to <code>index.html</code> in the “Navigation” section:</p>
+
+<pre><code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #0C0&quot;</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;green.html&quot;</code><code class="nt">&gt;</code>The Green Page<code class="nt">&lt;/a&gt;</code>
+<code class="nt">&lt;/li&gt;</code>
+</pre>
+
+
+<p>And finally, stage the green page and commit the snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">green.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add green page&quot;</code>
+</pre>
+
+
+
+<h2 id="begin-an-interactive-rebase">Begin an Interactive Rebase</h2>
+
+<p>The commits introduced in our <code>new-pages</code> branch are:</p>
+    
+<pre><code class="s">4c3027c</code> Add green page
+<code class="s">db96c72</code> Add new HTML pages
+</pre>
+
+
+<p>But, we want these commits to look more like:</p>
+
+<pre><code class="s">4c3027c</code> Add green page
+<code class="s">9b1a64f</code> Add yellow page
+<code class="s">77a1cf1</code> Add red page
+</pre>
+
+
+<p>To achieve this, we can use the same interactive rebasing method covered in
+the previous module, only this time we’ll actually <em>create</em>
+commits in the middle of the rebasing procedure.</p>
+
+<pre><code class="k">git</code> <code class="k">rebase</code> <code class="na">-i</code> <code class="n">master</code>
+</pre>
+
+
+<p>Change the rebase listing to the following, then save the file and exit the
+editor to begin the rebase.</p>
+
+<pre><code class="k">edit</code> <code class="s">db96c72</code> Add new HTML pages
+<code class="k">pick</code> <code class="s">4c3027c</code> Add green page
+</pre>
+
+
+
+<h2 id="undo-the-generic-commit">Undo the Generic Commit</h2>
+
+<p>First, let’s take a look at where we are with <code>git log
+--oneline</code>:</p>
+
+<pre><code class="s">db96c72</code> Add new HTML pages
+<code class="s">7070b0e</code> Add link to about section in home page
+...
+</pre>
+
+
+<p>When Git encountered the <code>edit</code> command in the rebase
+configuration, it stopped to let us edit the commit. As a result, the green
+page commit doesn’t appear in our history yet. This should be familiar
+from the previous module. But instead of <em>amending</em> the current commit,
+we’re going to completely remove it:</p>
+
+<pre><code class="k">git</code> <code class="k">reset</code> <code class="na">--mixed</code> <code class="n">HEAD~1</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>The <code>git reset</code> command moves the checked out snapshot to a new
+commit, and the <code>HEAD~1</code> parameter tells it to reset to the commit
+that occurs immediately before the current <code>HEAD</code> (likewise,
+<code>HEAD~2</code> would refer to second commit before <code>HEAD</code>). In
+this particular case, <code>HEAD~1</code> happens to coincide with
+<code>master</code>. The effect on our repository can be visualized as:</p>
+
+<figure>
+    <img src="media/6-1.png"/>
+
+    <figcaption>Resetting to <code>HEAD~1</code></figcaption>
+
+</figure>
+
+<p>You may recall from <a href="undoing-changes.xhtml">Undoing Changes</a> that
+we used <code>git reset --hard</code> to undo uncommitted changes to our
+project. The <code>--hard</code> flag told Git to make the working directory
+look exactly like the most recent commit, giving us the intended effect of
+removing uncommitted changes.</p>
+
+<p>But, this time we used the <code>--mixed</code> flag to preserve the working
+directory, which contains the changes we want to separate. That is to say, the
+<code>HEAD</code> moved, but the working directory remained unchanged. Of
+course, this results in a repository with uncommitted modifications. We now
+have the opportunity to add the <code>red.html</code> and
+<code>yellow.html</code> files to distinct commits.</p>
+
+
+<h2 id="split-the-generic-commit">Split the Generic Commit</h2>
+
+<p>Let’s start with the red page. Since we only want to commit content
+that involves the red page, we’ll have to manually go in and remove the
+yellow page’s link from the “Navigation” section. In
+<code>index.html</code>, change this section to match the following:</p>
+
+<pre><code class="nt">&lt;h2&gt;</code>Navigation<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;about/index.html&quot;</code><code class="nt">&gt;</code>About Us<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;orange.html&quot;</code><code class="nt">&gt;</code>The Orange Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #00F&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;blue.html&quot;</code><code class="nt">&gt;</code>The Blue Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>The Rainbow Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;red.html&quot;</code><code class="nt">&gt;</code>The Red Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>Now, we can group the red page’s updates into an independent commit.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">red.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add red page&quot;</code>
+</pre>
+
+
+<p>Next up is the yellow page. Go ahead and add it back to the
+“Navigation” section in <code>index.html</code>:</p>
+
+<pre><code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #FF0&quot;</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;yellow.html&quot;</code><code class="nt">&gt;</code>The Yellow Page<code class="nt">&lt;/a&gt;</code>
+<code class="nt">&lt;/li&gt;</code>
+</pre>
+
+
+<p>And again, stage and commit the snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">yellow.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add yellow page&quot;</code>
+</pre>
+
+
+<p>We’ve successfully split up the contents of a single commit into two
+new snapshots, as shown below.</p>
+
+<figure>
+    <img src="media/6-2.png"/>
+
+    <figcaption>Creating two new commits while rebasing</figcaption>
+
+</figure>
+
+<p>But, don’t forget that the rebase still needs to transfer the green
+page:</p>
+
+<pre><code class="k">git</code> <code class="k">rebase</code> <code class="na">--continue</code>
+</pre>
+
+
+<p>To summarize, we removed the “bad” commit from the current
+branch with <code>git reset</code>, keeping the contained HTML files intact
+with the <code>‑‑mixed</code> flag. Then, we committed them in
+separate snapshots with the usual <code>git add</code> and <code>git
+commit</code> commands. The point to remember is that during a rebase you can
+add, delete, and edit commits to your heart’s content, and the entire
+result will be moved to the new base.</p>
+
+
+<h2 id="remove-the-last-commit">Remove the Last Commit</h2>
+
+<p>Next, we’re going to “accidentally” remove the green page
+commit so we can learn how to retrieve it via Git’s internal repository
+data.</p>
+
+<pre><code class="k">git</code> <code class="k">reset</code> <code class="na">--hard</code> <code class="n">HEAD~1</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>This moves the checked-out commit backward by one snapshot, along with the
+<code>new-pages</code> pointer. Note that <code>git status</code> tells us that
+we have nothing to commit, since the <code>--hard</code> flag obliterated any
+changes in the working directory. And of course, the <code>git log</code>
+output shows that the <code>new-pages</code> branch no longer contains the
+green commit.</p>
+
+<p>This behavior is slightly different from the reset we used in the
+interactive rebase: this time the <em>branch</em> moved with the new
+<code>HEAD</code>. Since we were on <code>(no branch)</code> during the rebase,
+there was no branch tip to move. However, in general, <code>git reset</code> is
+used to move branch tips around and optionally alter the working directory via
+one of its many flags (e.g., <code>--mixed</code> or <code>--hard</code>).</p>
+
+<figure>
+    <img src="media/6-3.png"/>
+
+    <figcaption>Removing the most recent commit</figcaption>
+
+</figure>
+
+<p>The commit that we removed from the branch is now a <strong>dangling
+commit</strong>. Dangling commits are those that cannot be reached from any
+branch and are thus in danger of being lost forever.</p>
+
+
+<h2 id="open-the-reflog">Open the Reflog</h2>
+
+<p>Git uses something called the <strong>reflog</strong> to record every change
+you make to your repository. Let’s take a look at what it contains:</p>
+    
+<pre><code class="k">git</code> <code class="k">reflog</code>
+</pre>
+
+
+<p>The resulting output should look something like the following. Depending on
+your version of Git, the messages might be slightly different. You can press
+<code>Space</code> to scroll through the content or <code>q</code> to exit.</p>
+
+<pre><code class="s">9b1a64f</code><code class="nl"> HEAD@{0}: </code>reset: moving to HEAD~1
+<code class="s">002185c</code><code class="nl"> HEAD@{1}: </code>rebase -i (finish): returning to refs/heads/new-pages
+<code class="s">002185c</code><code class="nl"> HEAD@{2}: </code>rebase -i (pick): Add green page
+<code class="s">9b1a64f</code><code class="nl"> HEAD@{3}: </code>commit: Add yellow page
+<code class="s">77a1cf1</code><code class="nl"> HEAD@{4}: </code>commit: Add red page
+<code class="s">7070b0e</code><code class="nl"> HEAD@{5}: </code>reset: moving to HEAD~1
+...
+</pre>
+
+
+<p>The above listing reflects our last few actions. For example, the current
+<code>HEAD</code>, denoted by <code>HEAD@{0}</code>, resulted from reseting
+<code>HEAD</code> to <code>HEAD~1</code>. Four actions ago, the yellow page was
+applied during our rebase, as shown in <code>HEAD@{3}</code>.</p>
+
+<p>The reflog is a <em>chronological</em> listing of our history, without
+regard for the repository’s branch structure. This lets us find dangling
+commits that would otherwise be lost from the project history.</p>
+
+
+<h2 id="revive-the-lost-commit">Revive the Lost Commit</h2>
+
+<p>At the beginning of each reflog entry, you’ll find a commit ID
+representing the <code>HEAD</code> after that action. Check out the commit at
+<code>HEAD@{2}</code>, which should be where the rebase added the green page
+(change the ID below to the ID from <em>your</em> reflog).</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">002185c</code>
+</pre>
+
+
+<p>This puts us in a <code>detached HEAD</code> state, which means our
+<code>HEAD</code> is no longer on the tip of a branch. We’re actually in
+the opposite situation as we were in <a href="undoing-changes.xhtml">Undoing
+Changes</a> when we checked out a commit <em>before</em> the branch tip. Now,
+we’re looking at a commit <em>after</em> the tip of the branch, but we
+still have a <code>detached HEAD</code>:</p>
+
+<figure>
+    <img src="media/6-4.png"/>
+
+    <figcaption>Checking out a dangling commit</figcaption>
+
+</figure>
+
+<p>To turn our dangling commit into a full-fledged branch, all we have to do is
+create one:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">green-page</code>
+</pre>
+
+
+<p>We now have a branch that can be merged back into the project:</p>
+
+<figure>
+    <img src="media/6-5.png"/>
+
+    <figcaption>Creating a branch from the dangling commit</figcaption>
+
+</figure>
+
+<p>The above diagram makes it easy to see that the <code>green-page</code>
+branch is an extension of <code>new-pages</code>, but how would we figure this
+out if we weren’t drawing out the state of our repository every step of
+the way?</p>
+
+
+<h2 id="filter-the-log-history">Filter the Log History</h2>
+
+<p>To view the differences between branches, we can use Git’s
+log-filtering syntax.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">new-pages..green-page</code>
+</pre>
+
+
+<p>This will display all commits contained in <code>green-page</code> that
+aren’t in the <code>new-pages</code> branch. The above command tells us
+that <code>green-page</code> contains one more snapshot than
+<code>new-pages</code>: our dangling commit (although, it’s not really
+dangling anymore since we created a branch for it).</p>
+
+<p>You can also use this syntax to limit the output of <code>git log</code>.
+For example, to display the last 4 commits on the current branch, you could
+use:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">HEAD~4..HEAD</code>
+</pre>
+
+
+<p>However, this is a bit verbose for such a common task, so Git developers
+added the <code>-n</code> flag as an easier way to limit output.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">-n</code> <code class="n">4</code>
+</pre>
+
+
+<p>The <code>-n 4</code> parameter tells Git to show only the last four commits
+from the current <code>HEAD</code>, making it the equivalent of the
+<code>HEAD~4..HEAD</code> syntax shown above. Similarly, <code>-n 3</code>,
+<code>-n 2</code>, and <code>-n 1</code> would display three, two, and one
+commit, respectively. This feature becomes very useful once a repository grows
+beyond one screenful of history.</p>
+
+
+<h2 id="merge-in-the-revived-branch">Merge in the Revived Branch</h2>
+
+<p>We’ve revived our lost commit, and now we’re ready to merge
+everything back into the <code>master</code> branch. Before we do the merge,
+let’s see exactly what we’re merging:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">HEAD..green-page</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>The <code>git log HEAD..green-page</code> command shows us only those
+commits in <code>green-page</code> that aren’t in <code>master</code>
+(since <code>master</code> is the current branch, we can refer to it as
+<code>HEAD</code>). The new <code>--stat</code> flag includes information about
+which files have been changed in each commit. For example, the most recent
+commit tells us that 14 lines were added to the <code>green.html</code> file
+and 3 lines were added to <code>index.html</code>:</p>
+    
+<pre><code class="k">commit</code> <code class="s">002185c71e6674915eb75be2afb4ca52c2c7fd1b</code>
+<code class="nl">Author:</code> <code class="s">Ryan &lt;ryan.example@rypress.com&gt;</code>
+<code class="nl">Date:</code>   <code class="s">Wed Jan 11 06:49:50 2012 -0600</code>
+
+    Add green page
+
+ green.html |   14 ++++++++++++++
+ index.html |    3 +++
+ 2 files changed, 17 insertions(+), 0 deletions(-)
+</pre>
+
+
+<p>If we didn’t already know what was in this new commit, the log output
+would tell us which files we needed to look at. But, we authored all of these
+changes, so we can skip right to the merge.</p>
+
+<pre><code class="k">git</code> <code class="k">merge</code> <code class="n">green-page</code>
+</pre>
+
+
+<p>The following diagram shows the state of our repository after the merge.</p>
+
+<figure>
+    <img src="media/6-6.png"/>
+
+    <figcaption>Fast-forwarding <code>master</code> to the
+<code>green-page</code> branch</figcaption>
+
+</figure>
+
+<p>Note that the <code>green-page</code> branch already contains all the
+history of <code>new-pages</code>, which is why we merged the former instead of
+the latter. If this wasn’t the case, Git would complain when we try to
+run the following command.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">new-pages</code>
+</pre>
+
+
+<p>We can go ahead and delete the green page branch, too.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">green-page</code>
+</pre>
+
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This module took an in-depth look at rebasing, resetting, and the reflog.
+We learned how to split old commits into one or more new commits, and how to
+revive “lost” commits. Hopefully, this has given you a better
+understanding of the interaction between the working directory, the stage,
+branches, and committed snapshots. We also explored some new options for
+displaying our commit history, which will become an important skill as our
+project grows.</p>
+
+<p>We did a lot of work with branch tips this module. It’s important to
+realize that Git uses the <em>tip</em> of a branch to represent the <em>entire
+branch</em>. That is to say, a branch is actually a pointer to a single
+commit—not a container for a series of commits. This idea has been
+implicitly reflected in our diagrams:</p>
+
+<figure>
+    <img src="media/6-7.png"/>
+
+    <figcaption>Branch tips, not containers</figcaption>
+
+</figure>
+
+<p>The history is represented by the parent of each commit (designated by
+arrows), not the branch itself. So, to request a new branch, all Git has to do
+is create a reference to the current commit. And, to add a snapshot to a
+branch, it just has to move the branch reference to the new commit. An
+understanding of Git’s branch representation should make it easier to
+wrap your head around merging, rebasing, and other kinds of branch
+manipulation.</p>
+
+<p>We’ll revisit Git’s internal representation of a repository in
+the <a href="plumbing.xhtml">final module</a> of this tutorial. But now,
+we’re finally ready to discuss multi-user development, which happens to
+rely entirely on Git branches.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git reflog</code></dt>
+    <dd>Display the local, chronological history of a repository.</dd>
+
+    <dt><code>git reset --mixed HEAD~&lt;n&gt;</code></dt>
+    <dd>Move the <code>HEAD</code> backward <code>&lt;n&gt;</code> commits, but
+    don’t change the working directory.</dd>
+
+    <dt><code>git reset --hard HEAD~&lt;n&gt;</code></dt>
+    <dd>Move the <code>HEAD</code> backward <code>&lt;n&gt;</code> commits, and
+    change the working directory to match.</dd>
+
+    <dt><code>git log &lt;since&gt;..&lt;until&gt;</code></dt>
+    <dd>Display the commits reachable from <code>&lt;until&gt;</code> but not
+    from <code>&lt;since&gt;</code>. These parameters can be either commit
+    ID’s or branch names.</dd>
+
+    <dt><code>git log --stat</code></dt>
+    <dd>Include extra information about altered files in the log output.</dd>
+
+</dl>
+
+</div>
+    </div>
+  </body>
+</html>

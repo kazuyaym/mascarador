@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Remotes</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="remotes">Remotes</h1>
+
+<p>Simply put, a <strong>remote repository</strong> is one that is not your
+own. It can be another Git repository that’s on your company’s
+network, the internet, or even your local filesystem, but the point is that
+it’s a repository distinct from your <code>my-git-repo</code>
+project.</p>
+
+<p>We’ve already seen how branches can streamline a workflow within a
+single repository, but they also happen to be Git’s mechanism for sharing
+commits between repositories. <strong>Remote branches</strong> act just like
+the local branches that we’ve been using, only they represent a branch in
+someone else’s repository.</p>
+
+<figure>
+    <img src="media/7-1.png"/>
+
+    <figcaption>Accessing a feature branch from a remote repository</figcaption>
+
+</figure>
+
+<p>This means that we can adapt our merging and rebasing skills to make Git a
+fantastic collaboration tool. Over the next few modules, we’ll be exploring
+various multi-user workflows by pretending to be different developers working on
+our example website.</p>
+
+<p>For several parts of this module, we’re going to pretend to be Mary, the
+graphic designer for our website. Mary’s actions are clearly denoted by
+including her name in the heading of each step.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/remotes.zip">Download the repository
+    for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="clone-the-repository-mary">Clone the Repository (Mary)</h2>
+
+<p>First, Mary needs her own copy of the repository to work with. The <a href="distributed-workflows.xhtml">Distributed Workflows</a> module will discuss
+network-based remotes, but right now we’re just going to store them on
+the local filesystem.</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+<code class="k">cd</code> <code class="n">..</code>
+<code class="k">git</code> <code class="k">clone</code> <code class="n">my-git-repo</code> <code class="n">marys-repo</code>
+<code class="k">cd</code> <code class="n">marys-repo</code>
+</pre>
+
+
+<p>The first two lines navigate the command shell to the directory
+<em>above</em> <code>my-git-repo</code>. Make sure to change
+<code>/path/to/my-git-repo</code> to the actual path to your repository. The
+<code>git clone</code> command copies our repository into
+<code>marys-repo</code>, which will reside in the same directory as
+<code>my-git-repo</code>. Then, we navigate to Mary’s repository so we
+can start pretending to be Mary.</p>
+
+<p>Run <code>git log</code> to verify that Mary’s repository is in fact a
+copy of our original repository.</p>
+
+
+<h2 id="configure-the-repository-mary">Configure The Repository (Mary)</h2>
+
+<p>First off, Mary needs to configure her repository so that we know who
+contributed what to the project.</p>
+
+<pre><code class="k">git</code> <code class="k">config</code> <code class="n">user.name</code> <code class="s">&quot;Mary&quot;</code>
+<code class="k">git</code> <code class="k">config</code> <code class="n">user.email</code> <code class="n">mary.example@rypress.com</code>
+</pre>
+
+
+<p>You may recall from the first module that we used a <code>--global</code>
+flag to set the configuration for the entire Git installation. But since
+Mary’s repository is on the local filesystem, she needs a <em>local</em>
+configuration.</p>
+
+<p>Use a text editor to open up the file called <code>config</code> in the
+<code>.git</code> folder of Mary’s project (you may need to enable hidden
+files to see <code>.git</code>). This is where local configurations are stored,
+and we see Mary’s information at the bottom of the file. Note that this
+overrides the global configuration that we set in <a href="the-basics.xhtml">The
+Basics</a>.</p>
+
+
+<h2 id="start-marys-day-mary">Start Mary’s Day (Mary)</h2>
+
+<p>Today, Mary is going to be working on her bio page, which she should develop
+in a separate branch:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">bio-page</code>
+</pre>
+
+
+<p>Mary can create and check out branches just like we did in our copy of the
+project. Her repository is a completely isolated development environment, and
+she can do whatever she wants in here without worrying about what’s going
+on in <code>my-git-repo</code>. Just as branches are an abstraction for the
+working directory, the staged snapshot, and a commit history, a repository is
+an abstraction for branches.</p>
+
+
+<h2 id="create-marys-bio-page-mary">Create Mary’s Bio Page (Mary)</h2>
+
+<p>Let’s complete Mary’s biography page. In
+<code>marys-repo</code>, change <code>about/mary.html</code> to:</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>About Mary<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;../style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1&gt;</code>About Mary<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>I&#39;m a graphic designer.<code class="nt">&lt;/p&gt;</code>
+
+  <code class="nt">&lt;h2&gt;</code>Interests<code class="nt">&lt;/h2&gt;</code>
+  <code class="nt">&lt;ul&gt;</code>
+    <code class="nt">&lt;li&gt;</code>Oil Painting<code class="nt">&lt;/li&gt;</code>
+    <code class="nt">&lt;li&gt;</code>Web Design<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;/ul&gt;</code>
+
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to about page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Again, we’re developing this in a branch as a best-practice step: our
+<code>master</code> branch is only for stable, tested code. Stage and commit
+the snapshot, then take a look at the result.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add bio page for Mary&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">-n</code> <code class="n">1</code>
+</pre>
+
+
+<p>The <code>Author</code> field in the log output should reflect the local
+configurations we made for Mary’s name and email. Remember that the
+<code>-n 1</code> flag limits history output to a single commit.</p>
+
+
+<h2 id="publish-the-bio-page-mary">Publish the Bio Page (Mary)</h2>
+
+<p>Now, we can publish the bio page by merging into the <code>master</code>
+branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">bio-page</code>
+</pre>
+
+
+<p>Of course, this results in a fast-forward merge. We’ll eventually pull
+this update into <code>my-git-repo</code> once we stop pretending to be Mary.
+Here’s what Mary’s repository looks like compared to ours:</p>
+
+<figure>
+    <img src="media/7-2.png"/>
+
+    <figcaption>Merging Mary’s <code>bio-page</code> branch
+with her <code>master</code></figcaption>
+
+</figure>
+
+<p>Notice that both repositories have normal, local branches—we
+haven’t had any interaction between the two repositories, so we
+don’t see any remote branches yet. Before we switch back to
+<code>my-git-repo</code>, let’s examine Mary’s remote
+connections.</p>
+
+
+<h2 id="view-remote-repositories-mary">View Remote Repositories (Mary)</h2>
+
+<p>Mary can list the connections she has to other repositories using the following
+command.</p>
+
+<pre><code class="k">git</code> <code class="k">remote</code>
+</pre>
+
+
+<p>Apparently, she has a remote called <code>origin</code>. When you clone a
+repository, Git automatically adds an <code>origin</code> remote pointing to
+the original repository, under the assumption that you’ll probably want
+to interact with it down the road. We can request a little bit more information
+with the <code>-v</code> (verbose) flag:</p>
+
+<pre><code class="k">git</code> <code class="k">remote</code> <code class="na">-v</code>
+</pre>
+
+
+<p>This shows the full path to our original repository, verifying that
+<code>origin</code> is a remote connection to <code>my-git-repo</code>. The
+same path is designated as a “fetch” and a “push”
+location. We’ll see what these mean in a moment.</p>
+
+
+<h2 id="return-to-your-repository-you">Return to Your Repository (You)</h2>
+
+<p>Ok, we’re done being Mary, and we can return to our own repository.</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+</pre>
+
+
+<p>Notice that Mary’s bio page is still empty. It’s very important
+to understand that this repository and Mary’s repository are completely
+separate. While she was altering her bio page, we could have been doing all
+sorts of other things in <code>my-git-repo</code>. We could have even changed
+her bio page, which would result in a merge conflict when we try to pull her
+changes in.</p>
+
+
+<h2 id="add-mary-as-a-remote-you">Add Mary as a Remote (You)</h2>
+
+<p>Before we can get ahold of Mary’s bio page, we need access to her
+repository. Let’s look at our current list of remotes:</p>
+
+<pre><code class="k">git</code> <code class="k">remote</code>
+</pre>
+
+
+<p>We don’t have any (<code>origin</code> was never created because we
+didn’t clone from anywhere). So, let’s add Mary as a remote
+repository.</p>
+
+<pre><code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">mary</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="na">-v</code>
+</pre>
+
+
+<p>We can now use <code>mary</code> to refer to Mary’s repository, which
+is located at <code>../marys-repo</code>. The <code>git remote add</code>
+command is used to bookmark another Git repository for easy access, and our
+connections can be seen in the figure below.</p>
+
+<figure>
+    <img src="media/7-3.png"/>
+
+    <figcaption>Connections to remote repositories</figcaption>
+
+</figure>
+
+<p>Now that our remote <em>repositories</em> are setup, we’ll spend the
+rest of the module discussing remote <em>branches</em>.</p>
+
+
+<h2 id="fetch-marys-branches-you">Fetch Mary’s Branches (You)</h2>
+
+<p>As noted earlier, we can use remote branches to access snapshots from
+another repository. Let’s take a look at our current remote branches with
+the <code>-r</code> flag:</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-r</code>
+</pre>
+
+
+<p>Again, we don’t have any. To populate our remote branch listing, we
+need to <strong>fetch</strong> the branches from Mary’s repository:</p>
+
+<pre><code class="k">git</code> <code class="k">fetch</code> <code class="n">mary</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-r</code>
+</pre>
+
+
+<p>This will go to the “fetch” location shown in <code>git remote
+-v</code> and download all of the branches it finds there into our repository.
+The resulting branches are shown below.</p>
+
+<pre>mary/bio-page
+mary/master
+</pre>
+
+
+<p>Remote branches are always listed in the form
+<code>&lt;remote‑name&gt;/&lt;branch‑name&gt;</code> so that they
+will never be mistaken for local branches. The above listing reflects the state
+of Mary’s repository at the time of the fetch, but they will not be
+automatically updated if Mary continues developing any of her branches.</p>
+
+<p>That is to say, our remote branches are not <em>direct</em> links into
+Mary’s repository—they are read-only copies of her branches, stored
+in our own repository. This means that we would have to do another fetch to
+access new updates.</p>
+
+<figure>
+    <img src="media/7-4.png"/>
+
+    <figcaption>Mary’s remote branches in our repository</figcaption>
+
+</figure>
+
+<p>The above figure shows the state of <em>our</em> repository. We have access
+to Mary’s snapshots (represented as squares) and her branches, even
+though we don’t have a real-time connection to Mary’s
+repository.</p>
+
+
+<h2 id="check-out-a-remote-branch">Check Out a Remote Branch</h2>
+
+<p>Let’s check out a remote branch to review Mary’s changes.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">mary/master</code>
+</pre>
+
+
+<p>This puts us in a <code>detached HEAD</code> state, just like we were in
+when we checked out a dangling commit. This shouldn’t be that surprising,
+considering that our remote branches are <em>copies</em> of Mary’s
+branches. Checking out a remote branch takes our <code>HEAD</code> off the tip
+of a local branch, illustrated by the following diagram.</p>
+
+<figure>
+    <img src="media/7-5.png"/>
+
+    <figcaption>Checking out Mary’s <code>master</code>
+branch</figcaption>
+
+</figure>
+
+<p>We can’t continue developing if we’re not on a local branch. To
+build on <code>mary/master</code> we either need to merge it into our own local
+<code>master</code> or create another branch. We did the latter in <a href="branches-1.xhtml">Branches, Part I</a> to build on an old commit and in <a href="rewriting-history.xhtml">the previous module</a> to revive a
+“lost” commit, but right now we’re just looking at what Mary
+did, so the <code>detached HEAD</code> state doesn’t really affect
+us.</p>
+
+
+<h2 id="find-marys-changes">Find Mary’s Changes</h2>
+
+<p>We can use the same log-filtering syntax from the previous module to view
+Mary’s changes.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">master..mary/master</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>This shows us what Mary has added to her master branch, but it’s also
+a good idea to see if we’ve added any new changes that aren’t in
+Mary’s repository:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">mary/master..master</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>This won’t output anything, since we haven’t altered our
+database since Mary cloned it. In other words, our history hasn’t
+<em>diverged</em>—we’re just <em>behind</em> by a commit.</p>
+
+
+<h2 id="merge-marys-changes">Merge Mary’s Changes</h2>
+
+<p>Let’s approve Mary’s changes and integrate them into our own
+<code>master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">mary/master</code>
+</pre>
+
+
+<p>Even though <code>mary/master</code> is a remote branch, this still results
+in a fast-forward merge because there is a linear path from our
+<code>master</code> to the tip of <code>mary/master</code>:</p>
+
+<figure>
+    <img src="media/7-6.png"/>
+
+    <figcaption>Before merging Mary’s <code>master</code>
+branch into our own</figcaption>
+
+</figure>
+
+<p>After the merge, the snapshots from Mary’s remote branch become a part
+of our local <code>master</code> branch. As a result, our <code>master</code>
+is now synchronized with Mary’s:</p>
+
+<figure>
+    <img src="media/7-7.png"/>
+
+    <figcaption>After merging Mary’s master
+<code>branch</code> into our own</figcaption>
+
+</figure>
+
+<p>Notice that we only interacted with Mary’s <code>master</code> branch,
+even though we had access to her <code>bio-page</code>. If we hadn’t been
+pretending to be Mary, we wouldn’t have known what this feature branch
+was for or if it was ready to be merged.  But, since we’ve designated
+<code>master</code> as a stable branch for the project, it was safe to
+integrate those updates (assuming Mary was also aware of this convention).</p>
+
+
+<h2 id="push-a-dummy-branch">Push a Dummy Branch</h2>
+
+<p>To complement our <code>git fetch</code> command, we’ll take a brief
+look at <strong>pushing</strong>. Fetching and pushing are <em>almost</em>
+opposites, in that fetching imports branches, while pushing exports branches to
+another repository. Let’s take a look:</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="n">dummy</code>
+<code class="k">git</code> <code class="k">push</code> <code class="n">mary</code> <code class="n">dummy</code>
+</pre>
+
+
+<p>This creates a new branch called <code>dummy</code> and sends it to Mary.
+Switch into Mary’s repository to see what we did:</p>
+
+<pre><code class="k">cd</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">branch</code>
+</pre>
+
+
+<p>You should find a new <code>dummy</code> branch in her <em>local</em> branch
+listing. I said that <code>git fetch</code> and <code>git push</code> are
+<em>almost</em> opposites because pushing creates a new <em>local</em> branch,
+while fetching imports commits into <em>remote</em> branches.</p>
+
+<p>Now, put yourself in Mary’s shoes. She was developing in her own
+repository when, all of a sudden, a new <code>dummy</code> branch appeared out
+of nowhere. Obviously, pushing branches into other people’s repositories
+can make for a chaotic workflow. So, as a general rule, <strong>you should
+never push into another developer’s repository</strong>. But then, why
+does <code>git push</code> even exist?</p>
+
+<p>Over the next few modules, we’ll see that pushing is a necessary tool
+for maintaining public repositories. Until then, just remember to never, ever
+push into one of your friend’s repositories. Let’s get rid of these
+dummy branches and return to our repository.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">dummy</code>
+<code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">dummy</code>
+</pre>
+
+
+
+<h2 id="push-a-new-tag">Push a New Tag</h2>
+
+<p>An important property of <code>git push</code> is that it does not
+automatically push tags associated with a particular branch. Let’s
+examine this by creating a new tag.</p>
+
+<pre><code class="k">git</code> <code class="k">tag</code> <code class="na">-a</code> <code class="n">v2.0</code> <code class="na">-m</code> <code class="s">&quot;An even stabler version of the website&quot;</code>
+</pre>
+
+
+<p>We now have a <code>v2.0</code> tag in <code>my-git-repo</code>, which we
+can see by running the <code>git tag</code> command. Now, let’s try
+pushing the branch to Mary’s repository.</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">mary</code> <code class="n">master</code>
+</pre>
+
+
+<p>Git will say her <code>master</code> branch is already up-to-date, and her
+repository will remain unchanged. Instead of pushing the branch that contains
+the tag, Git requires us to manually push the tag itself:</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">mary</code> <code class="n">v2.0</code>
+</pre>
+
+
+<p>You should now be able to see the <code>v2.0</code> tag in Mary’s
+repository with a quick <code>git tag</code>. It’s very easy to forget to
+push new tags, so if it seems like your project has lost a tag or two,
+it’s most likely because you didn’t to push them to the remote
+repository.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this module, we learned how remote branches can be used to access
+content in someone else’s repository. The remotes listed in <code>git
+remote</code> are merely bookmarks for a full path to another repository. We
+used a local path, but as we’ll soon see, Git can use the SSH protocol to
+access repositories on another computer.</p>
+
+<p>The convention of <code>master</code> as a stable branch allowed us to pull
+changes without consulting Mary, but this doesn’t necessarily have to be
+the case. When implementing your own workflow, Git offers you a lot of
+flexibility about when and where you should pull from your team members. As
+long as you clearly define your project conventions, you can designate special
+uses or privileges to <em>any</em> branch.</p>
+
+<p>That said, it’s important to note that remotes are for
+<em>people</em>, whereas branches are for <em>topics</em>. Do <em>not</em>
+create separate branches for each of your developers—give them separate
+repositories and bookmark them with <code>git remote add</code>. Branches
+should always be for project development, not user management.</p>
+
+<p>Now that we know how Git shares information between repositories, we can add
+some more structure to our multi-user development environment. The next module
+will show you how to set up and access a shared central repository.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git clone &lt;remote-path&gt;</code></dt>
+    <dd>Create a copy of a remote Git repository.</dd>
+
+    <dt><code>git remote</code></dt>
+    <dd>List remote repositories.</dd>
+
+    <dt><code>git remote add &lt;remote-name&gt; &lt;remote-path&gt;</code></dt>
+    <dd>Add a remote repository.</dd>
+
+    <dt><code>git fetch &lt;remote-name&gt;</code></dt>
+    <dd>Download remote branch information, but do not merge anything.</dd>
+
+    <dt><code>git merge &lt;remote-name&gt;/&lt;branch-name&gt;</code></dt>
+    <dd>Merge a remote branch into the checked-out branch.</dd>
+
+    <dt><code>git branch -r</code></dt>
+    <dd>List remote branches.</dd>
+
+    <dt><code>git push &lt;remote-name&gt; &lt;branch-name&gt;</code></dt>
+    <dd>Push a local branch to another repository.</dd>
+
+    <dt><code>git push &lt;remote-name&gt; &lt;tag-name&gt;</code></dt>
+    <dd>Push a tag to another repository.</dd>
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

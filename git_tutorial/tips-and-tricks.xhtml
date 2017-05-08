@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Tips &amp; Tricks</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="tips-tricks">Tips &amp; Tricks</h1>
+
+<p>This module presents a broad survey of useful Git utilities. We’ll
+take a step back from the theoretical aspects of Git and focus on common tasks
+like preparing a project for release and backing up a repository. While working
+through this module, your goal shouldn’t be to master all of these
+miscellaneous tools, but rather to understand why they were created and when
+they might come in handy.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/tips-and-tricks.zip">Download the
+    repositories for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repositories from
+the above link, uncompress them, and you’re good to go.</p>
+
+
+<h2 id="archive-the-repository">Archive The Repository</h2>
+
+<p>First, let’s export our repository into a ZIP archive. Run the
+following command in your local copy of <code>my-git-repo</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">archive</code> <code class="n">master</code> <code class="na">--format</code><code class="n">=zip</code> <code class="na">--output</code><code class="n">=../website-12-10-2012.zip</code>
+</pre>
+
+
+<p>Or, for Unix users that would prefer a tarball:</p>
+
+<pre><code class="k">git</code> <code class="k">archive</code> <code class="n">master</code> <code class="na">--format</code><code class="n">=tar</code> <code class="na">--output</code><code class="n">=../website-12-10-2012.tar</code>
+</pre>
+
+
+<p>This takes the current <code>master</code> branch and places all of its
+files into a ZIP archive (or a tarball), omitting the <code>.git</code>
+directory. Removing the <code>.git</code> directory removes all version control
+information, and you’re left with a single snapshot of your project.</p>
+
+<p>You can send the resulting archive to a client for review, even if they
+don’t have Git installed on their machine. This is also an easy way to
+create Git-independent backups of important revisions, which is always a good
+idea.</p>
+
+
+<h2 id="bundle-the-repository">Bundle the Repository</h2>
+
+<p>Similar to the <code>git archive</code> command, <code>git bundle</code>
+turns a repository into a single file. However, in this case, the file retains
+the versioning information of the entire project. Try running the following
+command.</p>
+
+<pre><code class="k">git</code> <code class="k">bundle</code> <code class="n">create</code> <code class="n">../repo.bundle</code> <code class="n">master</code>
+</pre>
+
+
+<p>It’s like we just pushed our <code>master</code> branch to a remote,
+except it’s contained in a file instead of a remote repository. We can
+even clone it using the same <code>git clone</code> command:</p>
+
+<pre><code class="k">cd</code> <code class="n">..</code>
+<code class="k">git</code> <code class="k">clone</code> <code class="n">repo.bundle</code> <code class="n">repo-copy</code> <code class="na">-b</code> <code class="n">master</code>
+<code class="k">cd</code> <code class="n">repo-copy</code>
+<code class="k">git</code> <code class="k">log</code>
+<code class="k">cd</code> <code class="n">../my-git-repo</code>
+</pre>
+
+
+<p>The log output should show you the entire history of our <code>master</code>
+branch, and <code>repo.bundle</code> is also the <code>origin</code> remote for
+the new repository. This is the exact behavior we encountered when cloning a
+“normal” Git repository.</p>
+
+<p>Bundles are a great way to backup entire Git repositories (not just an
+isolated snapshot like <code>git archive</code>). They also let you share
+changes without a network connection. For example, if you didn’t want to
+configure the SSH accounts for a private Git server, you could bundle up the
+repository, put it on a jump drive, and walk it over to your co-worker’s
+computer. Of course, this could become a bit tiresome for active projects.</p>
+
+<p>We won’t be needing the <code>repo.bundle</code> file and
+<code>repo-copy</code> folder, so go ahead and delete them now.</p>
+
+
+<h2 id="ignore-a-file">Ignore a File</h2>
+
+<p>Remember that Git doesn’t automatically track files because we
+don’t want to record generated files like C binaries or compiled Python
+modules. But, seeing these files under the “Untracked files” list
+in <code>git status</code> can get confusing for large projects, so Git lets us
+ignore content using a special text file called <code>.gitignore</code>. Each
+file or directory stored in <code>.gitignore</code> will be invisible to
+Git.</p>
+
+<p>Let’s see how this works by creating a file called
+<code>notes.txt</code> to store some personal (private) comments about the
+project. Add some text to it and save it, then run the following.</p>
+    
+<pre><code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>As expected, this will show <code>notes.txt</code> in the “Untracked
+files” section. Next, create a file called <code>.gitignore</code> in the
+<code>my-git-repo</code> folder and add the following text to it. Windows users
+can create a file that starts with a period by executing the <code>touch
+.gitignore</code> command in Git Bash (you should also make sure hidden files
+are visible in your file browser).</p>
+
+<pre><code class="k">notes</code><code class="n">.txt</code>
+</pre>
+
+
+<p>Run another <code>git status</code> and you’ll see that the notes file
+no longer appears under “Untracked files”, but
+<code>.gitignore</code> does. This is a common file for Git-based projects, so
+let’s add it to the repository.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">.gitignore</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add .gitignore file&quot;</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>You can also specify entire directories in <code>.gitignore</code> or use
+the <code>*</code> wildcard to ignore files with a particular extension. For
+example, the following is a typical <code>.gitignore</code> file for a simple C
+project. It tells Git to overlook all <code>.o</code>, <code>.out</code>, and
+<code>.exe</code> files in the repository.</p>
+
+<pre>*.o
+*.out
+*.exe
+</pre>
+
+
+
+<h2 id="stash-uncommitted-changes">Stash Uncommitted Changes</h2>
+
+<p>Next, we’ll take a brief look at <strong>stashing</strong>, which
+conveniently “stashes” away uncommitted changes. Open up
+<code>style.css</code> and change the <code>h1</code> element to:</p>
+
+<pre><code class="nt">h1</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">32px</code><code class="p">;</code>
+  <code class="k">font-family</code><code class="o">:</code> <code class="s2">&quot;Times New Roman&quot;</code><code class="o">,</code> <code class="k">serif</code><code class="p">;</code>
+<code class="p">}</code>
+</pre>
+
+
+<p>Now let’s say we had to make an emergency fix to our project. We
+don’t want to commit an unfinished feature, and we also don’t want
+to lose our current CSS addition. The solution is to temporarily remove these
+changes with the <code>git stash</code> command:</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">stash</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>Before the stash, <code>style.css</code> was listed as “Changed by not
+updated.” The <code>git stash</code> command hid these changes, giving us
+a clean working directory.  We’re now able to switch to a new hotfix
+branch to make our important updates—without having to commit a
+meaningless snapshot just to save our current state.</p>
+
+<p>Let’s pretend we’ve completed our emergency update and
+we’re ready to continue working on our CSS changes. We can retrieve our
+stashed content with the following command.</p>
+
+<pre><code class="k">git</code> <code class="k">stash</code> <code class="k">apply</code>
+</pre>
+
+
+<p>The <code>style.css</code> file now looks the same as it did before the
+stash, and we can continue development as if we were never interrupted. Whereas
+patches represent a committed snapshot, a stash represents a set of
+<em>un</em>committed changes. It takes the uncommitted modifications, stores
+them internally, then does a <code>git reset --hard</code> to give us a clean
+working directory. This also means that stashes can be applied to <em>any</em>
+branch, not just the one from which it was created.</p>
+
+<p>In addition to temporarily storing uncommitted changes, this makes stashing
+a simple way to transfer modifications between branches. So, for example, if
+you ever found yourself developing on the wrong branch, you could stash all
+your changes, checkout the correct branch, then run a <code>git stash
+apply</code>.</p>
+
+<p>Let’s undo these CSS updates before moving on.</p>
+
+<pre><code class="k">git</code> <code class="k">reset</code> <code class="na">--hard</code>
+</pre>
+
+
+
+<h2 id="hook-into-gits-internals">Hook into Git’s Internals</h2>
+
+<p>Arguably, Git’s most useful configuration options are its
+<strong>hooks</strong>. A hook is a script that Git executes every time a
+particular event occurs in a repository.  In this section, we’ll take a
+hands-on look at Git hooks by automatically publishing our website every time
+someone pushes to the <code>central-repo.git</code> repository.</p>
+
+<p>In the <code>central-repo.git</code> directory, open the <code>hooks</code>
+directory and rename the file <code>post-update.sample</code> to
+<code>post-update</code>. After removing the <code>.sample</code> extension,
+this script will be executed whenever <em>any</em> branch gets pushed to
+<code>central-repo.git</code>. Replace the default contents of
+<code>post-update</code> with the following.</p>
+
+<pre><code class="c">#!/bin/sh</code>
+
+<code class="c"># Output a friendly message</code>
+<code class="k">echo</code> <code class="s">&quot;Publishing master branch!&quot;</code> <code class="n">&gt;&amp;2</code>
+
+<code class="c"># Remove the old `my-website` directory (if necessary)</code>
+<code class="k">rm</code> <code class="na">-rf</code> <code class="n">../my-website</code>
+
+<code class="c"># Create a new `my-website` directory</code>
+<code class="k">mkdir</code> <code class="n">../my-website</code>
+
+<code class="c"># Archive the `master` branch</code>
+<code class="k">git</code> <code class="k">archive</code> <code class="n">master</code> <code class="na">--format</code><code class="n">=tar</code> <code class="na">--output</code><code class="n">=../my-website.tar</code>
+
+<code class="c"># Uncompress the archive into the `my-website` directory</code>
+<code class="k">tar</code> <code class="na">-xf</code> <code class="n">../my-website.tar</code> <code class="na">-C</code> <code class="n">../my-website</code>
+
+<code class="k">exit</code> <code class="n">0</code>
+</pre>
+
+
+<p>While shell scripts are outside the scope of this tutorial, the majority of
+commands in the above code listing should be familiar to you. In short, this
+new <code>post-update</code> script creates an archive of the
+<code>master</code> branch, then exports it into a directory called
+<code>my-website</code>. This is our “live” website.</p>
+
+<p>We can see the script in action by pushing a branch to the
+<code>central-repo.git</code> repository.</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">../central-repo.git</code> <code class="n">master</code>
+</pre>
+
+
+<p>After the central repository receives the new <code>master</code> branch,
+our <code>post-update</code> script is executed. You should see the
+<code>Publishing master branch!</code> message echoed from the script, along
+with a new <code>my-website</code> folder in the same directory as
+<code>my-git-repo</code>. You can open <code>index.html</code> in a web browser
+to verify that it contains all the files from our <code>master</code> branch,
+and you can also see the intermediate <code>.tar</code> archive produced by the
+hook.</p>
+
+<p>This is a simple, unoptimized example, but Git hooks are infinitely
+versatile. Each of the <code>.sample</code> scripts in the <code>hooks</code>
+directory represents a different event that you can listen for, and each of
+them can do anything from automatically creating and publishing releases to
+enforcing a commit policy, making sure a project compiles, and of course,
+publishing websites (that means no more clunky FTP uploads). Hooks are even
+configured on a per-repository basis, which means you can run different scripts
+in your local repository than your central repository.</p>
+
+<p>For a detailed description of the available hooks, please consult the <a href="http://www.kernel.org/pub/software/scm/git/docs/githooks.html">official
+Git documentation</a>.</p>
+
+
+<h2 id="view-diffs-between-commits">View Diffs Between Commits</h2>
+
+<p>Up until now, we’ve been using <code>git log --stat</code> to view the
+changes introduced by new commits. However, this doesn’t show us which
+lines have been changed in any given file. For this level of detail, we need
+the <code>git diff</code> command. Let’s take a look at the updates from
+the <code>Add a pink block of color</code> commit:</p>
+
+<pre><code class="k">git</code> <code class="k">diff</code> <code class="n">HEAD~2..HEAD~1</code>
+</pre>
+
+
+<p>This will output the diff between the <code>Add a pink block of color</code>
+commit (<code>HEAD~1</code>) and the one before it (<code>HEAD~2</code>):</p>
+
+<pre><code class="gh">index 828dd1a..2713b10 100644</code>
+<code class="gd">--- a/pink.html</code>
+<code class="gi">+++ b/pink.html</code>
+<code class="gu">@@ -4,10 +4,17 @@</code>
+   &lt;title&gt;The Pink Page&lt;/title&gt;
+   &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot; /&gt;
+   &lt;meta charset=&quot;utf-8&quot; /&gt;
+<code class="gi">+  &lt;style&gt;</code>
+<code class="gi">+    div {</code>
+<code class="gi">+      width: 300px;</code>
+<code class="gi">+      height: 50px;</code>
+<code class="gi">+    }</code>
+<code class="gi">+  &lt;/style&gt;</code>
+ &lt;/head&gt;
+ &lt;body&gt;
+   &lt;h1 style=&quot;color: #F0F&quot;&gt;The Pink Page&lt;/h1&gt;
+   &lt;p&gt;Only &lt;span style=&quot;color: #F0F&quot;&gt;real men&lt;/span&gt; wear pink!&lt;/p&gt;
+<code class="gi">+  &lt;div style=&quot;background-color: #F0F&quot;&gt;&lt;/div&gt;</code>
+
+   &lt;p&gt;&lt;a href=&quot;index.html&quot;&gt;Return to home page&lt;/a&gt;&lt;/p&gt;
+ &lt;/body&gt;
+</pre>
+
+
+<p>This diff looks nearly identical to the patches we created in the previous
+module, and it shows exactly what was added to get from <code>HEAD~2</code> to
+<code>HEAD~1</code>. The <code>git diff</code> command is incredibly useful for
+pinpointing contributions from other developers. For example, we could have
+used the following to view the differences between John’s
+<code>pink-page</code> branch and our <code>master</code> before merging it
+into the project in <a href="distributed-workflows.xhtml">Distributed
+Workflows</a>.</p>
+
+<pre><code class="k">git</code> <code class="k">diff</code> <code class="n">master..john/pink-page</code>
+</pre>
+
+
+<p>This flexible command can also generate a detailed view of our uncommitted
+changes. Open up <code>blue.html</code>, make any kind of change, and save the
+file. Then, run <code>git diff</code> without any arguments:</p>
+
+<pre><code class="k">git</code> <code class="k">diff</code>
+</pre>
+
+
+<p>And, just in case we forgot what was added to the staging area, we can use
+the <code>--cached</code> flag to generate a diff between the staged snapshot
+and the most recent commit:</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">blue.html</code>
+<code class="k">git</code> <code class="k">diff</code> <code class="na">--cached</code>
+</pre>
+
+
+<p>A plain old <code>git diff</code> won’t output anything after
+<code>blue.html</code> is added to the staging area, but the changes are now
+visible through the <code>‑‑cached</code> flag. These are the three
+main configurations of the <code>git diff</code> command.</p>
+
+
+<h2 id="reset-and-checkout-files">Reset and Checkout Files</h2>
+
+<p>We’ve used <code>git reset</code> and <code>git checkout</code> many
+times throughout this tutorial; however, we’ve only seen them work with
+branches/commits. You can also reset and check out individual files, which
+slightly alters the behavior of both commands.</p>
+
+<p>The <code>git reset</code> we’re accustomed to moves the current
+branch to a new commit and optionally updates the working directory to match.
+But when we pass a file path, <code>git reset</code> updates the <em>staging
+area</em> to match the given commit instead of the working directory, and it
+doesn’t move the current branch pointer. This means we can remove
+<code>blue.html</code> from the staged snapshot with the following command.</p>
+
+<pre><code class="k">git</code> <code class="k">reset</code> <code class="n">HEAD</code> <code class="n">blue.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>This makes the <code>blue.html</code> in the staging area match the version
+stored in <code>HEAD</code>, but it leaves the working directory and current
+branch alone. The result is a staging area that matches the most recent commit
+and a working directory that contains the modified <code>blue.html</code> file.
+In other words, this type of <code>git reset</code> can be used to unstage a
+file:</p>
+
+<figure>
+    <img src="media/11-1.png"/>
+
+    <figcaption>Using <code>git reset</code> with a file path</figcaption>
+
+</figure>
+
+<p>Let’s take this one step further with <code>git checkout</code>. The
+<code>git checkout</code> we’ve been using updates the working directory
+<em>and</em> switches branches. If we add a file path to <code>git
+checkout</code>, it narrows its focus to only the specified file and does
+<em>not</em> update the branch pointer. This means that we can “check
+out” the most recent version of <code>blue.html</code> with the following
+command.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">HEAD</code> <code class="n">blue.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>Our <code>blue.html</code> file now looks exactly like the version stored in
+<code>HEAD</code>, and we thus have a clean working directory. Passing a file
+path to <code>git checkout</code> reverts that file to the specified
+commit.</p>
+
+<figure>
+    <img src="media/11-2.png"/>
+
+    <figcaption>Using <code>git checkout</code> with a file
+path</figcaption>
+
+</figure>
+
+<p>To summarize the file-path behavior of <code>git reset</code> and <code>git
+checkout</code>, both take a committed snapshot as an reference point and make
+a file in the staging area or the working directory match that reference,
+respectively.</p>
+
+
+<h2 id="aliases-and-other-configurations">Aliases and Other Configurations</h2>
+
+<p>Typing <code>git checkout</code> every time you wanted to see a new branch
+over the last ten modules has been a bit verbose. Fortunately, Git lets you
+create <strong>aliases</strong>, which are shortcuts to other commands.
+Let’s create a few aliases for our most common commands:</p>
+
+<pre><code class="k">git</code> <code class="k">config</code> <code class="na">--global</code> <code class="n">alias.co</code> <code class="k">checkout</code>
+<code class="k">git</code> <code class="k">config</code> <code class="na">--global</code> <code class="n">alias.ci</code> <code class="k">commit</code>
+<code class="k">git</code> <code class="k">config</code> <code class="na">--global</code> <code class="n">alias.br</code> <code class="k">branch</code>
+</pre>
+
+
+<p>Now, we can use <code>git co</code> instead of <code>git checkout</code>,
+<code>git ci</code> for committing, and <code>git br</code> for listing
+branches. We can even use <code>git br &lt;branch-name&gt;</code> for creating
+a new branch.</p>
+
+<p>Git stores these aliases in a global config file, similar to the local
+config file we looked at in Mary’s repository
+(<code>marys-repo/.git/config</code>). By default, global configurations reside
+in <code>~/.gitconfig</code>, where the <code>~</code> character represents
+your home directory. This file should resemble the following.</p>
+
+<pre>[user]
+    name = Ryan
+    email = ryan.example@rypress.com
+[alias]
+    co = checkout
+    ci = commit
+    br = branch
+</pre>
+
+
+<p>Of course, your settings should reflect the name and email you entered in <a href="the-basics.xhtml">The Basics</a>. As you can see, all of our new aliases
+are also stored in <code>.gitconfig</code>. Let’s add a few more useful
+configurations by modifying this file directly. Append the following to
+<code>.gitconfig</code>.</p>
+
+<pre>[color]
+    status = always
+[core]
+    editor = gvim
+</pre>
+
+
+<p>This makes sure Git colorizes the output of <code>git status</code> and that
+it uses the gVim text editor for creating commit messages. To use a different
+editor, simply change <code>gvim</code> to the command that opens your editor.
+For example, Emacs users would use <code>emacs</code>, and Notepad users would
+use <code>notepad.exe</code>.</p>
+
+<p>Git includes a long list of configuration options, all of which can be found
+in the <a href="http://www.kernel.org/pub/software/scm/git/docs/git-config.html">official
+manual</a>. Note that storing your global configurations in a plaintext file
+makes it incredibly easy to transfer your settings to a new Git installation:
+just copy <code>~/.gitconfig</code> onto your new machine.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this module, we learned how to export snapshots, backup repositories,
+ignore files, stash temporary changes, hook into Git’s internals,
+generate diffs, reset individual files, and create shorter aliases for common
+commands. While it’s impossible to cover all of Git’s supporting
+features in a hands-on guide such as this, I hope that you now have a clearer
+picture of Git’s numerous capabilities.</p>
+
+<p>With all of these convenient features, it’s easy to get so caught up
+in designing the perfect workflow that you lose sight of Git’s underlying
+purpose. As you add new commands to your repertoire, remember that Git should
+always make it <em>easier</em> to develop a software project—never
+harder. If you ever find that Git is causing more harm than good, don’t
+be scared to drop some of the advanced features and go back to the basics.</p>
+
+<p>The final module will go a long way towards helping you realize the full
+potential of Git’s version control model. We’ll explore Git’s
+internal database by manually inspecting and creating snapshots. Equipped with
+this low-level knowledge, you’ll be more than ready to venture out into
+the reality of Git-based project management.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+
+    <dt><code>git archive &lt;branch-name&gt; --format=zip --output=&lt;file&gt;</code></dt>
+    <dd>Export a single snapshot to a ZIP archive called
+    <code>&lt;file&gt;</code>.</dd>
+
+    <dt><code>git bundle create &lt;file&gt; &lt;branch-name&gt;</code></dt>
+    <dd>Export an entire branch, complete with history, to the specified
+    file.</dd>
+
+    <dt><code>git clone repo.bundle &lt;repo-dir&gt; -b &lt;branch-name&gt;</code></dt>
+
+    <dd>Re-create a project from a bundled repository and checkout
+    <code>&lt;branch‑name&gt;</code>.</dd>
+
+    <dt><code>git stash</code></dt>
+    <dd>Temporarily stash changes to create a clean working directory.</dd>
+
+    <dt><code>git stash apply</code></dt>
+    <dd>Re-apply stashed changes to the working directory.</dd>
+
+    <dt><code>git diff &lt;commit-id&gt;..&lt;commit-id&gt;</code></dt>
+    <dd>View the difference between two commits.</dd>
+
+    <dt><code>git diff</code></dt>
+    <dd>View the difference between the working directory and the staging
+    area.</dd>
+
+    <dt><code>git diff --cached</code></dt>
+    <dd>View the difference between the staging area and the most recent
+    commit.</dd>
+
+    <dt><code>git reset HEAD &lt;file&gt;</code></dt>
+    <dd>Unstage a file, but don’t alter the working directory or move the
+    current branch.</dd>
+
+    <dt><code>git checkout &lt;commit-id&gt; &lt;file&gt;</code></dt>
+    <dd>Revert an individual file to match the specified commit without
+    switching branches.</dd>
+
+    <dt><code>git config --global alias.&lt;alias-name&gt; &lt;git-command&gt;</code></dt>
+    <dd>Create a shortcut for a command and store it in the global
+    configuration file.</dd>
+
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

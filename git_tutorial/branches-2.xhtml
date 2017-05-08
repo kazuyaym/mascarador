@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Branches, Part II</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="branches-part-ii">Branches, Part II</h1>
+
+<p>Now that we’ve covered the mechanics behind Git branches, we can
+discuss the practical impact that they have on the software development
+process. Instead of introducing new commands, this module covers how the
+typical Git user applies this workflow to real projects, as well as some of the
+problems that arise in a branched environment.</p>
+
+<p>To Git, a branch is a branch, but it’s often useful to assign special
+meaning to different branches. For example, we’ve been using
+<code>master</code> as the stable branch for our example project, and
+we’ve also used a temporary branch to add some CSS formatting. Temporary
+branches like the latter are called <strong>topic branches</strong> because
+they exist to develop a certain topic, then they are deleted. We’ll work
+with two types of topic branches later in this module.</p>
+
+<p>Amid our exploration of Git branches, we’ll also discover that some
+merges cannot be “fast-forwarded.” When the history of two branches
+diverges, a dedicated commit is required to combine the branches. This
+situation may also give rise to a merge conflict, which must be manually
+resolved before anything can be committed to the repository.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/branches-2.zip">Download the repository
+    for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="continue-the-crazy-experiment">Continue the Crazy Experiment</h2>
+
+<p>Let’s start by checking out the <code>crazy</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">crazy</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>The <code>crazy</code> branch is a longer-running type of topic branch
+called a <strong>feature branch</strong>. This is fitting, as it was created
+with the intention of developing a specific <em>feature</em>. It’s also a
+term that makes Git’s contribution to the development workflow readily
+apparent: branches enable you to focus on developing one clearly defined
+feature at a time.</p>
+
+<p>This brings us to my rule-of-thumb for using Git branches:</p>
+
+<ul>
+    <li>Create a new branch for each major addition to your project.</li>
+    <li><em>Don’t</em> create a branch if you can’t give it a
+    specific name.</li>
+</ul>
+
+<p>Following these simple guidelines will have a dramatic impact on your
+programming efficiency.</p>
+
+
+<h2 id="merge-the-css-updates">Merge the CSS Updates</h2>
+
+<p>Note that the CSS formatting we merged into <code>master</code> is nowhere
+to be found.  This presents a bit of a problem if we want our experiment to
+reflect these updates. Conveniently, Git lets us merge changes into
+<em>any</em> branch (not just the <code>master</code> branch). So, we can pull
+the updates in with the familiar <code>git merge</code> command. Remember that
+merging only affects the checked-out branch.</p>
+
+<pre><code class="k">git</code> <code class="k">merge</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>As of Git 1.7.10, this will open your editor and prompt you for a message
+explaining why the commit was necessary. You can use the default <code>Merge
+branch 'master' into crazy</code>. When you save and close the file,
+you’ll notice an extra commit in your project history. Recall that our
+first merge didn’t add any new commits; it just
+“fast-forwarded” the tip of the <code>master</code> branch. This
+was not the case for our new merge, which is shown below.</p>
+
+<figure>
+    <img src="media/4-1.png"/>
+
+    <figcaption>Merging <code>master</code> into the <code>crazy</code> branch</figcaption>
+
+</figure>
+
+<p>Take a moment to examine why the current merge couldn’t be a
+fast-forward one.  How could Git have walked the <code>crazy</code> pointer
+over to the tip of the <code>master</code> branch? It’s not possible
+without backtracking, which kind of defeats the idea of
+“fast-forwarding.” We’re left with a new way to combine
+branches: the <strong>3-way merge</strong>.</p>
+
+<p>A 3-way merge occurs when you try to merge two branches whose history has
+diverged. It creates an extra <strong>merge commit</strong> to function as a
+link between the two branches. As a result, it has <em>two</em> parent commits.
+The above figure visualizes this with two arrows originating from the tip of
+<code>crazy</code>.  It’s like saying “this commit comes from both
+the <code>crazy</code> branch <em>and</em> from <code>master</code>.”
+After the merge, the <code>crazy</code> branch has access to both its history
+and the <code>master</code> history.</p>
+
+<p>The name comes from the internal method used to create the merge commit. Git
+looks at <em>three</em> commits (numbered in the above figure) to generate the
+final state of the merge.</p>
+
+<p>This kind of branch interaction is a big part of what makes Git such a
+powerful development tool. We can not only create independent lines of
+development, but we can also share information between them by tying together
+their histories with a 3-way merge.</p>
+
+
+<h2 id="style-the-rainbow-page">Style the Rainbow Page</h2>
+
+<p>Now that we have access to the CSS updates from <code>master</code>, we can
+continue developing our crazy experiment. Link the CSS stylesheet to
+<code>rainbow.html</code> by adding the following HTML on the line after the
+<code>&lt;title&gt;</code> element.</p>
+
+<pre><code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+</pre>
+
+
+<p>Stage and commit the update, then check that it’s reflected in the
+history.</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add CSS stylesheet to rainbow.html&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>Notice that we skipped the staging step this time around. Instead of using
+<code>git add</code>, we passed the <code>-a</code> flag to <code>git
+commit</code>. This convenient parameter tells Git to automatically include
+<em>all</em> tracked files in the staged snapshot. Combined with the
+<code>-m</code> flag, we can stage and commit snapshots with a single command.
+However, be careful not to include unintended files when using the
+<code>-a</code> flag.</p>
+
+
+<h2 id="link-to-the-rainbow-page">Link to the Rainbow Page</h2>
+
+<p>We still need to add a navigation link to the home page. Change the
+“Navigation” section of <code>index.html</code> to the
+following.</p>
+
+<pre><code class="nt">&lt;h2&gt;</code>Navigation<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;orange.html&quot;</code><code class="nt">&gt;</code>The Orange Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #00F&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;blue.html&quot;</code><code class="nt">&gt;</code>The Blue Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>The Rainbow Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>As usual, stage and commit the snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Link index.html to rainbow.html&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+
+<h2 id="fork-an-alternative-rainbow">Fork an Alternative Rainbow</h2>
+
+<p>Next, we’re going to brainstorm an alternative to the current
+<code>rainbow.html</code> page. This is a perfect time to create another topic
+branch:</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="n">crazy-alt</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">crazy-alt</code>
+</pre>
+
+
+<p>Remember, we can do whatever we want here without worrying about either
+<code>crazy</code> or <code>master</code>. When <code>git branch</code> creates
+a branch, it uses the current <code>HEAD</code> as the starting point for the
+new branch. This means that we begin with the same files as <code>crazy</code>
+(if we called <code>git branch</code> from <code>master</code>, we would have
+had to re-create <code>rainbow.html</code>). After creating the new branch, our
+repository’s history looks like:</p>
+
+<figure>
+    <img src="media/4-2.png"/>
+
+    <figcaption>Creating the <code>crazy-alt</code> branch</figcaption>
+
+</figure>
+
+
+<h2 id="change-the-rainbow">Change the Rainbow</h2>
+
+<p>Change the colorful list in <code>rainbow.html</code> from:</p>
+
+<pre><code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: red&quot;</code><code class="nt">&gt;</code>Red<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: orange&quot;</code><code class="nt">&gt;</code>Orange<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: yellow&quot;</code><code class="nt">&gt;</code>Yellow<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: green&quot;</code><code class="nt">&gt;</code>Green<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: blue&quot;</code><code class="nt">&gt;</code>Blue<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: indigo&quot;</code><code class="nt">&gt;</code>Indigo<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: violet&quot;</code><code class="nt">&gt;</code>Violet<code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>to the following:</p>
+
+<pre><code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: red&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: orange&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: yellow&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: green&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: blue&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: indigo&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: violet&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+</pre>
+
+
+<p>Then, add some CSS formatting to <code>&lt;head&gt;</code> on the line after the
+<code>&lt;meta&gt;</code> element:</p>
+    
+<pre><code class="nt">&lt;style&gt;</code>
+  <code class="nt">div</code> <code class="p">{</code>
+    <code class="k">width</code><code class="o">:</code> <code class="m">300px</code><code class="p">;</code>
+    <code class="k">height</code><code class="o">:</code> <code class="m">50px</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="nt">&lt;/style&gt;</code>
+</pre>
+
+
+<p>If you open <code>rainbow.html</code> in a browser, you should now see
+colorful blocks in place of the colorful text. Don’t forget to commit the
+changes:</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Make a REAL rainbow&quot;</code>
+</pre>
+
+
+<p>The resulting project history is show below, with the first four commits omitted
+for the sake of presentation.</p>
+
+<figure>
+    <img src="media/4-3.png"/>
+
+    <figcaption>Committing on the <code>crazy-alt</code> branch</figcaption>
+
+</figure>
+
+
+<h2 id="emergency-update">Emergency Update!</h2>
+
+<p><em>Our boss called in with some breaking news!</em> He needs us to update
+the site immediately, but what do we do with our <code>rainbow.html</code>
+developments? Well, the beauty of Git branches is that we can just leave them
+where they are and add the breaking news to <code>master</code>.</p>
+
+<p>We’ll use what’s called a <strong>hotfix branch</strong> to
+create and test the news updates.  In contrast to our relatively long-running
+feature branch (<code>crazy</code>), hotfix branches are used to quickly patch
+a production release. For example, you’d use a hotfix branch to fix a
+time-sensitive bug in a public software project. This distinction is useful for
+demonstrating when it’s appropriate to create a new branch, but it is
+purely conceptual—a branch is a branch according to Git.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="n">news-hotfix</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">news-hotfix</code>
+</pre>
+
+
+<p>Change the “News” list in <code>index.html</code> to match the
+following.</p>
+    
+<pre><code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-1.html&quot;</code><code class="nt">&gt;</code>Blue Is The New Hue<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>And, create a new HTML page called <code>news-1.html</code> with the following
+content.</p>
+    
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>Blue Is The New Hue<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #079&quot;</code><code class="nt">&gt;</code>Blue Is The New Hue<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>European designers have just announced that
+  <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #079&quot;</code><code class="nt">&gt;</code>Blue<code class="nt">&lt;/span&gt;</code> will be this year&#39;s
+  hot color.<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+    
+<p>We can’t use <code>git commit -a</code> to automatically stage
+<code>news-1.html</code> because it’s an <em>untracked</em> file (as
+shown in <code>git status</code>). So, let’s use an explicit <code>git
+add</code>:</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">index.html</code> <code class="n">news-1.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add 1st news item&quot;</code>
+</pre>
+
+
+<p>Test these additions in a browser to make sure that the links work,
+it’s typo free, etc. If everything looks good, we can
+“publish” the changes by merging them into the stable
+<code>master</code> branch. Isolating this in a separate branch isn’t
+really necessary for our trivial example, but in the real world, this would
+give you the opportunity to run build tests without touching your stable
+project.</p>
+
+
+<h2 id="publish-the-news-hotfix">Publish the News Hotfix</h2>
+
+<p>Remember that to merge into the <code>master</code> branch, we first need to
+check it out.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">news-hotfix</code>
+</pre>
+
+
+<p>Since <code>master</code> now contains the news update, we can delete the hotfix
+branch:</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">news-hotfix</code>
+<code class="k">git</code> <code class="k">branch</code>
+</pre>
+
+
+<p>The following diagram reflects our repository’s history before and after the
+merge. Can you figure out why was this a fast-forward merge instead of a 3-way
+merge?</p>
+
+<figure>
+    <img src="media/4-4.png"/>
+
+    <figcaption>Fast-forwarding <code>master</code> to the
+<code>news-hotfix</code> branch</figcaption>
+
+</figure>
+
+<p>Also notice that we have another fork in our history (the commit before
+<code>master</code>
+branches in two directions), which means we should expect to see another merge
+commit in the near future.</p>
+
+
+<h2 id="complete-the-crazy-experiment">Complete the Crazy Experiment</h2>
+
+<p>Ok, let’s finish up our crazy experiment with one more commit.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">crazy</code>
+</pre>
+
+
+<p>Note that the news article is nowhere to be found, as should be expected
+(this branch is a completely isolated development environment).</p>
+
+<p>We’ll finish up our crazy experiment by adding a news item for it on the home
+page. Change the news list in <code>index.html</code> to the following:</p>
+
+<pre><code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>Our New Rainbow<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>Astute readers have probably observed that this directly conflicts with what
+we changed in the <code>news-hotfix</code> branch. We should <em>not</em>
+manually add in the other news item because it has no relationship with the
+current branch. In addition, there would be no way to make sure the link works
+because <code>news-1.html</code> doesn’t exist in this branch. This may
+seem trivial, but imagine the errors that could be introduced had
+<code>news-hotfix</code> made dozens of different changes.</p>
+
+<p>We’ll simply stage and commit the snapshot as if there were no
+conflicts:</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add news item for rainbow&quot;</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>Look at all those experimental commits (marked with asterisks below)!</p>
+
+<pre><code class="s">*42fa173</code> Add news item for rainbow
+<code class="s">*7147cc5</code> Link index.html to rainbow.html
+<code class="s">*6aa4b3b</code> Add CSS stylesheet to rainbow.html
+<code class="s">b9ae1bc</code> Merge branch &#39;master&#39; into crazy
+<code class="s">ae4e756</code> Link HTML pages to stylesheet
+<code class="s">98cd46d</code> Add CSS stylesheet
+<code class="s">*33e25c9</code> Rename crazy.html to rainbow.html
+<code class="s">*677e0e0</code> Add a rainbow to crazy.html
+<code class="s">506bb9b</code> Revert &quot;Add a crazzzy experiment&quot;
+<code class="s">*514fbe7</code> Add a crazzzy experiment
+<code class="s">1c310d2</code> Add navigation links
+<code class="s">54650a3</code> Create blue and orange pages
+<code class="s">b650e4b</code> Create index page
+</pre>
+
+
+
+<h2 id="publish-the-crazy-experiment">Publish the Crazy Experiment</h2>
+
+<p>We’re finally ready to merge our <code>crazy</code> branch back into
+<code>master</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">crazy</code>
+</pre>
+
+
+<p>You should get a message that reads:</p>
+
+<pre>Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+</pre>
+
+
+<p>This is our first <strong>merge conflict</strong>. Conflicts occur when we
+try to merge branches that have edited the same content. Git doesn’t know
+how to combine the two changes, so it stops to ask us what to do. We can see
+exactly what went wrong with the familiar <code>git status</code> command:</p>
+
+<pre><code class="c">#</code> <code class="c">On branch </code><code class="cs">master</code>
+<code class="c"># </code><code class="cs">Changes to be committed:</code>
+<code class="c">#</code>
+<code class="c">#       </code><code class="cs">new file:   rainbow.html</code>
+<code class="c">#</code>
+<code class="c"># </code><code class="cs">Unmerged paths:</code>
+<code class="c">#   (use &quot;git add/rm &lt;file&gt;...&quot; as appropriate to mark resolution)</code>
+<code class="c">#</code>
+<code class="c">#       </code><code class="cs">both modified:      index.html</code>
+<code class="c">#</code>
+</pre>
+
+
+<p>We’re looking at the staged snapshot of a merge commit. We never saw
+this with the first 3-way merge because we didn’t have any conflicts to
+resolve. But now, Git stopped to let us modify files and resolve the conflict
+before committing the snapshot. The “Unmerged paths” section
+contains files that have a conflict.</p>
+
+<p>Open up <code>index.html</code> and find the section that looks like:</p>
+
+<pre>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+    &lt;li&gt;&lt;a href=&quot;news-1.html&quot;&gt;Blue Is The New Hue&lt;/a&gt;&lt;/li&gt;
+=======
+    &lt;li&gt;&lt;a href=&quot;rainbow.html&quot;&gt;Our New Rainbow&lt;/a&gt;&lt;/li&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; crazy
+</pre>
+
+
+<p>Git went ahead and modified the conflicted file to show us exactly which
+lines are afflicted. The format of the above text shows us the difference
+between the two versions of the file. The section labeled
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> shows us the version in the
+current branch, while the part after the <code>=======</code> shows the version
+in the <code>crazy</code> branch.</p>
+
+
+<h2 id="resolve-the-merge-conflicts">Resolve the Merge Conflicts</h2>
+
+<p>We can change the affected lines to whatever we want in order to resolve the
+conflict. Edit the news section of <code>index.html</code> to keep changes from
+both versions:</p>
+
+<pre><code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-1.html&quot;</code><code class="nt">&gt;</code>Blue Is The New Hue<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>Our New Rainbow<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>The <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, and
+<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> markers are only used to show us the
+conflict and should be deleted. Next, we need to tell Git that we’re done
+resolving the conflict:</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>That’s right, all you have to do is add <code>index.html</code> to the
+staged snapshot to mark it as resolved. Finally, complete the 3-way merge:</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code>
+</pre>
+
+
+<p>We didn’t use the <code>-m</code> flag to specify a message because
+Git already gives us a default message for merge commits. It also gives us a
+“Conflicts” list, which can be particularly handy when trying to
+figure out where something went wrong in a project. Save and close the file to
+create the merge commit.</p>
+
+<p>The final state of our project looks like the following.</p>
+
+<figure>
+    <img src="media/4-5.png"/>
+
+    <figcaption>Merging the <code>crazy</code> branch into
+<code>master</code></figcaption>
+
+</figure>
+
+
+<h2 id="cleanup-the-feature-branches">Cleanup the Feature Branches</h2>
+
+<p>Since our crazy experiment has been successfully merged, we can get rid of our
+feature branches.</p>
+
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">crazy</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">crazy-alt</code>
+</pre>
+
+
+<p>As noted in the last module, the <code>git branch -d</code> command
+won’t let you delete a branch that contains unmerged changes. But, we
+really do want to scrap the alternative experiment, so we’ll follow the
+error message’s instructions for overriding this behavior:</p>
+    
+<pre><code class="k">git</code> <code class="k">branch</code> <code class="na">-D</code> <code class="n">crazy-alt</code>
+</pre>
+
+
+<p>Because we never merged <code>crazy-alt</code> into <code>master</code>, it
+is lost forever. However, the <code>crazy</code> branch is still accessible
+through its commits, which are now reachable via the <code>master</code>
+branch. That is to say, it is still part of the structure of the
+repository’s history, even though we deleted our reference to it.</p>
+
+<figure>
+    <img src="media/4-6.png"/>
+
+    <figcaption>Deleting the feature branches</figcaption>
+
+</figure>
+
+<p>Fast-forward merges are <em>not</em> reflected in the project history. This
+is the tangible distinction between fast-forward merges and 3-way merges. The
+next module will discuss the appropriate usage of both and the potential
+complications of a non-linear history.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This module demonstrated the three most common uses of Git branches:</p>
+
+<ul>
+    <li>To develop long-running features (<code>crazy</code>)</li>
+    <li>To apply quick updates (<code>news-hotfix</code>)</li>
+    <li>To record the evolution of a project (<code>master</code>)</li>
+</ul>
+
+<p>In the first two cases, we needed an <em>isolated</em> environment to test
+some changes before integrating them with our stable code. As you get more
+comfortable with Git, you should find yourself doing virtually everything in an
+isolated topic branch, then merging it into a stable branch once you’re
+done. Practically, this means you’ll never have a broken version of your
+project.</p>
+
+<p>We used the permanent <code>master</code> branch as the foundation for all
+of these temporary branches, effectively making it the historian for our entire
+project.  In addition to <code>master</code>, many programmers often add a
+second permanent branch called <code>develop</code>. This lets them use
+<code>master</code> to record <em>really</em> stable snapshots (e.g., public
+releases) and use <code>develop</code> as more of a preparation area for
+<code>master</code>.</p>
+
+<p>This module also introduced the 3-way merge, which combines two branches using
+a dedicated commit. The 3-way merge and the fast-forward merge are actually what
+makes branching so powerful: they let developers share and integrate independent
+updates with reliable results.</p>
+
+<p>Next, we’ll learn how to clean up our repository’s history.
+Using a new Git command, we’ll be able to better manage merge commits and
+make sure our history is easy to navigate.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git commit -a -m "&lt;message&gt;"</code></dt>
+    <dd>Stage all tracked files and commit the snapshot using the specified
+    message.</dd>
+
+    <dt><code>git branch -D &lt;branch-name&gt;</code></dt>
+    <dd>Force the removal of an unmerged branch (<em>be careful</em>: it will be lost
+    forever).</dd>
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

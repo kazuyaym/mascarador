@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Plumbing</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="plumbing">Plumbing</h1>
+
+<p>In <a href="rewriting-history.xhtml">Rewriting History</a>, I talked about
+the internal representation of a Git repository. I may have mislead you a bit.
+While the reflog, interactive rebasing, and resetting may be more complex
+features of Git, they are still considered part of the
+<strong>porcelain</strong>, as is every other command we’ve covered. In
+this module, we’ll take a look at Git’s
+<strong>plumbing</strong>—the low-level commands that give us access to
+Git’s <em>true</em> internal representation of a project.</p>
+
+<p>Unless you start hacking on Git’s source code, you’ll probably
+never need to use the plumbing commands presented below. But, manually
+manipulating a repository will fill in the conceptual details of how Git
+actually stores your data, and you should walk away with a much better
+understanding of the techniques that we’ve been using throughout this
+tutorial. In turn, this knowledge will make the familiar porcelain commands
+even more powerful.</p>
+
+<p>We’ll start by inspecting Git’s object database, then
+we’ll manually create and commit a snapshot using only Git’s
+low-level interface.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/plumbing.zip">Download the repository for this
+    module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="examine-commit-details">Examine Commit Details</h2>
+
+<p>First, let’s take a closer look at our latest commit with the
+<code>git cat-file</code> plumbing command.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="k">commit</code> <code class="n">HEAD</code>
+</pre>
+
+
+<p>The <code>commit</code> parameter tells Git that we want to see a commit
+object, and as we already know, <code>HEAD</code> refers to the most recent
+commit. This will output the following, although your IDs and user information
+will be different.</p>
+
+<pre>tree 552acd444696ccb1c3afe68a55ae8b20ece2b0e6
+parent 6a1d380780a83ef5f49523777c5e8d801b7b9ba2
+author Ryan &lt;ryan.example@rypress.com&gt; 1326496982 -0600
+committer Ryan &lt;ryan.example@rypress.com&gt; 1326496982 -0600
+
+Add .gitignore file
+</pre>
+
+
+<p>This is the complete representation of a commit: a tree, a parent, user
+data, and a commit message. The user information and commit message are
+relatively straightforward, but we’ve never seen the <em>tree</em> or
+<em>parent</em> values before.</p>
+
+<p>A <strong>tree object</strong> is Git’s representation of the
+“snapshots” we’ve been talking about since the beginning of
+this tutorial. They record the state of a directory at a given point, without
+any notion of time or author. To tie trees together into a coherent project
+history, Git wraps each one in a <strong>commit object</strong> and specifies a
+<strong>parent</strong>, which is just another commit. By following the parent
+of each commit, you can walk through the entire history of a project.</p>
+
+<figure>
+    <img src="media/12-1.png"/>
+
+    <figcaption>Commit and tree objects</figcaption>
+
+</figure>
+
+<p>Notice that each commit refers to one and only one tree object. From the
+<code>git cat-file</code> output, we can also infer that trees use SHA-1
+checksums for their ID’s. This will be the case for all of Git’s
+internal objects.</p>
+
+
+<h2 id="examine-a-tree">Examine a Tree</h2>
+
+<p>Next, let’s try to inspect a tree using the same <code>git
+cat-file</code> command. Make sure to change <code>552acd4</code> to the ID of
+your tree from the previous step.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="n">tree</code> <code class="n">552acd4</code>
+</pre>
+
+
+<p>Unfortunately, trees contain binary data, which is quite ugly when displayed
+in its raw form. So, Git offers another useful plumbing command:</p>
+
+<pre><code class="k">git</code> <code class="k">ls-tree</code> <code class="n">552acd4</code>
+</pre>
+
+
+<p>This will output the contents of the tree, which looks an awful lot like a
+directory listing:</p>
+
+<pre>100644 blob 99ed0d431c5a19f147da3c4cb8421b5566600449    .gitignore
+040000 tree ab4947cb27ef8731f7a54660655afaedaf45444d    about
+100644 blob cefb5a651557e135666af4c07c7f2ab4b8124bd7    blue.html
+100644 blob cb01ae23932fd9704fdc5e077bc3c1184e1af6b9    green.html
+100644 blob e993e5fa85a436b2bb05b6a8018e81f8e8864a24    index.html
+100644 blob 2a6deedee35cc59a83b1d978b0b8b7963e8298e9    news-1.html
+100644 blob 0171687fc1b23aa56c24c54168cdebaefecf7d71    news-2.html
+...
+</pre>
+
+
+<p>By examining the above output, we can presume that “blobs”
+represent files in our repository, whereas trees represent folders. Go ahead
+and examine the <code>about</code> tree with another <code>git ls-tree</code>
+to see if this really is the case. You should see the contents of our
+<code>about</code> folder.</p>
+
+<p>So, <strong>blob objects</strong> are how Git stores our file data, tree
+objects combine blobs and other trees into a directory listing, then commit
+objects tie trees into a project history. These are the only types of objects
+that Git needs to implement nearly all of the porcelain commands we’ve
+been using, and their relationship is summed up as follows:</p>
+
+<figure>
+    <img src="media/12-2.png"/>
+
+    <figcaption>Commit, tree, and blob objects</figcaption>
+
+</figure>
+
+
+<h2 id="examine-a-blob">Examine a Blob</h2>
+
+<p>Let’s take a look at the blob associated with <code>blue.html</code>
+(be sure to change the following to the ID next to <code>blue.html</code> in
+<em>your</em> tree output).</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="n">blob</code> <code class="n">cefb5a6</code>
+</pre>
+
+
+<p>This should display the entire contents of <code>blue.html</code>,
+confirming that blobs really are plain data files. Note that blobs are pure
+content: there is no mention of a filename in the above output. That is to say,
+the name <code>blue.html</code> is stored in the <em>tree that contains the
+blob</em>, not the blob itself.</p>
+
+<p>You may recall from <a href="the-basics.xhtml">The Basics</a> that an SHA-1
+checksum ensures an object’s contents is never corrupted without Git
+knowing about it.  Checksums work by using the object’s contents to
+generate a unique character sequence. This not only functions as an identifier,
+it also guarantees that an object won’t be silently corrupted (the
+altered content would generate a different ID).</p>
+
+<p>When it comes to blob objects, this has an additional benefit. Since two
+blobs with the same data will have the same ID, Git <em>must</em> share blobs
+across multiple trees. For example, our <code>blue.html</code> file
+hasn’t been changed since it was created, so our repository will only
+have a single associated blob, and all subsequent trees will refer to it. By
+not creating duplicate blobs for each tree object, Git vastly reduces the size
+of a repository. With this in mind, we can revise our Git object diagram to the
+following.</p>
+
+<figure>
+    <img src="media/12-3.png"/>
+
+    <figcaption>Commit, tree, and shared blob objects</figcaption>
+
+</figure>
+
+<p>However, as soon as you change a single line in a file, Git must create a
+new blob object because its contents will have changed, resulting in a new
+SHA-1 checksum.</p>
+
+
+<h2 id="examine-a-tag">Examine a Tag</h2>
+
+<p>The fourth and final type of Git object is the <strong>tag object</strong>
+We can use the same <code>git cat-file</code> command to show the details of a
+tag.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="k">tag</code> <code class="n">v2.0</code>
+</pre>
+
+
+<p>This will output the commit ID associated with <code>v2.0</code>, along with
+the tag’s name, author, creation date, and message. The straightforward
+relationship between tags and commits gives us our finalized Git object
+diagram:</p>
+
+<figure>
+    <img src="media/12-4.png"/>
+
+    <figcaption>Commit, tree, blob, and tag objects</figcaption>
+
+</figure>
+
+
+<h2 id="inspect-gits-branch-representation">Inspect Git’s Branch Representation</h2>
+
+<p>We now have the tools to fully explore Git’s branch representation.
+Using the <code>-t</code> flag, we can determine what kind of object Git uses
+for branches.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="na">-t</code> <code class="n">master</code>
+</pre>
+
+
+<p>That’s right, a branch is just a reference to a commit object, which
+means we can view it with a normal <code>git cat-file</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="k">commit</code> <code class="n">master</code>
+</pre>
+
+
+<p>This will output the exact same information as our original <code>git
+cat-file commit HEAD</code>. It seems that both the <code>master</code> branch
+and <code>HEAD</code> are simply references to a commit object.</p>
+
+<p>Using a text editor, open up the <code>.git/refs/heads/master</code> file.
+You should find the commit checksum of the most recent commit, which you can
+view with <code>git log -n 1</code>. This single file is all Git needs to
+maintain the <code>master</code> branch—all other information is
+extrapolated through the commit object relationships discussed above.</p>
+
+<p>The <code>HEAD</code> reference, on the other hand, is recorded in
+<code>.git/HEAD</code>. Unlike the branch tips, <code>HEAD</code> is not a
+direct link to a commit. Instead, it refers to a branch, which Git uses to
+figure out which commit is currently checked out. Remember that a
+<code>detached HEAD</code> state occurred when <code>HEAD</code> did not
+coincide with the tip of any branch. Internally, all this means to Git is that
+<code>.git/HEAD</code> doesn’t contain a local branch. Try checking out
+an old commit:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">HEAD~1</code>
+</pre>
+
+
+<p>Now, <code>.git/HEAD</code> should contain a commit ID instead of a branch.
+This tells Git that we’re in a <code>detached HEAD</code> state.
+Regardless of what state you’re in, the <code>git checkout</code> command
+will always record the checked-out reference in <code>.git/HEAD</code>.</p>
+
+<p>Let’s get back to our <code>master</code> branch before moving on:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+</pre>
+
+
+
+<h2 id="explore-the-object-database">Explore the Object Database</h2>
+
+<p>While we have a basic understanding of Git’s object interaction, we
+have yet to explore where Git keeps all of these objects. In your
+<code>my-git-repo</code> repository, open the folder <code>.git/objects</code>.
+This is Git’s object database.</p>
+
+<p>Each object, regardless of type, is stored as a file, using its SHA-1 checksum
+as the filename (sort of). But, instead of storing all objects in a single
+folder, they are split up using the first two characters of their ID as a
+directory name, resulting in an object database that looks something like the
+following.</p>
+
+<pre>00  10  28  33  3e  51  5c  6e  77  85  95  f7
+01  11  29  34  3f  52  5e  6f  79  86  96  f8
+02  16  2a  35  41  53  63  70  7a  87  98  f9
+03  1c  2b  36  42  54  64  71  7c  88  99  fa
+0c  26  30  3c  4e  5a  6a  75  83  91  a0  info
+0e  27  31  3d  50  5b  6b  76  84  93  a2  pack
+</pre>
+
+
+<p>For example, an object with the following ID:</p>
+
+<pre>7a52bb857229f89bffa74134ee3de48e5e146105
+</pre>
+
+
+<p>is stored in a folder called <code>7a</code>, using the remaining characters
+(<code>52bb8...</code>) as a filename. This gives us an object ID, but before
+we can inspect items in the object database, we need to know what type of
+object it is. Again, we can use the <code>-t</code> flag:</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="na">-t</code> <code class="n">7a52bb8</code>
+</pre>
+
+
+<p>Of course, change the object ID to an object from <em>your</em> database
+(don’t forget to combine the folder name with the filename to get the
+full ID). This will output the type of commit, which we can then pass to a
+normal call to <code>git cat-file</code>.</p>
+
+<pre><code class="k">git</code> <code class="k">cat-file</code> <code class="n">blob</code> <code class="n">7a52bb8</code>
+</pre>
+
+
+<p>My object was a blob, but yours may be different. If it’s a tree,
+remember to use <code>git ls-tree</code> to turn that ugly binary data into a
+pretty directory listing.</p>
+
+
+<h2 id="collect-the-garbage">Collect the Garbage</h2>
+
+<p>As your repository grows, Git may automatically transfer your object files
+into a more compact form know as a “pack” file. You can force this
+compression with the garbage collection command, but beware: this command is
+undo-able. If you want to continue exploring the contents of the
+<code>.git/objects</code> folder, you should do so before running the following
+command. Normal Git functionality will not be affected.</p>
+
+<pre><code class="k">git</code> <code class="k">gc</code>
+</pre>
+
+
+<p>This compresses individual object files into a faster, smaller pack file and
+removes dangling commits (e.g., from a deleted, unmerged branch).</p>
+
+<p>Of course, all of the same object ID’s will still work with <code>git
+cat-file</code>, and all of the porcelain commands will remain unaffected. The
+<code>git gc</code> command only changes Git’s storage
+mechanism—not the contents of a repository. Running <code>git gc</code>
+every now and then is usually a good idea, as it keeps your repository
+optimized.</p>
+
+
+<h2 id="add-files-to-the-index">Add Files to the Index</h2>
+
+<p>Thus far, we’ve been discussing Git’s low-level representation
+of committed snapshots. The rest of this module will shift gears and use more
+“plumbing” commands to manually prepare and commit a new snapshot.
+This will give us an idea of how Git manages the working directory and the
+staging area.</p>
+
+<p>Create a new file called <code>news-4.html</code> in
+<code>my-git-repo</code> and add the following HTML.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>Indigo Invasion<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #A0C&quot;</code><code class="nt">&gt;</code>Indigo Invasion<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Last week, a coalition of Asian designers, artists,
+  and advertisers announced the official color of Asia:
+  <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #A0C&quot;</code><code class="nt">&gt;</code>Indigo<code class="nt">&lt;/span&gt;</code>.<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Then, update the <code>index.html</code> “News” section to match
+the following.</p>
+
+<pre><code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-1.html&quot;</code><code class="nt">&gt;</code>Blue Is The New Hue<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>Our New Rainbow<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-2.html&quot;</code><code class="nt">&gt;</code>A Red Rebellion<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-3.html&quot;</code><code class="nt">&gt;</code>Middle East&#39;s Silent Beast<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-4.html&quot;</code><code class="nt">&gt;</code>Indigo Invasion<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>Instead of <code>git add</code>, we’ll use the low-level <code>git
+update-index</code> command to add files to the staging area. The
+<strong>index</strong> is Git’s term for the staged snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">update-index</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">update-index</code> <code class="n">news-4.html</code>
+</pre>
+
+
+<p>The last command will throw an error—Git won’t let you add a new
+file to the index without explicitly stating that it’s a new file:</p>
+
+<pre><code class="k">git</code> <code class="k">update-index</code> <code class="na">--add</code> <code class="n">news-4.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>We’ve just moved the working directory into the index, which means we
+have a snapshot prepared for committal. However, the process won’t be
+quite as simple as a mere <code>git commit</code>.</p>
+
+
+<h2 id="store-the-index-in-the-database">Store the Index in the Database</h2>
+
+<p>Remember that all commits refer to a tree object, which represents the
+snapshot for that commit. So, before creating a commit object, we need to add
+our index (the staged tree) to Git’s object database. We can do this with
+the following command.</p>
+
+<pre><code class="k">git</code> <code class="k">write-tree</code>
+</pre>
+
+
+<p>This command creates a tree object from the index and stores it in
+<code>.git/objects</code>. It will output the ID of the resulting tree (yours
+may be different):</p>
+
+<pre>5f44809ed995e5b861acf309022ab814ceaaafd6
+</pre>
+
+
+<p>You can examine your new snapshot with <code>git ls-tree</code>. Keep in
+mind that the only new blobs created for this commit were
+<code>index.html</code> and <code>news-4.html</code>. The rest of the tree
+contains references to existing blobs.</p>
+
+<pre><code class="k">git</code> <code class="k">ls-tree</code> <code class="n">5f44809</code>
+</pre>
+
+
+<p>So, we have our tree object, but we have yet to add it to the project
+history.</p>
+
+
+<h2 id="create-a-commit-object">Create a Commit Object</h2>
+
+<p>To commit the new tree object, we need to manually figure out the ID of the
+parent commit.</p>
+    
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code> <code class="na">-n</code> <code class="n">1</code>
+</pre>
+
+
+<p>This will output the following line, though your commit ID will be
+different. We’ll use this ID to specify the parent of our new commit
+object.</p>
+    
+<pre><code class="s">3329762</code> Add .gitignore file
+</pre>
+
+
+<p>The <code>git commit-tree</code> command creates a commit object from a tree
+and a parent ID, while the author information is taken from an environment
+variable set by Git. Make sure to change <code>5f44809</code> to your tree ID,
+and <code>3329762</code> to your most recent commit ID.</p>
+
+<pre><code class="k">git</code> <code class="k">commit-tree</code> <code class="n">5f44809</code> <code class="na">-p</code> <code class="n">3329762</code>
+</pre>
+
+
+<p>This command will wait for more input: the commit message. Type <code>Add
+4th news item</code> and press <code>Enter</code> to create the commit message,
+then <code>Ctrl-Z</code> and <code>Enter</code> for Windows or
+<code>Ctrl-D</code> for Unix to specify an “End-of-file” character
+to end the input. Like the <code>git write-tree</code> command, this will
+output the ID of the resulting commit object.</p>
+
+<pre>c51dc1b3515f9f8e80536aa7acb3d17d0400b0b5
+</pre>
+
+
+<p>You’ll now be able to find this commit in <code>.git/objects</code>,
+but neither <code>HEAD</code> nor the branches have been updated to include
+this commit. It’s a <em>dangling commit</em> at this point. Fortunately
+for us, we know where Git stores its branch information.</p>
+
+<figure>
+    <img src="media/12-5.png"/>
+
+    <figcaption>Creating a dangling commit</figcaption>
+
+</figure>
+
+
+<h2 id="update-head">Update HEAD</h2>
+
+<p>Since we’re not in a <code>detached HEAD</code> state,
+<code>HEAD</code> is a reference to a branch. So, all we need to do to update
+<code>HEAD</code> is move the <code>master</code> branch forward to our new
+commit object. Using a text editor, replace the contents of
+<code>.git/refs/heads/master</code> with the output from <code>git
+commit-tree</code> in the previous step.</p>
+
+<p>If this file seems to have disappeared, don’t fret! This just means
+that the <code>git gc</code> command packed up all of our branch references
+into single file. Instead of <code>.git/refs/heads/master</code>, open up
+<code>.git/packed-refs</code>, find the line with
+<code>refs/heads/master</code>, and change the ID to the left of it.</p>
+
+<p>Now that our <code>master</code> branch points to the new commit, we should
+be able to see the <code>news-4.html</code> file in the project history.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">-n</code> <code class="n">2</code>
+</pre>
+
+
+<p>The last four sections explain everything that happens behind the scenes
+when we execute <code>git commit -a -m "Some Message"</code>. Aren’t you
+glad you won’t have to use Git’s plumbing ever again?</p>
+
+<figure>
+    <img src="media/12-6.png"/>
+
+    <figcaption>Manually updating the <code>master</code> branch</figcaption>
+
+</figure>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>After this module, you hopefully have a solid grasp of the object database
+that underlies almost every Git command. We examined commits, trees, blobs,
+tags, and branches, and we even created a commit object from scratch. All of
+this was meant to give you a deeper understanding of Git’s porcelain
+commands, and you should now feel ready to adapt Git to virtually any task you
+could possibly demand from a version control system.</p>
+
+<p>As you migrate these skills to real-world projects, remember that Git is
+merely a tool for tracking your files, not a cure-all for managing software
+projects. No amount of intimate Git knowledge can make up for a haphazard set
+of conventions within a development team.</p>
+
+<p>Thus concludes our journey through Git-based revision control. This tutorial
+was meant to prepare you for the realities of distributed software
+development—not to transform you into a Git expert overnight. You should
+be able to manage your own projects, collaborate with other Git users, and,
+perhaps most importantly, understand exactly what any other piece of Git
+documentation is trying to convey.</p>
+
+<p>Your job now is to take these skills and apply them to new projects, sift
+through complex histories that you’ve never seen before, talk to other
+developers about their Git workflows, and take the time to actually try all of
+those “I wonder what would have happened if…” scenarios.
+Good luck!</p>
+
+<p>For questions, comments, or suggestions, please <a href="http://rypress.com/about">contact us</a>.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git cat-file &lt;type&gt; &lt;object-id&gt;</code></dt>
+    <dd>Display the specified object, where <code>&lt;type&gt;</code> is one of
+    <code>commit</code>, <code>tree</code>, <code>blob</code>, or
+    <code>tag</code>.</dd>
+
+    <dt><code>git cat-file -t &lt;object-id&gt;</code></dt>
+    <dd>Output the type of the specified object.</dd>
+
+    <dt><code>git ls-tree &lt;tree-id&gt;</code></dt>
+    <dd>Display a pretty version of the specified tree object.</dd>
+
+    <dt><code>git gc</code></dt>
+    <dd>Perform a garbage collection on the object database.</dd>
+
+    <dt><code>git update-index [--add] &lt;file&gt;</code></dt>
+    <dd>Stage the specified file, using the optional <code>--add</code> flag to
+    denote a new untracked file.</dd>
+
+    <dt><code>git write-tree</code></dt>
+    <dd>Generate a tree from the index and store it in the object database.
+    Returns the ID of the new tree object.</dd>
+
+    <dt><code>git commit-tree &lt;tree-id&gt; -p &lt;parent-id&gt;</code></dt>
+    <dd>Create a new commit object from the given tree object and parent
+    commit. Returns the ID of the new commit object.</dd>
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

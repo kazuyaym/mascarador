@@ -1,0 +1,166 @@
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:title>Ry&#8217;s Git Tutorial</dc:title>
+    <dc:identifier id="pub-id">urn:isbn:978-0-9850723-1-5</dc:identifier>
+    <meta refines="#pub-id" property="identifier-type" scheme="onix:codelist5">15</meta>
+    <dc:language>en-US</dc:language>
+    <meta property="dcterms:modified">2014-12-03T05:01:20Z</meta>
+    <dc:creator>Ryan Hodson</dc:creator>
+    <dc:publisher>RyPress</dc:publisher>
+    <dc:subject>Computer Software</dc:subject>
+    <dc:date>2012-12-23</dc:date>
+    <dc:description>Ry's Git Tutorial is a complete introduction to distributed
+version control with a focus on practical command line usage. We explain Git's
+robust branching, merging, and collaboration capabilities from the ground up,
+so prior experience with centralized systems like SVN or CVS is not
+required.</dc:description>
+    <meta name="cover" content="cover-art"/>
+  </metadata>
+  <manifest>
+    <item id="ncx-toc" media-type="application/x-dtbncx+xml" href="toc.ncx"/>
+    <item id="nav" media-type="application/xhtml+xml" href="navigation-document.xhtml" properties="nav"/>
+    <item id="stylesheet" media-type="text/css" href="style.css"/>
+    <item id="pygments-stylesheet" media-type="text/css" href="pygments.css"/>
+    <item id="cover-art" media-type="image/png" href="media/cover-art.png"/>
+    <item id="chapter-1" media-type="application/xhtml+xml" href="introduction.xhtml"/>
+    <item id="chapter-2" media-type="application/xhtml+xml" href="the-basics.xhtml"/>
+    <item id="chapter-3" media-type="application/xhtml+xml" href="undoing-changes.xhtml"/>
+    <item id="chapter-4" media-type="application/xhtml+xml" href="branches-1.xhtml"/>
+    <item id="chapter-5" media-type="application/xhtml+xml" href="branches-2.xhtml"/>
+    <item id="chapter-6" media-type="application/xhtml+xml" href="rebasing.xhtml"/>
+    <item id="chapter-7" media-type="application/xhtml+xml" href="rewriting-history.xhtml"/>
+    <item id="chapter-8" media-type="application/xhtml+xml" href="remotes.xhtml"/>
+    <item id="chapter-9" media-type="application/xhtml+xml" href="centralized-workflows.xhtml"/>
+    <item id="chapter-10" media-type="application/xhtml+xml" href="distributed-workflows.xhtml"/>
+    <item id="chapter-11" media-type="application/xhtml+xml" href="patch-workflows.xhtml"/>
+    <item id="chapter-12" media-type="application/xhtml+xml" href="tips-and-tricks.xhtml"/>
+    <item id="chapter-13" media-type="application/xhtml+xml" href="plumbing.xhtml"/>
+    <item id="media-1" media-type="image/png" href="media/0-1-old.png"/>
+    <item id="media-2" media-type="image/png" href="media/0-1.png"/>
+    <item id="media-3" media-type="image/png" href="media/0-2-old.png"/>
+    <item id="media-4" media-type="image/png" href="media/0-2.png"/>
+    <item id="media-5" media-type="image/png" href="media/0-3.png"/>
+    <item id="media-6" media-type="image/png" href="media/0-4.png"/>
+    <item id="media-7" media-type="image/gif" href="media/0-5.gif"/>
+    <item id="media-8" media-type="image/png" href="media/1-1.png"/>
+    <item id="media-9" media-type="image/png" href="media/1-2.png"/>
+    <item id="media-10" media-type="image/png" href="media/1-3.png"/>
+    <item id="media-11" media-type="image/png" href="media/1-4.png"/>
+    <item id="media-12" media-type="image/png" href="media/1-5.png"/>
+    <item id="media-13" media-type="image/png" href="media/10-1.png"/>
+    <item id="media-14" media-type="image/png" href="media/10-2.png"/>
+    <item id="media-15" media-type="image/png" href="media/11-1.png"/>
+    <item id="media-16" media-type="image/png" href="media/11-2.png"/>
+    <item id="media-17" media-type="image/png" href="media/12-1.png"/>
+    <item id="media-18" media-type="image/png" href="media/12-2.png"/>
+    <item id="media-19" media-type="image/png" href="media/12-3.png"/>
+    <item id="media-20" media-type="image/png" href="media/12-4.png"/>
+    <item id="media-21" media-type="image/png" href="media/12-5.png"/>
+    <item id="media-22" media-type="image/png" href="media/12-6.png"/>
+    <item id="media-23" media-type="image/png" href="media/2-1.png"/>
+    <item id="media-24" media-type="image/png" href="media/2-2.png"/>
+    <item id="media-25" media-type="image/png" href="media/2-3.png"/>
+    <item id="media-26" media-type="image/png" href="media/2-4.png"/>
+    <item id="media-27" media-type="image/png" href="media/2-5.png"/>
+    <item id="media-28" media-type="image/png" href="media/3-1.png"/>
+    <item id="media-29" media-type="image/png" href="media/3-10.png"/>
+    <item id="media-30" media-type="image/png" href="media/3-11.png"/>
+    <item id="media-31" media-type="image/png" href="media/3-12.png"/>
+    <item id="media-32" media-type="image/png" href="media/3-2.png"/>
+    <item id="media-33" media-type="image/png" href="media/3-3.png"/>
+    <item id="media-34" media-type="image/png" href="media/3-4.png"/>
+    <item id="media-35" media-type="image/png" href="media/3-5.png"/>
+    <item id="media-36" media-type="image/png" href="media/3-6.png"/>
+    <item id="media-37" media-type="image/png" href="media/3-7.png"/>
+    <item id="media-38" media-type="image/png" href="media/3-8.png"/>
+    <item id="media-39" media-type="image/png" href="media/3-9.png"/>
+    <item id="media-40" media-type="image/png" href="media/4-1.png"/>
+    <item id="media-41" media-type="image/png" href="media/4-2.png"/>
+    <item id="media-42" media-type="image/png" href="media/4-3.png"/>
+    <item id="media-43" media-type="image/png" href="media/4-4.png"/>
+    <item id="media-44" media-type="image/png" href="media/4-5.png"/>
+    <item id="media-45" media-type="image/png" href="media/4-6.png"/>
+    <item id="media-46" media-type="image/png" href="media/5-1.png"/>
+    <item id="media-47" media-type="image/png" href="media/5-2.png"/>
+    <item id="media-48" media-type="image/png" href="media/5-3.png"/>
+    <item id="media-49" media-type="image/png" href="media/5-4.png"/>
+    <item id="media-50" media-type="image/png" href="media/5-5.png"/>
+    <item id="media-51" media-type="image/png" href="media/5-6.png"/>
+    <item id="media-52" media-type="image/png" href="media/5-7.png"/>
+    <item id="media-53" media-type="image/png" href="media/6-1.png"/>
+    <item id="media-54" media-type="image/png" href="media/6-2.png"/>
+    <item id="media-55" media-type="image/png" href="media/6-3.png"/>
+    <item id="media-56" media-type="image/png" href="media/6-4.png"/>
+    <item id="media-57" media-type="image/png" href="media/6-5.png"/>
+    <item id="media-58" media-type="image/png" href="media/6-6.png"/>
+    <item id="media-59" media-type="image/png" href="media/6-7.png"/>
+    <item id="media-60" media-type="image/png" href="media/7-1.png"/>
+    <item id="media-61" media-type="image/png" href="media/7-2.png"/>
+    <item id="media-62" media-type="image/png" href="media/7-3.png"/>
+    <item id="media-63" media-type="image/png" href="media/7-4.png"/>
+    <item id="media-64" media-type="image/png" href="media/7-5.png"/>
+    <item id="media-65" media-type="image/png" href="media/7-6.png"/>
+    <item id="media-66" media-type="image/png" href="media/7-7.png"/>
+    <item id="media-67" media-type="image/png" href="media/8-1.png"/>
+    <item id="media-68" media-type="image/png" href="media/8-2.png"/>
+    <item id="media-69" media-type="image/png" href="media/8-3.png"/>
+    <item id="media-70" media-type="image/png" href="media/8-4.png"/>
+    <item id="media-71" media-type="image/png" href="media/8-5.png"/>
+    <item id="media-72" media-type="image/png" href="media/8-6.png"/>
+    <item id="media-73" media-type="image/png" href="media/8-7.png"/>
+    <item id="media-74" media-type="image/png" href="media/9-1.png"/>
+    <item id="media-75" media-type="image/png" href="media/9-10.png"/>
+    <item id="media-76" media-type="image/png" href="media/9-11.png"/>
+    <item id="media-77" media-type="image/png" href="media/9-2.png"/>
+    <item id="media-78" media-type="image/png" href="media/9-3.png"/>
+    <item id="media-79" media-type="image/png" href="media/9-4.png"/>
+    <item id="media-80" media-type="image/png" href="media/9-5.png"/>
+    <item id="media-81" media-type="image/png" href="media/9-6.png"/>
+    <item id="media-82" media-type="image/png" href="media/9-7.png"/>
+    <item id="media-83" media-type="image/png" href="media/9-8.png"/>
+    <item id="media-84" media-type="image/png" href="media/9-9.png"/>
+    <item id="media-85" media-type="image/png" href="media/bitbucket-logo.png"/>
+    <item id="media-87" media-type="image/png" href="media/icons/branches-1.png"/>
+    <item id="media-88" media-type="image/png" href="media/icons/branches-2.png"/>
+    <item id="media-89" media-type="image/png" href="media/icons/centralized-workflows.png"/>
+    <item id="media-90" media-type="image/png" href="media/icons/distributed-workflows.png"/>
+    <item id="media-91" media-type="image/png" href="media/icons/download.png"/>
+    <item id="media-92" media-type="image/png" href="media/icons/index.png"/>
+    <item id="media-93" media-type="image/png" href="media/icons/introduction.png"/>
+    <item id="media-94" media-type="image/png" href="media/icons/patch-workflows.png"/>
+    <item id="media-95" media-type="image/png" href="media/icons/plumbing.png"/>
+    <item id="media-96" media-type="image/png" href="media/icons/rebasing.png"/>
+    <item id="media-97" media-type="image/png" href="media/icons/remotes.png"/>
+    <item id="media-98" media-type="image/png" href="media/icons/rewriting-history.png"/>
+    <item id="media-99" media-type="image/png" href="media/icons/the-basics.png"/>
+    <item id="media-100" media-type="image/png" href="media/icons/tips-and-tricks.png"/>
+    <item id="media-101" media-type="image/png" href="media/icons/undoing-changes.png"/>
+    <item id="media-102" media-type="application/zip" href="media/repo-zips/branches-1.zip"/>
+    <item id="media-103" media-type="application/zip" href="media/repo-zips/branches-2.zip"/>
+    <item id="media-104" media-type="application/zip" href="media/repo-zips/centralized-workflows.zip"/>
+    <item id="media-105" media-type="application/zip" href="media/repo-zips/distributed-workflows.zip"/>
+    <item id="media-106" media-type="application/zip" href="media/repo-zips/patch-workflows.zip"/>
+    <item id="media-107" media-type="application/zip" href="media/repo-zips/plumbing.zip"/>
+    <item id="media-108" media-type="application/zip" href="media/repo-zips/rebasing.zip"/>
+    <item id="media-109" media-type="application/zip" href="media/repo-zips/remotes.zip"/>
+    <item id="media-110" media-type="application/zip" href="media/repo-zips/rewriting-history.zip"/>
+    <item id="media-111" media-type="application/zip" href="media/repo-zips/tips-and-tricks.zip"/>
+    <item id="media-112" media-type="application/zip" href="media/repo-zips/undoing-changes.zip"/>
+  </manifest>
+  <spine toc="ncx-toc">
+    <itemref idref="nav"/>
+    <itemref idref="chapter-1"/>
+    <itemref idref="chapter-2"/>
+    <itemref idref="chapter-3"/>
+    <itemref idref="chapter-4"/>
+    <itemref idref="chapter-5"/>
+    <itemref idref="chapter-6"/>
+    <itemref idref="chapter-7"/>
+    <itemref idref="chapter-8"/>
+    <itemref idref="chapter-9"/>
+    <itemref idref="chapter-10"/>
+    <itemref idref="chapter-11"/>
+    <itemref idref="chapter-12"/>
+    <itemref idref="chapter-13"/>
+  </spine>
+</package>

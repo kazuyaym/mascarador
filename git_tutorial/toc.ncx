@@ -1,0 +1,1075 @@
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en">
+  <head>
+    <meta name="dtb:uid" content="urn:isbn:978-0-9850723-1-5"/>
+  </head>
+  <docTitle>
+    <text>Ry&#8217;s Git Tutorial</text>
+  </docTitle>
+  <docAuthor>
+    <text>Ryan Hodson</text>
+  </docAuthor>
+  <navMap>
+    <navPoint id="n-1">
+      <navLabel>
+        <text>Introduction</text>
+      </navLabel>
+      <content src="introduction.xhtml"/>
+      <navPoint id="n-2">
+        <navLabel>
+          <text>A Brief History of Revision Control</text>
+        </navLabel>
+        <content src="introduction.xhtml#a-brief-history-of-revision-control"/>
+      </navPoint>
+      <navPoint id="n-3">
+        <navLabel>
+          <text>The Birth of Git</text>
+        </navLabel>
+        <content src="introduction.xhtml#the-birth-of-git"/>
+      </navPoint>
+      <navPoint id="n-4">
+        <navLabel>
+          <text>Installation</text>
+        </navLabel>
+        <content src="introduction.xhtml#installation"/>
+      </navPoint>
+      <navPoint id="n-5">
+        <navLabel>
+          <text>Get Ready!</text>
+        </navLabel>
+        <content src="introduction.xhtml#get-ready"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-6">
+      <navLabel>
+        <text>The Basics</text>
+      </navLabel>
+      <content src="the-basics.xhtml"/>
+      <navPoint id="n-7">
+        <navLabel>
+          <text>Create the Example Site</text>
+        </navLabel>
+        <content src="the-basics.xhtml#create-the-example-site"/>
+      </navPoint>
+      <navPoint id="n-8">
+        <navLabel>
+          <text>Initialize the Git Repository</text>
+        </navLabel>
+        <content src="the-basics.xhtml#initialize-the-git-repository"/>
+      </navPoint>
+      <navPoint id="n-9">
+        <navLabel>
+          <text>View the Repository Status</text>
+        </navLabel>
+        <content src="the-basics.xhtml#view-the-repository-status"/>
+      </navPoint>
+      <navPoint id="n-10">
+        <navLabel>
+          <text>Stage a Snapshot</text>
+        </navLabel>
+        <content src="the-basics.xhtml#stage-a-snapshot"/>
+      </navPoint>
+      <navPoint id="n-11">
+        <navLabel>
+          <text>Commit the Snapshot</text>
+        </navLabel>
+        <content src="the-basics.xhtml#commit-the-snapshot"/>
+      </navPoint>
+      <navPoint id="n-12">
+        <navLabel>
+          <text>View the Repository History</text>
+        </navLabel>
+        <content src="the-basics.xhtml#view-the-repository-history"/>
+      </navPoint>
+      <navPoint id="n-13">
+        <navLabel>
+          <text>Configure Git</text>
+        </navLabel>
+        <content src="the-basics.xhtml#configure-git"/>
+      </navPoint>
+      <navPoint id="n-14">
+        <navLabel>
+          <text>Create New HTML Files</text>
+        </navLabel>
+        <content src="the-basics.xhtml#create-new-html-files"/>
+      </navPoint>
+      <navPoint id="n-15">
+        <navLabel>
+          <text>Stage the New Files</text>
+        </navLabel>
+        <content src="the-basics.xhtml#stage-the-new-files"/>
+      </navPoint>
+      <navPoint id="n-16">
+        <navLabel>
+          <text>Commit the New Files</text>
+        </navLabel>
+        <content src="the-basics.xhtml#commit-the-new-files"/>
+      </navPoint>
+      <navPoint id="n-17">
+        <navLabel>
+          <text>Modify the HTML Pages</text>
+        </navLabel>
+        <content src="the-basics.xhtml#modify-the-html-pages"/>
+      </navPoint>
+      <navPoint id="n-18">
+        <navLabel>
+          <text>Stage and Commit the Snapshot</text>
+        </navLabel>
+        <content src="the-basics.xhtml#stage-and-commit-the-snapshot"/>
+      </navPoint>
+      <navPoint id="n-19">
+        <navLabel>
+          <text>Explore the Repository</text>
+        </navLabel>
+        <content src="the-basics.xhtml#explore-the-repository"/>
+      </navPoint>
+      <navPoint id="n-20">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="the-basics.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-21">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="the-basics.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-22">
+      <navLabel>
+        <text>Undoing Changes</text>
+      </navLabel>
+      <content src="undoing-changes.xhtml"/>
+      <navPoint id="n-23">
+        <navLabel>
+          <text>Display Commit Checksums</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#display-commit-checksums"/>
+      </navPoint>
+      <navPoint id="n-24">
+        <navLabel>
+          <text>View an Old Revision</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#view-an-old-revision"/>
+      </navPoint>
+      <navPoint id="n-25">
+        <navLabel>
+          <text>View an Older Revision</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#view-an-older-revision"/>
+      </navPoint>
+      <navPoint id="n-26">
+        <navLabel>
+          <text>Return to Current Version</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#return-to-current-version"/>
+      </navPoint>
+      <navPoint id="n-27">
+        <navLabel>
+          <text>Tag a Release</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#tag-a-release"/>
+      </navPoint>
+      <navPoint id="n-28">
+        <navLabel>
+          <text>Try a Crazy Experiment</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#try-a-crazy-experiment"/>
+      </navPoint>
+      <navPoint id="n-29">
+        <navLabel>
+          <text>Stage and Commit the Snapshot</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#stage-and-commit-the-snapshot"/>
+      </navPoint>
+      <navPoint id="n-30">
+        <navLabel>
+          <text>View the Stable Commit</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#view-the-stable-commit"/>
+      </navPoint>
+      <navPoint id="n-31">
+        <navLabel>
+          <text>Undo Committed Changes</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#undo-committed-changes"/>
+      </navPoint>
+      <navPoint id="n-32">
+        <navLabel>
+          <text>Start a Smaller Experiment</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#start-a-smaller-experiment"/>
+      </navPoint>
+      <navPoint id="n-33">
+        <navLabel>
+          <text>Undo Uncommitted Changes</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#undo-uncommitted-changes"/>
+      </navPoint>
+      <navPoint id="n-34">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-35">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="undoing-changes.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-36">
+      <navLabel>
+        <text>Branches I</text>
+      </navLabel>
+      <content src="branches-1.xhtml"/>
+      <navPoint id="n-37">
+        <navLabel>
+          <text>View Existing Branches</text>
+        </navLabel>
+        <content src="branches-1.xhtml#view-existing-branches"/>
+      </navPoint>
+      <navPoint id="n-38">
+        <navLabel>
+          <text>Checkout the Crazy Experiment</text>
+        </navLabel>
+        <content src="branches-1.xhtml#checkout-the-crazy-experiment"/>
+      </navPoint>
+      <navPoint id="n-39">
+        <navLabel>
+          <text>Create a New Branch</text>
+        </navLabel>
+        <content src="branches-1.xhtml#create-a-new-branch"/>
+      </navPoint>
+      <navPoint id="n-40">
+        <navLabel>
+          <text>Make a Rainbow</text>
+        </navLabel>
+        <content src="branches-1.xhtml#make-a-rainbow"/>
+      </navPoint>
+      <navPoint id="n-41">
+        <navLabel>
+          <text>Stage and Commit the Rainbow</text>
+        </navLabel>
+        <content src="branches-1.xhtml#stage-and-commit-the-rainbow"/>
+      </navPoint>
+      <navPoint id="n-42">
+        <navLabel>
+          <text>Rename the Rainbow</text>
+        </navLabel>
+        <content src="branches-1.xhtml#rename-the-rainbow"/>
+      </navPoint>
+      <navPoint id="n-43">
+        <navLabel>
+          <text>Return to the Master Branch</text>
+        </navLabel>
+        <content src="branches-1.xhtml#return-to-the-master-branch"/>
+      </navPoint>
+      <navPoint id="n-44">
+        <navLabel>
+          <text>Create a CSS Branch</text>
+        </navLabel>
+        <content src="branches-1.xhtml#create-a-css-branch"/>
+      </navPoint>
+      <navPoint id="n-45">
+        <navLabel>
+          <text>Add a CSS Stylesheet</text>
+        </navLabel>
+        <content src="branches-1.xhtml#add-a-css-stylesheet"/>
+      </navPoint>
+      <navPoint id="n-46">
+        <navLabel>
+          <text>Link the Stylesheet</text>
+        </navLabel>
+        <content src="branches-1.xhtml#link-the-stylesheet"/>
+      </navPoint>
+      <navPoint id="n-47">
+        <navLabel>
+          <text>Return to the Master Branch (Again)</text>
+        </navLabel>
+        <content src="branches-1.xhtml#return-to-the-master-branch-again"/>
+      </navPoint>
+      <navPoint id="n-48">
+        <navLabel>
+          <text>Merge the CSS Branch</text>
+        </navLabel>
+        <content src="branches-1.xhtml#merge-the-css-branch"/>
+      </navPoint>
+      <navPoint id="n-49">
+        <navLabel>
+          <text>Delete the CSS Branch</text>
+        </navLabel>
+        <content src="branches-1.xhtml#delete-the-css-branch"/>
+      </navPoint>
+      <navPoint id="n-50">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="branches-1.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-51">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="branches-1.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-52">
+      <navLabel>
+        <text>Branches II</text>
+      </navLabel>
+      <content src="branches-2.xhtml"/>
+      <navPoint id="n-53">
+        <navLabel>
+          <text>Continue the Crazy Experiment</text>
+        </navLabel>
+        <content src="branches-2.xhtml#continue-the-crazy-experiment"/>
+      </navPoint>
+      <navPoint id="n-54">
+        <navLabel>
+          <text>Merge the CSS Updates</text>
+        </navLabel>
+        <content src="branches-2.xhtml#merge-the-css-updates"/>
+      </navPoint>
+      <navPoint id="n-55">
+        <navLabel>
+          <text>Style the Rainbow Page</text>
+        </navLabel>
+        <content src="branches-2.xhtml#style-the-rainbow-page"/>
+      </navPoint>
+      <navPoint id="n-56">
+        <navLabel>
+          <text>Link to the Rainbow Page</text>
+        </navLabel>
+        <content src="branches-2.xhtml#link-to-the-rainbow-page"/>
+      </navPoint>
+      <navPoint id="n-57">
+        <navLabel>
+          <text>Fork an Alternative Rainbow</text>
+        </navLabel>
+        <content src="branches-2.xhtml#fork-an-alternative-rainbow"/>
+      </navPoint>
+      <navPoint id="n-58">
+        <navLabel>
+          <text>Change the Rainbow</text>
+        </navLabel>
+        <content src="branches-2.xhtml#change-the-rainbow"/>
+      </navPoint>
+      <navPoint id="n-59">
+        <navLabel>
+          <text>Emergency Update!</text>
+        </navLabel>
+        <content src="branches-2.xhtml#emergency-update"/>
+      </navPoint>
+      <navPoint id="n-60">
+        <navLabel>
+          <text>Publish the News Hotfix</text>
+        </navLabel>
+        <content src="branches-2.xhtml#publish-the-news-hotfix"/>
+      </navPoint>
+      <navPoint id="n-61">
+        <navLabel>
+          <text>Complete the Crazy Experiment</text>
+        </navLabel>
+        <content src="branches-2.xhtml#complete-the-crazy-experiment"/>
+      </navPoint>
+      <navPoint id="n-62">
+        <navLabel>
+          <text>Publish the Crazy Experiment</text>
+        </navLabel>
+        <content src="branches-2.xhtml#publish-the-crazy-experiment"/>
+      </navPoint>
+      <navPoint id="n-63">
+        <navLabel>
+          <text>Resolve the Merge Conflicts</text>
+        </navLabel>
+        <content src="branches-2.xhtml#resolve-the-merge-conflicts"/>
+      </navPoint>
+      <navPoint id="n-64">
+        <navLabel>
+          <text>Cleanup the Feature Branches</text>
+        </navLabel>
+        <content src="branches-2.xhtml#cleanup-the-feature-branches"/>
+      </navPoint>
+      <navPoint id="n-65">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="branches-2.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-66">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="branches-2.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-67">
+      <navLabel>
+        <text>Rebasing</text>
+      </navLabel>
+      <content src="rebasing.xhtml"/>
+      <navPoint id="n-68">
+        <navLabel>
+          <text>Create an About Section</text>
+        </navLabel>
+        <content src="rebasing.xhtml#create-an-about-section"/>
+      </navPoint>
+      <navPoint id="n-69">
+        <navLabel>
+          <text>Add an About Page</text>
+        </navLabel>
+        <content src="rebasing.xhtml#add-an-about-page"/>
+      </navPoint>
+      <navPoint id="n-70">
+        <navLabel>
+          <text>Another Emergency Update!</text>
+        </navLabel>
+        <content src="rebasing.xhtml#another-emergency-update"/>
+      </navPoint>
+      <navPoint id="n-71">
+        <navLabel>
+          <text>Publish News Hotfix</text>
+        </navLabel>
+        <content src="rebasing.xhtml#publish-news-hotfix"/>
+      </navPoint>
+      <navPoint id="n-72">
+        <navLabel>
+          <text>Rebase the About Branch</text>
+        </navLabel>
+        <content src="rebasing.xhtml#rebase-the-about-branch"/>
+      </navPoint>
+      <navPoint id="n-73">
+        <navLabel>
+          <text>Add a Personal Bio</text>
+        </navLabel>
+        <content src="rebasing.xhtml#add-a-personal-bio"/>
+      </navPoint>
+      <navPoint id="n-74">
+        <navLabel>
+          <text>Add Dummy Page for Mary</text>
+        </navLabel>
+        <content src="rebasing.xhtml#add-dummy-page-for-mary"/>
+      </navPoint>
+      <navPoint id="n-75">
+        <navLabel>
+          <text>Link to the About Section</text>
+        </navLabel>
+        <content src="rebasing.xhtml#link-to-the-about-section"/>
+      </navPoint>
+      <navPoint id="n-76">
+        <navLabel>
+          <text>Clean Up the Commit History</text>
+        </navLabel>
+        <content src="rebasing.xhtml#clean-up-the-commit-history"/>
+      </navPoint>
+      <navPoint id="n-77">
+        <navLabel>
+          <text>Stop to Amend a Commit</text>
+        </navLabel>
+        <content src="rebasing.xhtml#stop-to-amend-a-commit"/>
+      </navPoint>
+      <navPoint id="n-78">
+        <navLabel>
+          <text>Continue the Interactive Rebase</text>
+        </navLabel>
+        <content src="rebasing.xhtml#continue-the-interactive-rebase"/>
+      </navPoint>
+      <navPoint id="n-79">
+        <navLabel>
+          <text>Publish the About Section</text>
+        </navLabel>
+        <content src="rebasing.xhtml#publish-the-about-section"/>
+      </navPoint>
+      <navPoint id="n-80">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="rebasing.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-81">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="rebasing.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-82">
+      <navLabel>
+        <text>Rewriting History</text>
+      </navLabel>
+      <content src="rewriting-history.xhtml"/>
+      <navPoint id="n-83">
+        <navLabel>
+          <text>Create the Red Page</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#create-the-red-page"/>
+      </navPoint>
+      <navPoint id="n-84">
+        <navLabel>
+          <text>Create the Yellow Page</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#create-the-yellow-page"/>
+      </navPoint>
+      <navPoint id="n-85">
+        <navLabel>
+          <text>Link and Commit the New Pages</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#link-and-commit-the-new-pages"/>
+      </navPoint>
+      <navPoint id="n-86">
+        <navLabel>
+          <text>Create and Commit the Green Page</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#create-and-commit-the-green-page"/>
+      </navPoint>
+      <navPoint id="n-87">
+        <navLabel>
+          <text>Begin an Interactive Rebase</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#begin-an-interactive-rebase"/>
+      </navPoint>
+      <navPoint id="n-88">
+        <navLabel>
+          <text>Undo the Generic Commit</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#undo-the-generic-commit"/>
+      </navPoint>
+      <navPoint id="n-89">
+        <navLabel>
+          <text>Split the Generic Commit</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#split-the-generic-commit"/>
+      </navPoint>
+      <navPoint id="n-90">
+        <navLabel>
+          <text>Remove the Last Commit</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#remove-the-last-commit"/>
+      </navPoint>
+      <navPoint id="n-91">
+        <navLabel>
+          <text>Open the Reflog</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#open-the-reflog"/>
+      </navPoint>
+      <navPoint id="n-92">
+        <navLabel>
+          <text>Revive the Lost Commit</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#revive-the-lost-commit"/>
+      </navPoint>
+      <navPoint id="n-93">
+        <navLabel>
+          <text>Filter the Log History</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#filter-the-log-history"/>
+      </navPoint>
+      <navPoint id="n-94">
+        <navLabel>
+          <text>Merge in the Revived Branch</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#merge-in-the-revived-branch"/>
+      </navPoint>
+      <navPoint id="n-95">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-96">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="rewriting-history.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-97">
+      <navLabel>
+        <text>Remotes</text>
+      </navLabel>
+      <content src="remotes.xhtml"/>
+      <navPoint id="n-98">
+        <navLabel>
+          <text>Clone the Repository (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#clone-the-repository-mary"/>
+      </navPoint>
+      <navPoint id="n-99">
+        <navLabel>
+          <text>Configure The Repository (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#configure-the-repository-mary"/>
+      </navPoint>
+      <navPoint id="n-100">
+        <navLabel>
+          <text>Start Mary&#8217;s Day (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#start-marys-day-mary"/>
+      </navPoint>
+      <navPoint id="n-101">
+        <navLabel>
+          <text>Create Mary&#8217;s Bio Page (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#create-marys-bio-page-mary"/>
+      </navPoint>
+      <navPoint id="n-102">
+        <navLabel>
+          <text>Publish the Bio Page (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#publish-the-bio-page-mary"/>
+      </navPoint>
+      <navPoint id="n-103">
+        <navLabel>
+          <text>View Remote Repositories (Mary)</text>
+        </navLabel>
+        <content src="remotes.xhtml#view-remote-repositories-mary"/>
+      </navPoint>
+      <navPoint id="n-104">
+        <navLabel>
+          <text>Return to Your Repository (You)</text>
+        </navLabel>
+        <content src="remotes.xhtml#return-to-your-repository-you"/>
+      </navPoint>
+      <navPoint id="n-105">
+        <navLabel>
+          <text>Add Mary as a Remote (You)</text>
+        </navLabel>
+        <content src="remotes.xhtml#add-mary-as-a-remote-you"/>
+      </navPoint>
+      <navPoint id="n-106">
+        <navLabel>
+          <text>Fetch Mary&#8217;s Branches (You)</text>
+        </navLabel>
+        <content src="remotes.xhtml#fetch-marys-branches-you"/>
+      </navPoint>
+      <navPoint id="n-107">
+        <navLabel>
+          <text>Check Out a Remote Branch</text>
+        </navLabel>
+        <content src="remotes.xhtml#check-out-a-remote-branch"/>
+      </navPoint>
+      <navPoint id="n-108">
+        <navLabel>
+          <text>Find Mary&#8217;s Changes</text>
+        </navLabel>
+        <content src="remotes.xhtml#find-marys-changes"/>
+      </navPoint>
+      <navPoint id="n-109">
+        <navLabel>
+          <text>Merge Mary&#8217;s Changes</text>
+        </navLabel>
+        <content src="remotes.xhtml#merge-marys-changes"/>
+      </navPoint>
+      <navPoint id="n-110">
+        <navLabel>
+          <text>Push a Dummy Branch</text>
+        </navLabel>
+        <content src="remotes.xhtml#push-a-dummy-branch"/>
+      </navPoint>
+      <navPoint id="n-111">
+        <navLabel>
+          <text>Push a New Tag</text>
+        </navLabel>
+        <content src="remotes.xhtml#push-a-new-tag"/>
+      </navPoint>
+      <navPoint id="n-112">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="remotes.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-113">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="remotes.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-114">
+      <navLabel>
+        <text>Centralized Workflows</text>
+      </navLabel>
+      <content src="centralized-workflows.xhtml"/>
+      <navPoint id="n-115">
+        <navLabel>
+          <text>Create a Bare Repository (Central)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#create-a-bare-repository-central"/>
+      </navPoint>
+      <navPoint id="n-116">
+        <navLabel>
+          <text>Update Remotes (Mary and You)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#update-remotes-mary-and-you"/>
+      </navPoint>
+      <navPoint id="n-117">
+        <navLabel>
+          <text>Push the Master Branch (You)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#push-the-master-branch-you"/>
+      </navPoint>
+      <navPoint id="n-118">
+        <navLabel>
+          <text>Add News Update (You)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#add-news-update-you"/>
+      </navPoint>
+      <navPoint id="n-119">
+        <navLabel>
+          <text>Publish the News Item (You)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#publish-the-news-item-you"/>
+      </navPoint>
+      <navPoint id="n-120">
+        <navLabel>
+          <text>Update CSS Styles (Mary)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#update-css-styles-mary"/>
+      </navPoint>
+      <navPoint id="n-121">
+        <navLabel>
+          <text>Update Another CSS Style (Mary)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#update-another-css-style-mary"/>
+      </navPoint>
+      <navPoint id="n-122">
+        <navLabel>
+          <text>Clean Up Before Publishing (Mary)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#clean-up-before-publishing-mary"/>
+      </navPoint>
+      <navPoint id="n-123">
+        <navLabel>
+          <text>Publish CSS Changes (Mary)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#publish-css-changes-mary"/>
+      </navPoint>
+      <navPoint id="n-124">
+        <navLabel>
+          <text>Pull in Changes (Mary)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#pull-in-changes-mary"/>
+      </navPoint>
+      <navPoint id="n-125">
+        <navLabel>
+          <text>Pull in Changes (You)</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#pull-in-changes-you"/>
+      </navPoint>
+      <navPoint id="n-126">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-127">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="centralized-workflows.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-128">
+      <navLabel>
+        <text>Distributed Workflows</text>
+      </navLabel>
+      <content src="distributed-workflows.xhtml"/>
+      <navPoint id="n-129">
+        <navLabel>
+          <text>Create a Bitbucket Account</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#create-a-bitbucket-account"/>
+      </navPoint>
+      <navPoint id="n-130">
+        <navLabel>
+          <text>Create a Public Repository (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#create-a-public-repository-you"/>
+      </navPoint>
+      <navPoint id="n-131">
+        <navLabel>
+          <text>Push to the Public Repository (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#push-to-the-public-repository-you"/>
+      </navPoint>
+      <navPoint id="n-132">
+        <navLabel>
+          <text>Browse the Public Repository (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#browse-the-public-repository-you"/>
+      </navPoint>
+      <navPoint id="n-133">
+        <navLabel>
+          <text>Clone the Repository (John)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#clone-the-repository-john"/>
+      </navPoint>
+      <navPoint id="n-134">
+        <navLabel>
+          <text>Add the Pink Page (John)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#add-the-pink-page-john"/>
+      </navPoint>
+      <navPoint id="n-135">
+        <navLabel>
+          <text>Publish the Pink Page (John)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#publish-the-pink-page-john"/>
+      </navPoint>
+      <navPoint id="n-136">
+        <navLabel>
+          <text>View John&#8217;s Contributions (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#view-johns-contributions-you"/>
+      </navPoint>
+      <navPoint id="n-137">
+        <navLabel>
+          <text>Integrate John&#8217;s Contributions (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#integrate-johns-contributions-you"/>
+      </navPoint>
+      <navPoint id="n-138">
+        <navLabel>
+          <text>Publish John&#8217;s Contributions (You)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#publish-johns-contributions-you"/>
+      </navPoint>
+      <navPoint id="n-139">
+        <navLabel>
+          <text>Update Mary&#8217;s Repository (Mary)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#update-marys-repository-mary"/>
+      </navPoint>
+      <navPoint id="n-140">
+        <navLabel>
+          <text>Update John&#8217;s Repository (John)</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#update-johns-repository-john"/>
+      </navPoint>
+      <navPoint id="n-141">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="distributed-workflows.xhtml#conclusion"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-142">
+      <navLabel>
+        <text>Patch Workflows</text>
+      </navLabel>
+      <content src="patch-workflows.xhtml"/>
+      <navPoint id="n-143">
+        <navLabel>
+          <text>Change the Pink Page (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#change-the-pink-page-mary"/>
+      </navPoint>
+      <navPoint id="n-144">
+        <navLabel>
+          <text>Create a Patch (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#create-a-patch-mary"/>
+      </navPoint>
+      <navPoint id="n-145">
+        <navLabel>
+          <text>Add a Pink Block (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#add-a-pink-block-mary"/>
+      </navPoint>
+      <navPoint id="n-146">
+        <navLabel>
+          <text>Create Patch of Entire Branch (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#create-patch-of-entire-branch-mary"/>
+      </navPoint>
+      <navPoint id="n-147">
+        <navLabel>
+          <text>Mail the Patches (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#mail-the-patches-mary"/>
+      </navPoint>
+      <navPoint id="n-148">
+        <navLabel>
+          <text>Apply the Patches (You)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#apply-the-patches-you"/>
+      </navPoint>
+      <navPoint id="n-149">
+        <navLabel>
+          <text>Integrate the Patches (You)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#integrate-the-patches-you"/>
+      </navPoint>
+      <navPoint id="n-150">
+        <navLabel>
+          <text>Update Mary&#8217;s Repository (Mary)</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#update-marys-repository-mary"/>
+      </navPoint>
+      <navPoint id="n-151">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-152">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="patch-workflows.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-153">
+      <navLabel>
+        <text>Tips &amp; Tricks</text>
+      </navLabel>
+      <content src="tips-and-tricks.xhtml"/>
+      <navPoint id="n-154">
+        <navLabel>
+          <text>Archive The Repository</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#archive-the-repository"/>
+      </navPoint>
+      <navPoint id="n-155">
+        <navLabel>
+          <text>Bundle the Repository</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#bundle-the-repository"/>
+      </navPoint>
+      <navPoint id="n-156">
+        <navLabel>
+          <text>Ignore a File</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#ignore-a-file"/>
+      </navPoint>
+      <navPoint id="n-157">
+        <navLabel>
+          <text>Stash Uncommitted Changes</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#stash-uncommitted-changes"/>
+      </navPoint>
+      <navPoint id="n-158">
+        <navLabel>
+          <text>Hook into Git&#8217;s Internals</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#hook-into-gits-internals"/>
+      </navPoint>
+      <navPoint id="n-159">
+        <navLabel>
+          <text>View Diffs Between Commits</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#view-diffs-between-commits"/>
+      </navPoint>
+      <navPoint id="n-160">
+        <navLabel>
+          <text>Reset and Checkout Files</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#reset-and-checkout-files"/>
+      </navPoint>
+      <navPoint id="n-161">
+        <navLabel>
+          <text>Aliases and Other Configurations</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#aliases-and-other-configurations"/>
+      </navPoint>
+      <navPoint id="n-162">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-163">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="tips-and-tricks.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="n-164">
+      <navLabel>
+        <text>Plumbing</text>
+      </navLabel>
+      <content src="plumbing.xhtml"/>
+      <navPoint id="n-165">
+        <navLabel>
+          <text>Examine Commit Details</text>
+        </navLabel>
+        <content src="plumbing.xhtml#examine-commit-details"/>
+      </navPoint>
+      <navPoint id="n-166">
+        <navLabel>
+          <text>Examine a Tree</text>
+        </navLabel>
+        <content src="plumbing.xhtml#examine-a-tree"/>
+      </navPoint>
+      <navPoint id="n-167">
+        <navLabel>
+          <text>Examine a Blob</text>
+        </navLabel>
+        <content src="plumbing.xhtml#examine-a-blob"/>
+      </navPoint>
+      <navPoint id="n-168">
+        <navLabel>
+          <text>Examine a Tag</text>
+        </navLabel>
+        <content src="plumbing.xhtml#examine-a-tag"/>
+      </navPoint>
+      <navPoint id="n-169">
+        <navLabel>
+          <text>Inspect Git&#8217;s Branch Representation</text>
+        </navLabel>
+        <content src="plumbing.xhtml#inspect-gits-branch-representation"/>
+      </navPoint>
+      <navPoint id="n-170">
+        <navLabel>
+          <text>Explore the Object Database</text>
+        </navLabel>
+        <content src="plumbing.xhtml#explore-the-object-database"/>
+      </navPoint>
+      <navPoint id="n-171">
+        <navLabel>
+          <text>Collect the Garbage</text>
+        </navLabel>
+        <content src="plumbing.xhtml#collect-the-garbage"/>
+      </navPoint>
+      <navPoint id="n-172">
+        <navLabel>
+          <text>Add Files to the Index</text>
+        </navLabel>
+        <content src="plumbing.xhtml#add-files-to-the-index"/>
+      </navPoint>
+      <navPoint id="n-173">
+        <navLabel>
+          <text>Store the Index in the Database</text>
+        </navLabel>
+        <content src="plumbing.xhtml#store-the-index-in-the-database"/>
+      </navPoint>
+      <navPoint id="n-174">
+        <navLabel>
+          <text>Create a Commit Object</text>
+        </navLabel>
+        <content src="plumbing.xhtml#create-a-commit-object"/>
+      </navPoint>
+      <navPoint id="n-175">
+        <navLabel>
+          <text>Update HEAD</text>
+        </navLabel>
+        <content src="plumbing.xhtml#update-head"/>
+      </navPoint>
+      <navPoint id="n-176">
+        <navLabel>
+          <text>Conclusion</text>
+        </navLabel>
+        <content src="plumbing.xhtml#conclusion"/>
+      </navPoint>
+      <navPoint id="n-177">
+        <navLabel>
+          <text>Quick Reference</text>
+        </navLabel>
+        <content src="plumbing.xhtml#quick-reference"/>
+      </navPoint>
+    </navPoint>
+  </navMap>
+</ncx>

@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Patch Workflows</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="patch-workflows">Patch Workflows</h1>
+
+<p>Thus far, all of the collaboration workflows we’ve seen rely heavily
+on branches. For example, in the last module, a contributor had to publish an
+entire <em>branch</em> for us to merge into our project. However, it’s
+also possible to communicate directly on the <em>commit</em> level using a
+<strong><em>patch</em></strong>.</p>
+
+<p>A patch file represents a single set of changes (i.e., a commit) that can be
+applied to any branch, in any order. In this sense, the patch workflow is akin
+to interactive rebasing, except you can easily share patches with other
+developers. This kind of communication lessens the importance of a
+project’s branch structure and gives complete control to the project
+maintainer (at least with regards to incorporating contributions).</p>
+
+<p>Integrating on the commit level will also give us a deeper understanding of
+how a Git repository records project history.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/patch-workflows.zip">Download the
+    repositories for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repositories from
+the above link, uncompress them, and you’re good to go. If you’ve
+set up a Bitbucket account, you should also run the following commands to
+configure the downloaded repositories:</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">https://&lt;username&gt;@bitbucket.org/&lt;username&gt;/my-git-repo.git</code>
+<code class="k">cd</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">http://bitbucket.org/&lt;username&gt;/my-git-repo.git</code>
+</pre>
+
+
+
+<h2 id="change-the-pink-page-mary">Change the Pink Page (Mary)</h2>
+
+<p>We’ll begin by pretending to be Mary again. Mary didn’t like the
+pink page that John contributed and wants to change it.</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/marys-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">pink-page</code>
+</pre>
+
+
+<p>Developing in a new branch not only gives Mary an isolated environment, it
+also makes it easier to create a series of patches once she’s done
+editing the pink page. Find these lines in <code>pink.html</code>:</p>
+
+<pre><code class="nt">&lt;p&gt;</code>Pink is <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>girly,
+flirty and fun<code class="nt">&lt;/span&gt;</code>!<code class="nt">&lt;/p&gt;</code>
+</pre>
+
+
+<p>and change them to the following.</p>
+
+<pre><code class="nt">&lt;p&gt;</code>Only <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>real men<code class="nt">&lt;/span&gt;</code> wear pink!<code class="nt">&lt;/p&gt;</code>
+</pre>
+
+
+<p>Stage and commit the update as normal.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Change pink to a manly color&quot;</code>
+</pre>
+
+
+<p>Note that Mary’s local development process doesn’t change at
+all. Patches—like the centralized and integrator workflows—are
+merely a way to share changes amongst developers. It has little effect on the
+core Git concepts introduced in the first portion of this tutorial.</p>
+
+
+<h2 id="create-a-patch-mary">Create a Patch (Mary)</h2>
+
+<p>Mary can create a patch from the new commit using the
+<code>git format‑patch</code> command.</p>
+
+<pre><code class="k">git</code> <code class="k">format-patch</code> <code class="n">master</code>
+</pre>
+
+
+<p>This creates a file called
+<code>0001-Change-pink-to-a-manly-color.patch</code> that contains enough
+information to re-create the commit from the last step. The <code>master</code>
+parameter tells Git to generate patches for every commit in the current branch
+that’s missing from <code>master</code>.</p>
+
+<p>Open up the patch file in a text editor. As shown by the addresses in the top of
+the file, it’s actually a complete email. This makes it incredibly easy to send
+patches to other developer. Further down, you should see the following.</p>
+
+<pre><code class="gh">index 98e10a1..828dd1a 100644</code>
+<code class="gd">--- a/pink.html</code>
+<code class="gi">+++ b/pink.html</code>
+<code class="gu">@@ -7,8 +7,7 @@</code>
+ &lt;/head&gt;
+ &lt;body&gt;
+   &lt;h1 style=&quot;color: #F0F&quot;&gt;The Pink Page&lt;/h1&gt;
+<code class="gd">-  &lt;p&gt;Pink is &lt;span style=&quot;color: #F0F&quot;&gt;girly,</code>
+<code class="gd">-  flirty and fun&lt;/span&gt;!&lt;/p&gt;</code>
+<code class="gi">+  &lt;p&gt;Only &lt;span style=&quot;color: #F0F&quot;&gt;real men&lt;/span&gt; wear pink!&lt;/p&gt;</code>
+ 
+   &lt;p&gt;&lt;a href=&quot;index.html&quot;&gt;Return to home page&lt;/a&gt;&lt;/p&gt;
+ &lt;/body&gt;
+</pre>
+
+
+<p>This unique formatting is called a <strong><em>diff</em></strong>, because
+it shows the <em>diff</em>erence between two versions of a file. In our case,
+it tells us what happened to the <code>pink.html</code> file between the
+<code>98e10a1</code> and <code>828dd1a</code> commits (your patch will contain
+different commit ID’s). The <code>-7,8 +7,7</code> portion describes the
+lines affected in the respective versions of the file, and the rest of the text
+shows us the content that has been changed. The lines beginning with
+<code>-</code> have been deleted in the new version, and the line starting with
+<code>+</code> has been added.</p>
+
+<p>While you don’t have to know the ins-and-outs of diffs to make use of
+patches, you do need to understand that a single patch file represents a
+complete commit. And, since it’s a normal file (and also an email),
+it’s much easier to pass around than a Git branch.</p>
+
+<p>Delete the patch file for now (we’ll re-create it later).</p>
+
+
+<h2 id="add-a-pink-block-mary">Add a Pink Block (Mary)</h2>
+
+<p>Before learning how to turn patches back into commits, Mary will add one
+more snapshot.</p>
+
+<p>In <code>pink.html</code>, add the following on the line after the
+<code>&lt;meta&gt;</code> tag.</p>
+    
+<pre><code class="nt">&lt;style&gt;</code>
+  <code class="nt">div</code> <code class="p">{</code>
+    <code class="k">width</code><code class="o">:</code> <code class="m">300px</code><code class="p">;</code>
+    <code class="k">height</code><code class="o">:</code> <code class="m">50px</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="nt">&lt;/style&gt;</code>
+</pre>
+
+
+<p>And, add the next line of HTML after <code>Only real men wear
+pink!</code>:</p>
+
+<pre><code class="nt">&lt;div</code> <code class="na">style=</code><code class="s">&quot;background-color: #F0F&quot;</code><code class="nt">&gt;&lt;/div&gt;</code>
+</pre>
+
+
+<p>Stage and commit the snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add a pink block of color&quot;</code>
+</pre>
+
+
+<p>Mary’s repository now contains two commits after the tip of
+<code>master</code>:</p>
+
+<figure>
+    <img src="media/10-1.png"/>
+
+    <figcaption>Adding two commits on the <code>pink-page</code> branch</figcaption>
+
+</figure>
+
+
+<h2 id="create-patch-of-entire-branch-mary">Create Patch of Entire Branch (Mary)</h2>
+
+<p>Mary can use the same command as before to generate patches for all the
+commits in her <code>pink-page</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">format-patch</code> <code class="n">master</code>
+</pre>
+
+
+<p>The first patch is the exact same as we previously examined, but we also
+have a new one called <code>0002-Add-a-pink-block-of-color.patch</code>. Note
+that the first line of the commit message will always be used to make a
+descriptive filename for the patch. You should find the following diff in the
+second patch.</p>
+
+<pre><code class="gh">index 828dd1a..2713b10 100644</code>
+<code class="gd">--- a/pink.html</code>
+<code class="gi">+++ b/pink.html</code>
+<code class="gu">@@ -4,10 +4,17 @@</code>
+   &lt;title&gt;The Pink Page&lt;/title&gt;
+   &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot; /&gt;
+   &lt;meta charset=&quot;utf-8&quot; /&gt;
+<code class="gi">+  &lt;style&gt;</code>
+<code class="gi">+    div {</code>
+<code class="gi">+      width: 300px;</code>
+<code class="gi">+      height: 50px;</code>
+<code class="gi">+    }</code>
+<code class="gi">+  &lt;/style&gt;</code>
+ &lt;/head&gt;
+ &lt;body&gt;
+   &lt;h1 style=&quot;color: #F0F&quot;&gt;The Pink Page&lt;/h1&gt;
+   &lt;p&gt;Only &lt;span style=&quot;color: #F0F&quot;&gt;real men&lt;/span&gt; wear pink!&lt;/p&gt;
+<code class="gi">+  &lt;div style=&quot;background-color: #F0F&quot;&gt;&lt;/div&gt;</code>
+ 
+   &lt;p&gt;&lt;a href=&quot;index.html&quot;&gt;Return to home page&lt;/a&gt;&lt;/p&gt;
+ &lt;/body&gt;
+</pre>
+
+
+<p>This is the same formatting as the first patch, except its lack of
+<code>-</code> lines indicate that we only added HTML during the second commit.
+As you can see, this patch is really just a machine-readable summary of our
+actions from the previous section.</p>
+
+
+<h2 id="mail-the-patches-mary">Mail the Patches (Mary)</h2>
+
+<p>Now that Mary has prepared a series of patches, she can send them to the
+project maintainer (us). In the typical patch workflow, she would send them via
+email using one of the following methods:</p>
+
+<ul>
+
+    <li>Copying and pasting the contents of the patch files into an email
+    client. If she uses this method, Mary would have to make sure that her
+    email application doesn’t change the whitespace in the patch upon
+    sending it.</li>
+
+    <li>Sending the patch file as an attachment to a normal email.</li>
+
+    <li>Using the convenient <code>git send-email</code> command and specifying
+    a file or a directory of files to send. For example, <code>git send-email
+    .</code> will send all the patches in the current directory. Git also
+    requires some special configurations for this command. Please consult the
+    <a href="http://www.kernel.org/pub/software/scm/git/docs/git-send-email.html">official
+    Git documentation</a> for details.</li>
+
+</ul>
+ 
+<p>The point is, the <code>.patch</code> files need to find their way into the
+Git repository of whoever wants to add it to their project. For our example,
+all we need to do is copy the patches into the <code>my-git-repo</code>
+directory that represents our local version of the project.</p>
+
+
+<h2 id="apply-the-patches-you">Apply the Patches (You)</h2>
+
+<p>Copy the two patch files from <code>marys-repo</code> into
+<code>my-git-repo</code>. Using the new <code>git am</code> command, we can use
+these patches to add Mary’s commits to our repository.</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">patch-integration</code>
+<code class="k">git</code> <code class="k">am</code> <code class="n">&lt;</code> <code class="n">0001-Change-pink-to-a-manly-color.patch</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">master..HEAD</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>First, notice that we’re doing our integrating in a new topic branch.
+Again, this ensures that we won’t destroy our existing functionality and
+gives us a chance to approve changes. Second, the <code>git am</code> command
+takes a patch file and creates a new commit from it. The log output shows us
+that our integration branch contains Mary’s update, along with her author
+information.</p>
+
+<p>Let’s repeat the process for the second commit.</p>
+
+<pre><code class="k">git</code> <code class="k">am</code> <code class="n">&lt;</code> <code class="n">0002-Add-a-pink-block-of-color.patch</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">master..HEAD</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>The <code>git am</code> command is configured to read from something called
+“standard input,” and the <code>&lt;</code> character is how we can
+turn a file’s contents into standard input. As it’s really more of
+an operating system topic, you can just think of this syntax as a quirk of the
+<code>git am</code> command.</p>
+
+<p>After applying this patch, our integration branch now looks exactly like
+Mary’s <code>pink-page</code> branch. We applied Mary’s patches in
+the same order she did, but that didn’t necessarily have to be the case.
+The whole idea behind patches is that they let you isolate a commit and move it
+around as you please.</p>
+
+
+<h2 id="integrate-the-patches-you">Integrate the Patches (You)</h2>
+
+<p>Once again, we’re in the familiar situation of integrating a topic
+branch into the stable <code>master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">patch-integration</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">patch-integration</code>
+<code class="k">git</code> <code class="k">clean</code> <code class="na">-f</code>
+<code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>Mary’s updates are now completely integrated into our local
+repository, so we can get rid of the patch files with <code>git clean</code>.
+This was also an appropriate time to push changes to the public repository so
+other developers can access the most up-to-date version of the project.</p>
+
+
+<h2 id="update-marys-repository-mary">Update Mary’s Repository (Mary)</h2>
+
+<p>Mary might be tempted to merge her <code>pink-page</code> branch directly
+into her <code>master</code> branch, but this would be a mistake. Her
+<code>master</code> branch <em>must</em> track the “official”
+repository’s <code>master</code>, as discussed in the previous
+module.</p>
+
+<pre><code class="k">cd</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">fetch</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">rebase</code> <code class="n">origin/master</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-D</code> <code class="n">pink-page</code>
+<code class="k">git</code> <code class="k">clean</code> <code class="na">-f</code>
+</pre>
+
+
+<p>Patches are a convenient way to share commits amongst developers, but the
+patch workflow still requires an “official” repository that
+contains <em>everybody’s</em> changes. What would have happened if Mary
+wasn’t the only one sending patches to us? We may very well have applied
+several different patches or applied Mary’s contributions in a different
+order. Using Mary’s <code>pink-page</code> to update her
+<code>master</code> branch would completely ignore all these updates.</p>
+
+<p>Taking this into consideration, our final patch workflow resembles the
+following.</p>
+
+<figure>
+    <img src="media/10-2.png"/>
+
+    <figcaption>The patch workflow</figcaption>
+
+</figure>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Whereas remote repositories are a way to share entire <em>branches</em>,
+patches are a way to send individual <em>commits</em> to another developer.
+Keep in mind that patches are usually only sent to a project maintainer, who
+then integrates them into the “official” project for all to see. It
+would be impossible for everyone to communicate using only patches, as no one
+would be applying them in the same order. Eventually, everyone’s project
+history would look entirely different.</p>
+
+<p>In many ways, patches are a simpler way to accept contributions than the
+integrator workflow from the previous module. Only the project maintainer
+needs a public repository, and he’ll never have to peek at anyone
+else’s repository. From the maintainer’s perspective, patches also
+provide the same security as the integrator workflow: he still won’t have
+to give anyone access to his “official” repository. But, now he
+won’t have to keep track of everybody’s remote repositories,
+either.</p>
+
+<p>As a programmer, you’re most likely to use patches when you want to
+fix a bug in someone else’s project. After fixing it, you can send them a
+patch of the resulting commit. For this kind of one-time-fix, it’s much
+more convenient for you to generate a patch than to set up a public Git
+repository.</p>
+
+<p>This module concludes our discussion of the standard Git workflows.
+Hopefully, you now have a good idea of how Git can better manage your personal
+and professional software projects using a centralized, integrator, or patch
+workflow. In the next module, we’ll switch gears and introduce a variety
+of practical Git commands.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git format-patch &lt;branch-name&gt;</code></dt>
+    <dd>Create a patch for each commit contained in the current branch but not
+    in <code>&lt;branch-name&gt;</code>. You can also specify a commit ID
+    instead of <code>&lt;branch-name&gt;</code>.</dd>
+
+    <dt><code>git am &lt; &lt;patch-file&gt;</code></dt>
+    <dd>Apply a patch to the current branch.</dd>
+</dl>
+
+</div>
+    </div>
+  </body>
+</html>

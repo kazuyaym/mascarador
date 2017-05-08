@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Undoing Changes</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="undoing-changes">Undoing Changes</h1>
+
+<p>In the last module, we learned how to record versions of a project into a
+Git repository. The whole point of maintaining these “safe” copies
+is peace of mind: should our project suddenly break, we’ll know that we
+have easy access to a functional version, and we’ll be able to pinpoint
+precisely where the problem was introduced.</p>
+
+<p>To this end, storing “safe” versions isn’t much help
+without the ability to restore them. Our next task is to learn how to view the
+previous states of a project, revert back to them, and reset uncommitted
+changes.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/undoing-changes.zip">Download the repository
+    for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repository from
+the above link, uncompress it, and you’re good to go.</p>
+
+
+<h2 id="display-commit-checksums">Display Commit Checksums</h2>
+
+<p>As a quick review, let’s display our repository’s history.
+Navigate a command prompt (or Git Bash) to the <code>my-git-repo</code> folder
+and run the following.</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>The output for this should look similar to the following, but contain different
+commit checksums.</p>
+
+<pre><code class="s">1c310d2</code> Add navigation links
+<code class="s">54650a3</code> Create blue and orange pages
+<code class="s">b650e4b</code> Create index page
+</pre>
+
+
+<p>Git only outputs the first 7 characters of the checksum (remember that you
+can see the full version with the default formatting of <code>git log</code>).
+These first few characters effectively serve as a unique ID for each
+commit.</p>
+
+
+<h2 id="view-an-old-revision">View an Old Revision</h2>
+
+<p>Using the new <code>git checkout</code> command, we can view the contents of
+a previous snapshot. Make sure to change <code>54650a3</code> in the following
+command to the ID of your <em>second</em> commit.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">54650a3</code>
+</pre>
+
+
+<p>This will output a lot of information about a <code>detached HEAD</code>
+state. You can ignore it for now. All you need to know is that the above
+command turns your <code>my-git-repo</code> directory into an exact replica of
+the second snapshot we committed in <a href="the-basics.xhtml">The
+Basics</a>.</p>
+
+<p>Open the HTML files in a text editor or web browser to verify that the
+navigation links we added in the third commit have disappeared. Running
+<code>git log</code> will also tell us that the third commit is no longer part
+of the project. After checking out the second commit, our repository history
+looks like the following (the red circle represents the current commit).</p>
+
+<figure>
+    <img src="media/2-1.png"/>
+
+    <figcaption>Checking out the 2nd commit</figcaption>
+
+</figure>
+
+
+<h2 id="view-an-older-revision">View an Older Revision</h2>
+
+<p>Let’s go even farther back in our history. Be sure to change
+<code>b650e4b</code> to the ID of your <em>first</em> commit.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">b650e4b</code>
+</pre>
+
+
+<p>Now, the <code>blue.html</code> and <code>orange.html</code> files are gone,
+as is the rest of the <code>git log</code> history.</p>
+
+<figure>
+    <img src="media/2-2.png"/>
+
+    <figcaption>Checking out the 1st commit</figcaption>
+
+</figure>
+
+<p>In the last module, we said that Git was designed to never lose a committed
+snapshot. So, where did our second and third snapshots go? A simple <code>git
+status</code> will answer that question for us. It should return the following
+message:</p>
+
+<pre><code class="c">#</code> <code class="c">Not currently on any branch.</code>
+nothing to commit (working directory clean)
+</pre>
+
+
+<p>Compare this with the status output from the previous module:</p>
+
+<pre><code class="c">#</code> <code class="c">On branch </code><code class="cs">master</code>
+nothing to commit (working directory clean)
+</pre>
+
+
+<p>All of our actions in <em>The Basics</em> took place on the
+<code>master</code> branch, which is where our second and third commits still
+reside. To retrieve our complete history, we just have to check out this
+branch. This is a very brief introduction to branches, but it’s all we
+need to know to navigate between commits. The next module will discuss branches
+in full detail.</p>
+ 
+
+<h2 id="return-to-current-version">Return to Current Version</h2>
+
+<p>We can use the same <code>git checkout</code> command to return to the
+<code>master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+</pre>
+
+
+<p>This makes Git update our working directory to reflect the state of the
+<code>master</code> branch’s snapshot. It re-creates the
+<code>blue.html</code> and <code>orange.html</code> files for us, and the
+content of <code>index.html</code> is updated as well. We’re now back to
+the current state of the project, and our history looks like:</p>
+
+<figure>
+    <img src="media/2-3.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+
+<h2 id="tag-a-release">Tag a Release</h2>
+
+<p>Let’s call this a stable version of the example website. We can make
+it official by <strong>tagging</strong> the most recent commit with a version
+number.</p>
+
+<pre><code class="k">git</code> <code class="k">tag</code> <code class="na">-a</code> <code class="n">v1.0</code> <code class="na">-m</code> <code class="s">&quot;Stable version of the website&quot;</code>
+</pre>
+
+
+<p>Tags are convenient references to official releases and other significant
+milestones in a software project. It lets developers easily browse and check
+out important revisions. For example, we can now use the <code>v1.0</code> tag
+to refer to the third commit instead of its random ID. To view a list of
+existing tags, execute <code>git tag</code> without any arguments.</p>
+
+<p>In the above snippet, the <code>-a</code> flag tells Git to create an
+<strong>annotated tag</strong>, which lets us record our name, the date, and a
+descriptive message (specified via the <code>-m</code> flag). We’ll use
+this tag to find the stable version after we try some crazy experiments.</p>
+
+
+<h2 id="try-a-crazy-experiment">Try a Crazy Experiment</h2>
+
+<p>We’re now free to add experimental changes to the example site without
+affecting any committed content. Create a new file called
+<code>crazy.html</code> and add the following HTML.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>A Crazy Experiment<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1&gt;</code>A Crazy Experiment<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>We&#39;re trying out a <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>crazy<code class="nt">&lt;/span&gt;</code>
+  <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #06C&quot;</code><code class="nt">&gt;</code>experiment<code class="nt">&lt;/span&gt;</code>!
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+
+<h2 id="stage-and-commit-the-snapshot">Stage and Commit the Snapshot</h2>
+
+<p>Stage and commit the new file as usual.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">crazy.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add a crazzzy experiment&quot;</code>
+<code class="k">git</code> <code class="k">log</code>
+</pre>
+
+
+<p>It’s a good practice to run <code>git status</code> to see exactly
+what you’re committing before running <code>git commit -m</code>. This
+will keep you from unintentionally committing a file that doesn’t belong
+in the current snapshot.</p>
+
+<p>As expected, the new snapshot shows up in the repository’s history. If
+your log history takes up more than one screen, you can scroll down by pressing
+<code>Space</code> and return to the command line by pressing the letter
+<code>q</code>.</p>
+
+
+<h2 id="view-the-stable-commit">View the Stable Commit</h2>
+
+<p>Let’s go back and take a look at our stable revision. Remember that
+the <code>v1.0</code> tag now serves as a user-friendly shortcut to the third
+commit’s ID.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">v1.0</code>
+</pre>
+
+
+<p>After seeing the stable version of the site, we decide to scrap the crazy
+experiment. But, before we undo the changes, we need to return to the
+<code>master</code> branch. If we didn’t, all of our updates would be on
+some non-existent branch. As we’ll discover next module, you should
+never make changes directly to a previous revision.</p>
+    
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>At this point, our history should look like the following:</p>
+
+<pre><code class="s">514fbe7</code> Add a crazzzy experiment
+<code class="s">1c310d2</code> Add navigation links
+<code class="s">54650a3</code> Create blue and orange pages
+<code class="s">b650e4b</code> Create index page
+</pre>
+
+
+
+<h2 id="undo-committed-changes">Undo Committed Changes</h2>
+
+<p>We’re ready to restore our stable tag by removing the most recent
+commit.  Make sure to change <code>514fbe7</code> to the ID of the <em>crazy
+experiment’s commit</em> before running the next command.</p>
+
+<pre><code class="k">git</code> <code class="k">revert</code> <code class="n">514fbe7</code>
+</pre>
+
+
+<p>This will prompt you for a commit message with a default of <code>Revert
+"Add a crazzzy experiment"...</code>. You can leave the default message and
+close the file.  After verifying that <code>crazy.html</code> is gone, take a
+look at your history with <code>git log --oneline</code>.</p>
+
+<pre><code class="s">506bb9b</code> Revert &quot;Add a crazzzy experiment&quot;
+<code class="s">514fbe7</code> Add a crazzzy experiment
+<code class="s">1c310d2</code> Add navigation links
+<code class="s">54650a3</code> Create blue and orange pages
+<code class="s">b650e4b</code> Create index page
+</pre>
+
+
+<p>Notice that instead of deleting the “crazzzy experiment” commit,
+Git figures out how to undo the changes it contains, then tacks on another
+commit with the resulting content. So, our fifth commit and our third commit
+represent the exact same snapshot, as shown below. Again, Git is designed to
+<em>never</em> lose history: the fourth snapshot is still accessible, just in
+case we want to continue developing it.</p>
+
+<figure>
+    <img src="media/2-4.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+<p>When using <code>git revert</code>, remember to specify the commit that you
+want to undo—not the stable commit that you want to return to. It helps
+to think of this command as saying “undo this commit” rather than
+“restore this version.”</p>
+
+
+<h2 id="start-a-smaller-experiment">Start a Smaller Experiment</h2>
+
+<p>Let’s try a smaller experiment this time. Create
+<code>dummy.html</code> and leave it as a blank file. Then, add a link in the
+“Navigation” section of <code>index.html</code> so that it
+resembles the following.</p>
+    
+<pre><code class="nt">&lt;h2&gt;</code>Navigation<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;orange.html&quot;</code><code class="nt">&gt;</code>The Orange Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #00F&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;blue.html&quot;</code><code class="nt">&gt;</code>The Blue Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;dummy.html&quot;</code><code class="nt">&gt;</code>The Dummy Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>In the next section, we’re going to abandon this uncommitted
+experiment. But since the <code>git revert</code> command requires a commit ID
+to undo, we can’t use the method discussed above.</p>
+
+
+<h2 id="undo-uncommitted-changes">Undo Uncommitted Changes</h2>
+
+<p>Before we start undoing things, let’s take a look at the status of our
+repository.</p>
+    
+<pre><code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>We have a tracked file and an untracked file that need to be changed. First,
+we’ll take care of <code>index.html</code>:</p>
+
+<pre><code class="k">git</code> <code class="k">reset</code> <code class="na">--hard</code>
+</pre>
+
+
+<p>This changes all <em>tracked</em> files to match the most recent commit.
+Note that the <code>--hard</code> flag is what actually updates the file.
+Running <code>git reset</code> without any flags will simply unstage
+<code>index.html</code>, leaving its contents as is. In either case, <code>git
+reset</code> only operates on the working directory and the staging area, so
+our <code>git log</code> history remains unchanged.</p>
+
+<p>Next, let’s remove the <code>dummy.html</code> file. Of course, we
+could manually delete it, but using Git to reset changes eliminates human
+errors when working with several files in large teams. Run the following
+command.</p>
+
+<pre><code class="k">git</code> <code class="k">clean</code> <code class="na">-f</code>
+</pre>
+
+
+<p>This will remove all <em>untracked</em> files. With <code>dummy.html</code>
+gone, <code>git status</code> should now tell us that we have a
+“clean” working directory, meaning our project matches the most
+recent commit.</p>
+
+<p><strong><em>Be careful</em></strong> with <code>git reset</code> and
+<code>git clean</code>. Both operate on the working directory, not on the
+committed snapshots. Unlike <code>git revert</code>, they
+<strong><em>permanently</em></strong> undo changes, so make sure you really
+want to trash what you’re working on before you use them.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As noted in the previous module, most Git commands operate on one of the
+three main components of a Git repository: the working directory, the staged
+snapshot, or the committed snapshots. The <code>git reset</code> command undoes
+changes to the working directory and the staged snapshot, while <code>git
+revert</code> undoes changes contained in committed snapshots. Not
+surprisingly, <code>git status</code> and <code>git log</code> directly
+parallel this behavior.</p>
+
+<figure>
+    <img src="media/2-5.png"/>
+
+    <figcaption>Resetting vs. Reverting</figcaption>
+
+</figure>
+
+<p>I mentioned that instead of completely removing a commit, <code>git
+revert</code> saves the commit in case you want to come back to it later. This
+is only one reason for preserving committed snapshots. When we start working
+with remote repositories, we’ll see that altering the history by removing
+a commit has dramatic consequences for collaborating with other developers.</p>
+
+<p>This module also introduces the concept of switching between various
+commits and branches with <code>git checkout</code>. Branches round out our
+discussion of the core Git components, and they offer an elegant option for
+optimizing your development workflow. In the next module, we’ll cover
+the basic Git branch commands.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git checkout &lt;commit-id&gt;</code></dt>
+    <dd>View a previous commit.</dd>
+
+    <dt><code>git tag -a &lt;tag-name&gt; -m "&lt;description&gt;"</code></dt>
+    <dd>Create an annotated tag pointing to the most recent commit.</dd>
+
+    <dt><code>git revert &lt;commit-id&gt;</code></dt>
+    <dd>Undo the specified commit by applying a new commit.</dd>
+
+    <dt><code>git reset --hard</code></dt>
+    <dd>Reset <em>tracked</em> files to match the most recent commit.</dd>
+
+    <dt><code>git clean -f</code></dt>
+    <dd>Remove <em>untracked</em> files.</dd>
+
+    <dt><code>git reset --hard</code> / <code> git clean -f</code></dt>
+    <dd>Permanently undo uncommitted changes.</dd>
+</dl>
+
+</div>
+    </div>
+  </body>
+</html>

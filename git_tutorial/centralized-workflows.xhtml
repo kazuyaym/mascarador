@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Centralized Workflows</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="centralized-workflows">Centralized Workflows</h1>
+
+<p>In the previous module, we shared information directly between two
+developers’ repositories: <code>my-git-repo</code> and
+<code>marys-repo</code>. This works for very small teams developing simple
+programs, but larger projects call for a more structured environment. This
+module introduces one such environment: the <strong>centralized
+workflow</strong>.</p>
+
+<p>We’ll use a third Git repository to act as a central communication hub
+between us and Mary. Instead of pulling changes into <code>my-git-repo</code>
+from <code>marys-repo</code> and vice versa, we’ll push to and fetch from
+a dedicated storage repository. After this module, our workflow will look like
+the following.</p>
+
+<figure>
+    <img src="media/8-1.png"/>
+
+    <figcaption>The centralized workflow</figcaption>
+
+</figure>
+
+<p>Typically, you would store the central repository on a server to allow
+internet-based collaboration. Unfortunately, server configuration can vary among
+hosting providers, making it hard to write universal step-by-step instructions.
+So, we’ll continue exploring remote repositories using our local filesystem,
+just like in the previous module.</p>
+
+<p>If you have access to a server, feel free to use it to host the central
+repository that we’re about to create. You’ll have to provide SSH
+paths to your server-based repository in place of the paths provided below, but
+other than that, you can follow this module’s instructions as you find
+them. For everyone else, our network-based Git experience will begin in the
+next module.</p>
+
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/centralized-workflows.zip">Download the
+    repositories for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repositories from
+the above link, uncompress them, and you’re good to go.</p>
+
+
+<h2 id="create-a-bare-repository-central">Create a Bare Repository (Central)</h2>
+
+<p>First, let’s create our central “communication hub.”
+Again, make sure to change <code>/path/to/my-git-repo</code> to the actual path
+to your repository. If you’ve decided to host the central repository on
+your server, you should SSH into it and run the <code>git init</code> command
+wherever you’d like to store the repository.</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+<code class="k">cd</code> <code class="n">..</code>
+<code class="k">git</code> <code class="k">init</code> <code class="na">--bare</code> <code class="n">central-repo.git</code>
+</pre>
+
+
+<p>As in the very first module, <code>git init</code> creates a new repository.
+But this time, we used the <code>--bare</code> flag to tell Git that we
+don’t want a working directory. This will prevent us from developing in
+the central repository, which eliminates the possibility of messing up another
+user’s environment with <code>git push</code>. A central repository is
+only supposed to act as a <em>storage facility</em>—not a development
+environment.</p>
+
+<p>If you examine the contents of the resulting <code>central-repo.git</code>
+folder, you’ll notice that it contains the exact same files as the
+<code>.git</code> folder in our <code>my-git-repo</code> project. Git has
+<em>literally</em> gotten rid of our working directory. The conventional
+<code>.git</code> extension in the directory name is a way to convey this
+property.</p>
+
+
+<h2 id="update-remotes-mary-and-you">Update Remotes (Mary and You)</h2>
+
+<p>We’ve successfully set up a central repository that can be used to
+share updates between us, Mary, and any other developers. Next, we should add
+it as a remote to both <code>marys-repo</code> and
+<code>my-git-repo</code>.</p>
+
+<pre><code class="k">cd</code> <code class="n">marys-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">rm</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">../central-repo.git</code>
+</pre>
+
+
+<p>Now for our repository:</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">../central-repo.git</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">rm</code> <code class="n">mary</code>
+</pre>
+
+
+<p>Note that we deleted the remote connections between Mary and our
+<code>my-git-repo</code> folder with <code>git remote rm</code>. For the rest
+of this module, we’ll only use the central repository to share
+updates.</p>
+
+<p>If you decided to host the central repository on a server, you’ll need
+to change the <code>../central-repo.git</code> path to:
+<code>ssh://user@example.com/path/to/central-repo.git</code>, substituting your
+SSH username and server location for <code>user@example.com</code> and the
+central repository’s location for
+<code>path/to/central-repo.git</code>.</p>
+
+
+<h2 id="push-the-master-branch-you">Push the Master Branch (You)</h2>
+
+<p>We didn’t <em>clone</em> the central repository—we just
+initialized it as a bare repository. This means it doesn’t have any of
+our project history yet. We can fix that using the <code>git push</code>
+command introduced in the last module.</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>Our central repository now contains our entire <code>master</code> branch,
+which we can double-check with the following.</p>
+
+<pre><code class="k">cd</code> <code class="n">../central-repo.git</code>
+<code class="k">git</code> <code class="k">log</code>
+</pre>
+
+
+<p>This should output the familiar history listing of the <code>master</code>
+branch.</p>
+
+<p>Recall that <code>git push</code> creates <em>local</em> branches in the
+destination repository.  We said it was dangerous to push to a friend’s
+repository, as they probably wouldn’t appreciate new branches appearing
+at random. However, it’s safe to create local branches in
+<code>central-repo.git</code> because it has no working directory, which means
+it’s impossible to disturb anyone’s development.</p>
+
+
+<h2 id="add-news-update-you">Add News Update (You)</h2>
+
+<p>Let’s see our new centralized collaboration workflow in action by
+committing a few more snapshots.</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">news-item</code>
+</pre>
+
+
+<p>Create a file called <code>news-3.html</code> in <code>my-git-repo</code>
+and add the following HTML.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>Middle East&#39;s Silent Beast<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #D90&quot;</code><code class="nt">&gt;</code>Middle East&#39;s Silent Beast<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Late yesterday evening, the Middle East&#39;s largest
+  design house<code class="ni">&amp;mdash;</code>until now, silent on the West&#39;s colorful
+  disagreement<code class="ni">&amp;mdash;</code>announced the adoption of
+  <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #D90&quot;</code><code class="nt">&gt;</code>Yellow<code class="nt">&lt;/span&gt;</code> as this year&#39;s
+  color of choice.<code class="nt">&lt;/p&gt;</code>
+    
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Next, add a link to the “News” section of
+<code>index.html</code> so that it looks like:</p>
+
+<pre><code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-1.html&quot;</code><code class="nt">&gt;</code>Blue Is The New Hue<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;rainbow.html&quot;</code><code class="nt">&gt;</code>Our New Rainbow<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-2.html&quot;</code><code class="nt">&gt;</code>A Red Rebellion<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+  <code class="nt">&lt;li&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;news-3.html&quot;</code><code class="nt">&gt;</code>Middle East&#39;s Silent Beast<code class="nt">&lt;/a&gt;&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>Stage and commit a snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">news-3.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add 3rd news item&quot;</code>
+</pre>
+
+
+
+<h2 id="publish-the-news-item-you">Publish the News Item (You)</h2>
+
+<p>Previously, “publishing” meant merging with the local
+<code>master</code> branch. But since we’re <em>only</em> interacting
+with the central repository, our <code>master</code> branch is private again.
+There’s no chance of Mary pulling content directly from our
+repository.</p>
+
+<p>Instead, everyone accesses updates through the <em>public</em>
+<code>master</code> branch, so “publishing” means pushing to the
+central repository.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">news-item</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">news-item</code>
+<code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>After merging into <code>master</code> as we normally would, <code>git
+push</code> updates the central repository’s <code>master</code> branch
+to reflect our local <code>master</code>. From our perspective, the push can be
+visualized as the following:</p>
+
+<figure>
+    <img src="media/8-2.png"/>
+
+    <figcaption>Pushing <code>master</code> to the central repository</figcaption>
+
+</figure>
+
+<p>Note that this accomplishes the exact same thing as going into the central
+repository and doing a fetch/fast-forward merge, except <code>git push</code>
+allows us to do everything from inside <code>my-git-repo</code>. We’ll
+see some other convenient features of this command later in the module.</p>
+
+
+<h2 id="update-css-styles-mary">Update CSS Styles (Mary)</h2>
+
+<p>Next, let’s pretend to be Mary again and add some CSS formatting (she
+is our graphic designer, after all).</p>
+
+<pre><code class="k">cd</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">css-edits</code>
+</pre>
+
+
+<p>Add the following to the end of <code>style.css</code>:</p>
+
+<pre><code class="nt">h1</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">32px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nt">h2</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">24px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nt">a</code><code class="nd">:link</code><code class="o">,</code> <code class="nt">a</code><code class="nd">:visited</code> <code class="p">{</code>
+  <code class="k">color</code><code class="o">:</code> <code class="m">#03C</code><code class="p">;</code>
+<code class="p">}</code>
+</pre>
+
+
+<p>And, stage and commit a snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add CSS styles for headings and links&quot;</code>
+</pre>
+
+
+
+<h2 id="update-another-css-style-mary">Update Another CSS Style (Mary)</h2>
+
+<p>Oops, Mary forgot to add some formatting. Append the <code>h3</code> styling
+to <code>style.css</code>:</p>
+
+<pre><code class="nt">h3</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">18px</code><code class="p">;</code>
+  <code class="k">margin-left</code><code class="o">:</code> <code class="m">20px</code><code class="p">;</code>
+<code class="p">}</code>
+</pre>
+
+
+<p>And of course, stage and commit the updates.</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code> <code class="na">-a</code> <code class="na">-m</code> <code class="s">&quot;Add CSS styles for 3rd level headings&quot;</code>
+</pre>
+
+
+
+<h2 id="clean-up-before-publishing-mary">Clean Up Before Publishing (Mary)</h2>
+
+<p>Before Mary considers pushing her updates to the central repository, she
+needs to make sure she has a clean history. This <em>must</em> be done by Mary,
+because it’s near-impossible to change history after it has been made
+public.</p>
+
+<pre><code class="k">git</code> <code class="k">rebase</code> <code class="na">-i</code> <code class="n">master</code>
+</pre>
+
+
+<p>This highlights another benefit of using isolated branches to develop
+independent features. Mary doesn’t need to go back and figure out what changes
+need to be rebased, since they all reside in her current branch. Change the
+rebase configuration to:</p>
+
+<pre><code class="k">pick</code> <code class="s">681bd1c</code> Add CSS styles for headings and links
+<code class="k">squash</code> <code class="s">eabac68</code> Add CSS styles for 3rd level headings
+</pre>
+
+
+<p>When Git stops to ask for the combined commit message, just use the first
+commit’s message:</p>
+    
+<pre>Add CSS styles for headings and links
+</pre>
+
+
+<p>Consider what would have happened had Mary rebased <em>after</em> pushing to
+the central repository. She would be re-writing commits that other developers
+may have already pulled into their project. To Git, Mary’s re-written
+commits look like entirely new commits (since they have different ID’s).
+This situation is shown below.</p>
+
+<figure>
+    <img src="media/8-3.png"/>
+
+    <figcaption>Squashing a public commit</figcaption>
+
+</figure>
+
+<p>The commits labeled <em>1</em> and <em>2</em> are the public commits that
+Mary would be rebasing. Afterwards, the public history is still the exact same
+as Mary’s original history, but now her local <code>master</code> branch
+has diverged from <code>origin/master</code>—even though they represent
+the same snapshot.</p>
+
+<p>So, to publish her rebased <code>master</code> branch to the central
+repository, Mary would have to merge with <code>origin/master</code>. This
+cannot be a fast-forward merge, and the resulting merge commit is likely to
+confuse her collaborators and disrupt their workflow.</p>
+
+<p>This brings us to the most important rule to remember while rebasing:
+<strong>Never, ever rebase commits that have been pushed to a shared
+repository</strong>.</p>
+
+<p>If you need to change a public commit, use the <code>git revert</code>
+command that we discussed in <a href="undoing-changes.xhtml">Undoing
+Changes</a>. This creates a new commit with the required modifications instead
+of re-writing old snapshots.</p>
+
+
+<h2 id="publish-css-changes-mary">Publish CSS Changes (Mary)</h2>
+
+<p>Now that her history is cleaned up, Mary can publish the changes.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">css-edits</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-d</code> <code class="n">css-edits</code>
+</pre>
+
+
+<p>She shouldn’t push the <code>css-edits</code> branch to the server,
+since it’s no longer under development, and other collaborators
+wouldn’t know what it contains.  However, if we had all decided to
+develop the CSS edits together and wanted an isolated environment to do so, it
+would make sense to publish it as an independent branch.</p>
+
+<p>Mary still needs to push the changes to the central repository. But first,
+let’s take a look at the state of everyone’s project.</p>
+
+<figure>
+    <img src="media/8-4.png"/>
+
+    <figcaption>Before publishing Mary’s CSS changes</figcaption>
+
+</figure>
+
+<p>You might be wondering how Mary can push her local <code>master</code> up to
+the central repository, since it has progressed since Mary last fetched from
+it. This is a common situation when many developers are working on a project
+simultaneously. Let’s see how Git handles it:</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>This will output a verbose rejection message. It seems that Git won’t
+let anyone push to a remote server if it doesn’t result in a fast-forward
+merge. This prevents us from losing the <code>Add 3rd news item</code> commit
+that would need to be overwritten for <code>origin/master</code> to match
+<code>mary/master</code>.</p>
+
+
+<h2 id="pull-in-changes-mary">Pull in Changes (Mary)</h2>
+
+<p>Mary can solve this problem by pulling in the central changes before trying
+to push her CSS changes. First, she needs the most up-to-date version of the
+<code>origin/master</code> branch.</p>
+
+<pre><code class="k">git</code> <code class="k">fetch</code> <code class="n">origin</code>
+</pre>
+
+
+<p>Remember that Mary can see what’s in <code>origin/master</code> and
+not in the local <code>master</code> using the <code>..</code> syntax:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">master..origin/master</code>
+</pre>
+
+
+<p>And she can also see what’s in her <code>master</code> that’s
+not in <code>origin/master</code>:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="n">origin/master..master</code>
+</pre>
+
+
+<p>Since both of these output a commit, we can tell that Mary’s history
+diverged. This should also be clear from the diagram below, which shows the
+updated <code>origin/master</code> branch.</p>
+
+<figure>
+    <img src="media/8-5.png"/>
+
+    <figcaption>Fetching the central repository’s
+<code>master</code> branch</figcaption>
+
+</figure>
+
+<p>Mary is now in the familiar position of having to pull in changes from
+another branch. She can either merge, which <em>cannot</em> be fast-forwarded,
+or she can rebase for a linear history.</p>
+
+<p>Typically, you’ll want to rebase your changes on top of those found in your
+central repository. This is the equivalent of saying, “I want to add my changes
+to what everyone else has already done.” As previously discussed, rebasing also
+eliminates superfluous merge commits. For these reasons, Mary will opt for a
+rebase.</p>
+
+<pre><code class="k">git</code> <code class="k">rebase</code> <code class="n">origin/master</code>
+<code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>After the rebase, Mary’s <code>master</code> branch contains
+everything from the central repository, so she can do a fast-forward push to
+publish her changes.</p>
+
+<figure>
+    <img src="media/8-6.png"/>
+
+    <figcaption>Updating the central repository’s
+<code>master</code></figcaption>
+
+</figure>
+
+
+<h2 id="pull-in-changes-you">Pull in Changes (You)</h2>
+
+<p>Finally, we’ll switch back to our repository and pull in Mary’s
+CSS formatting.</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">fetch</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">master..origin/master</code> <code class="na">--stat</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">origin/master..master</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>Of course, the second log command won’t output anything, since we
+haven’t added any new commits while Mary was adding her CSS edits.
+It’s usually a good idea to check this before trying to merge in a remote
+branch. Otherwise, you might end up with some extra merge commits when you
+thought you were fast-forwarding your branch.</p>
+
+<pre><code class="k">git</code> <code class="k">merge</code> <code class="n">origin/master</code>
+</pre>
+
+
+<p>Our repository is now synchronized with the central repository. Note that
+Mary may have moved on and added some new content that we don’t know
+about, but it doesn’t matter. The only changes we need to know about are
+those in <code>central-repo.git</code>. While this doesn’t make a huge
+difference when we’re working with just one other developer, imagine
+having to keep track of a dozen different developers’ repositories in
+real-time. This kind of chaos is precisely the problem a centralized
+collaboration workflow is designed to solve:</p>
+
+<figure>
+    <img src="media/8-7.png"/>
+
+    <figcaption>The centralized workflow with many developers</figcaption>
+
+</figure>
+
+<p>The presence of a central communication hub condenses all this development
+into a single repository and ensures that no one overwrites another’s
+content, as we discovered while trying to push Mary’s CSS updates.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this module, we introduced another remote repository to serve as the
+central storage facility for our project. We also discovered bare repositories,
+which are just like ordinary repositories—minus the working directory.
+Bare repositories provide a “safe” location to push branches to, as
+long as you remember not to rebase the commits that it already contains.</p>
+
+<p>We hosted the central repository on our local filesystem, right next to both
+ours and Mary’s projects. However, most real-world central repositories reside
+on a remote server with internet access. This lets any developer fetch from or
+push to the repository over the internet, making Git a very powerful multi-user
+development platform. Having the central repository on a remote server is also
+an affordable, convenient way to back up a project.</p>
+
+<p>Next up, we’ll configure a network-based repository using a service called
+GitHub. In addition to introducing network access for Git repositories, this
+will open the door for another collaboration standard: the integrator
+workflow.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git init --bare &lt;repository-name&gt;</code></dt>
+    <dd>Create a Git repository, but omit the working directory.</dd>
+
+    <dt><code>git remote rm &lt;remote-name&gt;</code></dt>
+    <dd>Remove the specified remote from your bookmarked connections.</dd>
+</dl>
+
+</div>
+    </div>
+  </body>
+</html>

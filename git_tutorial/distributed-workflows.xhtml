@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Distributed Workflows</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="distributed-workflows">Distributed Workflows</h1>
+
+<p>Now that we know how to share information via a centralized workflow, we can
+appreciate some of the drawbacks of this collaboration model. While it may be
+convenient, allowing everyone to push to an “official” repository
+raises some legitimate security concerns. It means that for anyone to
+contribute content, they need access to the <em>entire project.</em></p>
+
+<p>This is fine if you’re only interacting with a small team, but imagine a
+scenario where you’re working on an open-source software project and a stranger
+found a bug, fixed it, and wants to incorporate the update into the main
+project. You probably don’t want to give them push-access to your central
+repository, since they could start pushing all sorts of random snapshots, and
+you would effectively lose control of the project.</p>
+
+<p>But, what you can do is tell the contributor to push the changes to
+<em>their own</em> public repository. Then, you can pull their bug fix into
+your private repository to ensure it doesn’t contain any undeclared code.
+If you approve their contributions, all you have to do is merge them into a local
+branch and push it to the main repository, just like we did in the previous
+module. You’ve become an <em>integrator</em>, in addition to an ordinary
+developer:</p>
+
+<figure>
+    <img src="media/9-1.png"/>
+
+    <figcaption>The integrator workflow</figcaption>
+
+</figure>
+
+<p>In this module, we’ll experience all of this first-hand by creating a
+free public repository on <a href="http://bitbucket.org">Bitbucket.org</a> and
+incorporating a contribution from an anonymous developer named John. Bitbucket
+is a DVCS hosting provider that makes it very easy to set up a Git repository
+and start collaborating with a team of developers.</p>
+
+<div class="icon-text download-icon-text">
+    <img src="media/icons/download.png" style="max-width: 45px"/>
+
+    <p><a href="http://rypress.com/tutorials/git/media/repo-zips/distributed-workflows.zip">Download the
+    repositories for this module</a></p>
+
+</div>
+
+<div style="clear: both"/>
+
+<p>If you’ve been following along from the previous module, you already
+have everything you need. Otherwise, download the zipped Git repositories from
+the above link, uncompress them, and you’re good to go.</p>
+
+
+<h2 id="create-a-bitbucket-account">Create a Bitbucket Account</h2>
+
+<p>The first part of this module will walk you through setting up a Bitbucket
+account. Navigate your web browser to <a href="http://bitbucket.org">Bitbucket.org</a> and sign up for a free
+account.</p>
+
+<figure>
+    <img src="media/bitbucket-logo.png"/>
+
+    <figcaption>The Bitbucket logo</figcaption>
+
+</figure>
+
+<p>You can choose any username for your account, but the email address should
+match the one you assigned to your Git installation with <code>git
+config</code> in <a href="the-basics.xhtml">The Basics</a>. If you need to
+change your email, you can run another <code>git config --global user.email
+you@example.com</code> command.</p>
+
+
+<h2 id="create-a-public-repository-you">Create a Public Repository (You)</h2>
+
+<p>To create our first networked Git repository, log into your Bitbucket
+account, and navigate to <em>Repositories &gt; Create
+repository</em>. Use <code>my-git-repo</code> as the <em>Repository Name</em>,
+and anything you like for the <em>Description</em> field. Since this is just an
+example project, go ahead and uncheck the <em>This is a private repository</em>
+field. Select <em>HTML/CSS</em> for the <em>Language</em> field, then go ahead
+and click <em>Create repository</em>.</p>
+
+<figure>
+    <img src="media/9-4.png"/>
+
+    <figcaption>Bitbucket’s new repository form</figcaption>
+
+</figure>
+
+<p>Essentially, we just ran <code>git init --bare</code> on a Bitbucket server.
+We can now push to and fetch from this repository as we did with
+<code>central-repo.git</code> in the previous module.</p>
+
+<p>After initialization, Bitbucket offers some helpful instructions, but
+don’t follow them just yet—we’ll walk through importing an
+existing repository in the next section.</p>
+
+<figure>
+    <img src="media/9-5.png"/>
+
+    <figcaption>Bitbucket’s setup instructions</figcaption>
+
+</figure>
+
+
+<h2 id="push-to-the-public-repository-you">Push to the Public Repository (You)</h2>
+
+<p>Before populating this new repository with our existing
+<code>my-git-repo</code> project, we first need to point our
+<code>origin</code> remote to the Bitbucket repository. Be sure to change the
+<code>&lt;username&gt;</code> portion to your actual Bitbucket username.</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">rm</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">https://&lt;username&gt;@bitbucket.org/&lt;username&gt;/my-git-repo.git</code>
+</pre>
+
+
+<p>The utility of remotes should be more apparent than in previous modules, as
+typing the full path to this repository every time we needed to interact with
+it would be rather tedious.</p>
+
+<p>To populate the remote repository with our existing code, we can use the
+same push mechanism as with a centralized workflow. When prompted for a
+password, use the one that you signed up with.</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+
+<h2 id="browse-the-public-repository-you">Browse the Public Repository (You)</h2>
+
+<p>We should now be able to see our project on the Bitbucket site. The
+<em>Source</em> tab displays all of the files in the project, and the
+<em>Commits</em> tab contains the entire commit history. Note that the branch
+structure of the repository is also visualized to the left of each commit.</p>
+
+<figure>
+    <img src="media/9-6.png"/>
+
+    <figcaption>Our history in Bitbucket’s Commit tab</figcaption>
+
+</figure>
+
+<p>This repository now serves as the “official” copy of our example
+website. We’ll tell everyone else to download from this repository, and
+we’ll push all the changes from our local <code>my-git-repo</code> to it.
+However, it’s important to note that this “official” status
+is merely a convention. As the <code>master</code> branch is just another
+branch, our Bitbucket repository is just another repository according to Git.</p>
+
+<p>Having both a public and a private repository for each developer makes it
+easy to incorporate contributions from third-parties, even if you’ve
+never met them before.</p>
+
+
+<h2 id="clone-the-repository-john">Clone the Repository (John)</h2>
+
+<p>Next, we’re going to pretend to be John, a third-party contributor to
+our website. John noticed that we didn’t have a pink page and, being the
+friendly developer that he is, wants to create one for us. We’d like to
+let him contribute, but we don’t want to give him push-access to our
+entire repository—this would allow him to re-write or even delete all of
+our hard work.</p>
+
+<p>Fortunately, John knows how to exploit Bitbucket’s collaboration
+potential. He’ll start by cloning a copy of our public repository:</p>
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+<code class="k">cd</code> <code class="n">..</code>
+<code class="k">git</code> <code class="k">clone</code> <code class="n">http://bitbucket.org/&lt;username&gt;/my-git-repo.git</code> <code class="n">johns-repo</code>
+<code class="k">cd</code> <code class="n">johns-repo</code>
+</pre>
+
+
+<p>You should now have another copy of our repository called
+<code>johns-repo</code> in the same folder as <code>my-git-repo</code>. This is
+John’s <em>private</em> repository—a completely isolated
+environment where he can safely develop the pink page. Let’s quickly
+configure his name and email:</p>
+
+<pre><code class="k">git</code> <code class="k">config</code> <code class="n">user.name</code> <code class="s">&quot;John&quot;</code>
+<code class="k">git</code> <code class="k">config</code> <code class="n">user.email</code> <code class="n">john.example@rypress.com</code>
+</pre>
+
+
+
+<h2 id="add-the-pink-page-john">Add the Pink Page (John)</h2>
+
+<p>Of course, John should be developing his contributions in a dedicated
+feature branch.</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="na">-b</code> <code class="n">pink-page</code>
+</pre>
+
+
+<p>In addition to being a best practice, this makes it easy for the integrator
+to see what commits to include. When John’s done, he’ll tell us
+where to find his repository and what branch the new feature resides in. Then,
+we’ll be able merge his content with minimal effort.</p>
+
+<p>Create the file <code>pink.html</code> and add the following code:</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Pink Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;link</code> <code class="na">rel=</code><code class="s">&quot;stylesheet&quot;</code> <code class="na">href=</code><code class="s">&quot;style.css&quot;</code> <code class="nt">/&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>The Pink Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Pink is <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>girly,
+  flirty and fun<code class="nt">&lt;/span&gt;</code>!<code class="nt">&lt;/p&gt;</code>
+
+  <code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Add the pink page to the “Navigation” section in
+<code>index.html</code>:</p>
+
+<pre><code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #F0F&quot;</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;pink.html&quot;</code><code class="nt">&gt;</code>The Pink Page<code class="nt">&lt;/a&gt;</code>
+<code class="nt">&lt;/li&gt;</code>
+</pre>
+
+
+<p>Then, stage and commit the snapshot as normal.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">pink.html</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add pink page&quot;</code>
+</pre>
+
+
+
+<h2 id="publish-the-pink-page-john">Publish the Pink Page (John)</h2>
+
+<p>Now, John needs to publish his contributions to a public repository.
+Remember that we don’t want him to push to <em>our</em> public
+repository, which is stored in his <code>origin</code> remote. In fact, he
+<em>can’t</em> push to <code>origin</code> for reasons we’ll
+discuss in a moment.</p>
+
+<p>Instead, he’ll create his own Bitbucket repository that we can pull
+contributions from. In the real world, John would have his own Bitbucket
+account, but for convenience, we’ll just store his public repository
+under our existing account. Once again, navigate to your Bitbucket home page
+and click <em>Repositories &gt; Create repository</em> to create
+John’s public repository. For the <em>Name</em> field, use
+<code>johns-repo</code>.</p>
+
+<figure>
+    <img src="media/9-7.png"/>
+
+    <figcaption>John’s new repository form</figcaption>
+
+</figure>
+
+<p>Back in John’s private repository, we’ll need to add this as a
+remote:</p>
+
+<pre><code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">john-public</code> <code class="n">https://&lt;username&gt;@bitbucket.org/&lt;username&gt;/johns-repo.git</code>
+</pre>
+
+
+<p>This is where John will publish the pink page for us to access. Since
+he’s pushing with HTTPS, he’ll need to enter the password for his
+Bitbucket account (which is actually the password for <em>your</em>
+account).</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">john-public</code> <code class="n">pink-page</code>
+</pre>
+
+
+<p>All John needs to do now is tell us the name of the feature branch and send
+us a link to his repository, which will be:</p>
+
+<pre>http://bitbucket.org/&lt;username&gt;/johns-repo.git
+</pre>
+
+
+<p>Note that John used a different path for pushing to his public repository
+than the one he gave us for fetching from it. The most important distinction is
+the transport protocol: the former used <code>https://</code> while the latter
+used <code>http://</code>. Accessing a repository over HTTPS (or SSH) lets you
+fetch or push, but as we saw, requires a password. This prevents unknown
+developers from overwriting commits.</p>
+
+<p>On the other hand, fetching over HTTP requires no username or password, but
+pushing is not possible. This lets anyone fetch from a repository without
+compromising its security. In the integrator workflow, other developers access
+your repository via HTTP, while you publish changes via HTTPS. This is also the
+reason why John can’t push to his <code>origin</code> remote.</p>
+
+<p>Of course, if you’re working on a private project, anonymous HTTP
+access would be disabled for that repository.</p>
+
+
+<h2 id="view-johns-contributions-you">View John’s Contributions (You)</h2>
+
+<p>Ok, we’re done being John and we’re ready to integrate his code
+into the official project. Let’s start by switching back into our
+repository and adding John’s public repository as a remote.</p>
+
+<pre><code class="k">cd</code> <code class="n">../my-git-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">john</code> <code class="n">http://bitbucket.org/&lt;username&gt;/johns-repo.git</code>
+</pre>
+
+
+<p>Note that we don’t care about anything in John’s private
+repository—the only thing that matters are his published changes.
+Let’s download his branches and take a look at what he’s been
+working on:</p>
+
+<pre><code class="k">git</code> <code class="k">fetch</code> <code class="n">john</code>
+<code class="k">git</code> <code class="k">branch</code> <code class="na">-r</code>
+<code class="k">git</code> <code class="k">log</code> <code class="n">master..john/pink-page</code> <code class="na">--stat</code>
+</pre>
+
+
+<p>We can visualize this history information as the following.</p>
+
+<figure>
+    <img src="media/9-8.png"/>
+
+    <figcaption>Before merging John’s <code>pink-page</code>
+branch</figcaption>
+
+</figure>
+
+<p>Let’s take a look at his actual changes:</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">john/pink-page</code>
+</pre>
+
+
+<p>Open up the <code>pink.html</code> file to see if it’s ok. Remember
+that John isn’t a trusted collaborator, and we would normally have no
+idea what this file might contain. With that in mind, it’s incredibly
+important to verify its contents. <strong>Never blindly merge content from
+a third-party contributor.</strong></p>
+
+
+<h2 id="integrate-johns-contributions-you">Integrate John’s Contributions (You)</h2>
+
+<p>Assuming we approve John’s updates, we’re now ready to merge it
+into the project.</p>
+    
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">merge</code> <code class="n">john/pink-page</code>
+</pre>
+
+
+<p>Notice that is the exact same way we incorporated Mary’s changes in
+the centralized workflow, except now we’re pulling from and pushing to
+different locations:</p>
+
+<figure>
+    <img src="media/9-9.png"/>
+
+    <figcaption>The integrator workflow with John</figcaption>
+
+</figure>
+
+<p>Furthermore, John’s workflow is just like ours: develop in a local,
+private repository, then push changes to the public one. The integrator
+workflow is merely a standardized way of organizing the collaboration
+effort—nothing has changed about how we develop locally, and we’re
+using the same Git commands as we have been for the last few modules.</p>
+
+
+<h2 id="publish-johns-contributions-you">Publish John’s Contributions (You)</h2>
+
+<p>We’ve integrated John’s contribution into our local
+<code>my-git-repo</code> repository, but no one else knows what we’ve
+done. It’s time to publish our <code>master</code> branch again.</p>
+
+<pre><code class="k">git</code> <code class="k">push</code> <code class="n">origin</code> <code class="n">master</code>
+</pre>
+
+
+<p>Since we designated our public Bitbucket repository as the
+“official” source for our project, everyone (i.e., Mary and John)
+will now be able to synchronize with it.</p>
+
+
+<h2 id="update-marys-repository-mary">Update Mary’s Repository (Mary)</h2>
+
+<p>Mary should now be pulling changes from our Bitbucket repository instead of
+the central one from the previous module. This should be fairly easy for her to
+configure.</p>
+
+<pre><code class="k">cd</code> <code class="n">../marys-repo</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">rm</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">remote</code> <code class="k">add</code> <code class="n">origin</code> <code class="n">http://bitbucket.org/&lt;username&gt;/my-git-repo.git</code>
+</pre>
+
+
+<p>Again, remember to change <code>&lt;username&gt;</code> to your Bitbucket
+account’s username. For the sake of brevity, we’ll do a blind merge
+to add John’s updates to Mary’s repository (normally, Mary should
+check what she’s integrating before doing so).</p>
+
+<pre><code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">fetch</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">rebase</code> <code class="n">origin/master</code>
+</pre>
+
+
+<p>For Mary, it doesn’t really matter that the updates came from John.
+All she has to know is that the “official” <code>master</code>
+branch moved forward, prompting her to synchronize her private repository.</p>
+
+
+<h2 id="update-johns-repository-john">Update John’s Repository (John)</h2>
+
+<p>John still needs to incorporate the pink page into his <code>master</code>
+branch. He should <em>not</em> merge directly from his <code>pink-page</code>
+topic branch because we could have edited his contribution before publishing it
+or included other contributions along with it. Instead, he’ll pull from
+the “official” <code>master</code>:</p>
+
+<pre><code class="k">cd</code> <code class="n">../johns-repo</code>
+<code class="k">git</code> <code class="k">checkout</code> <code class="n">master</code>
+<code class="k">git</code> <code class="k">fetch</code> <code class="n">origin</code>
+<code class="k">git</code> <code class="k">rebase</code> <code class="n">origin/master</code>
+</pre>
+
+
+<p>If John had updated <code>master</code> directly from his local
+<code>pink-page</code>, it could have wound up out-of-sync from the main
+project. For this reason, the integrator workflow requires that everyone
+<em>pull</em> from a single, official repository, while they all <em>push</em>
+to their own public repositories:</p>
+
+<figure>
+    <img src="media/9-10.png"/>
+
+    <figcaption>The integrator workflow with many developers</figcaption>
+
+</figure>
+
+<p>In this way, additions from one contributor can be approved, integrated, and
+made available to everyone without interrupting anyone’s independent
+developments.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Using the integrator workflow, our private development process largely
+remains the same (develop a feature branch, merge it into <code>master</code>,
+and publish it). But, we’ve added an additional task: incorporating
+changes from third-party contributors. Luckily, this doesn’t require any
+new skills—just access to a few more remote repositories.</p>
+
+<p>While this setup forces us to keep track of more remotes, it also makes it
+much, much easier to work with a large number of developers. You’ll never
+have to worry about security using an integrator workflow because you’ll
+still be the only one with access to the “official” repository.</p>
+
+<p>There’s also an interesting side-effect to this kind of security. By
+giving each developer their own public repository, the integrator workflow
+creates a more stable development environment for open-source software
+projects. Should the lead developer stop maintaining the “official”
+repository, any of the other participants could take over by simply designating
+their public repository as the new “official” project. This is part
+of what makes Git a <em>distributed</em> version control system: there is no
+single central repository that Git forces everyone to rely upon.</p>
+
+<figure>
+    <img src="media/9-11.png"/>
+
+    <figcaption>John/Mary taking over project maintenance</figcaption>
+
+</figure>
+
+<p>In the next module, we’ll take a look at an even more flexible way to share
+commits. This low-level approach will also give us a better understanding of how
+Git internally manages our content.</p>
+
+
+</div>
+    </div>
+  </body>
+</html>

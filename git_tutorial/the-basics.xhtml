@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>The Basics</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="pygments.css"/>
+  </head>
+  <body>
+    <div id="page">
+      <div id="content">
+
+<h1 id="the-basics">The Basics</h1>
+
+<p>Now that you have a basic understanding of version control systems in
+general, we can start experimenting with Git. Using Git as a VCS is a lot like
+working with a normal software project. You’re still writing code in
+files and storing those files in folders, only now you have access to a
+plethora of Git commands to manipulate those files.</p>
+
+<p>For example, if you want to revert to a previous version of your project,
+all you have to do is run a simple Git command. This command will dive into
+Git’s internal database, figure out what your project looked like at the
+desired state, and update all the existing files in your project folder (also
+known as the <strong>working directory</strong>). From an external standpoint,
+it will look like your project magically went back in time.</p>
+
+<p>This module explores the fundamental Git workflow: creating a repository,
+staging and committing snapshots, configuring options, and viewing the state of
+a repository. It also introduces the HTML website that serves as the running
+example for this entire tutorial. A very basic knowledge of HTML and CSS will
+give you a deeper understanding of the purpose underlying various Git commands
+but is not strictly required.</p>
+
+
+<h2 id="create-the-example-site">Create the Example Site</h2>
+
+<p>Before we can execute any Git commands, we need to create the example
+project. Create a new folder called <code>my-git-repo</code> to store the
+project, then add a file called <code>index.html</code> to it. Open
+<code>index.html</code> in your favorite text editor and add the following
+HTML.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>A Colorful Website<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #07F&quot;</code><code class="nt">&gt;</code>A Colorful Website<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>This is a website about color!<code class="nt">&lt;/p&gt;</code>    
+  
+  <code class="nt">&lt;h2</code> <code class="na">style=</code><code class="s">&quot;color: #C00&quot;</code><code class="nt">&gt;</code>News<code class="nt">&lt;/h2&gt;</code>
+  <code class="nt">&lt;ul&gt;</code>
+    <code class="nt">&lt;li&gt;</code>Nothing going on (yet)<code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;/ul&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Save the file when you’re done. This serves as the foundation of our
+example project. Feel free to open the <code>index.html</code> in a web browser
+to see what kind of website it translates to. It’s not exactly pretty,
+but it serves our purposes.</p>
+
+
+<h2 id="initialize-the-git-repository">Initialize the Git Repository</h2>
+
+<p>Now, we’re ready to create our first Git repository. Open a command
+prompt (or Git Bash for Windows users) and navigate to the project directory by
+executing:</p> 
+
+<pre><code class="k">cd</code> <code class="n">/path/to/my-git-repo</code>
+</pre>
+
+
+<p>where <code>/path/to/my-git-repo</code> is a path to the folder created in
+the previous step. For example, if you created <code>my-git-repo</code> on your
+desktop, you would execute:</p>
+
+<pre><code class="k">cd</code> <code class="n">~/Desktop/my-git-repo</code>
+</pre>
+
+
+<p>Next, run the following command to turn the directory into a Git
+repository.</p>
+
+<pre><code class="k">git</code> <code class="k">init</code>
+</pre>
+
+
+<p>This initializes the repository, which enables the rest of Git’s
+powerful features. Notice that there is now a <code>.git</code> directory in
+<code>my-git-repo</code> that stores all the tracking data for our repository
+(you may need to enable hidden files to view this folder). The
+<code>.git</code> folder is the only difference between a Git repository and an
+ordinary folder, so deleting it will turn your project back into an unversioned
+collection of files.</p>
+
+
+<h2 id="view-the-repository-status">View the Repository Status</h2>
+
+<p>Before we try to start creating revisions, it would be helpful to view the
+status of our new repository. Execute the following in your command prompt.</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>This should output something like:</p>
+
+<pre><code class="c">#</code> <code class="c">On branch </code><code class="cs">master</code>
+<code class="c">#</code>
+<code class="c"># Initial commit</code>
+<code class="c">#</code>
+<code class="c"># </code><code class="cs">Untracked files:</code>
+<code class="c">#   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)</code>
+<code class="c">#</code>
+<code class="c">#       </code><code class="cs">index.html</code>
+nothing added to commit but untracked files present (use &quot;git add&quot; to track)
+</pre>
+
+
+
+<p>Ignoring the <code>On branch master</code> portion for the time being, this
+status message tells us that we’re on our initial commit and that we have
+nothing to commit but “untracked files.”</p>
+
+<p>An <strong>untracked file</strong> is one that is not under version control.
+Git doesn’t automatically track files because there are often project
+files that we don’t want to keep under revision control. These include
+binaries created by a C program, compiled Python modules (<code>.pyc</code>
+files), and any other content that would unnecessarily bloat the repository. To
+keep a project small and efficient, you should only track <em>source</em> files
+and omit anything that can be <em>generated</em> from those files. This latter
+content is part of the build process—not revision control.</p>
+
+
+<h2 id="stage-a-snapshot">Stage a Snapshot</h2>
+
+<p>So, we need to explicitly tell Git to add <code>index.html</code> to the
+repository. The aptly named <code>git add</code> command tells Git to start
+tracking <code>index.html</code>:</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">index.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>In place of the “Untracked files” list, you should see the
+following status.</p>
+
+<pre><code class="c">#</code> <code class="cs">Changes to be committed:</code>
+<code class="c">#   (use &quot;git rm --cached &lt;file&gt;...&quot; to unstage)</code>
+<code class="c">#</code>
+<code class="c">#       </code><code class="cs">new file:   index.html</code>
+</pre>
+
+
+<p>We’ve just added <code>index.html</code> to the
+<strong>snapshot</strong> for the next commit. A snapshot represents the state
+of your project at a given point in time. In this case, we created a snapshot
+with one file: <code>index.html</code>. If we ever told Git to revert to this
+snapshot, it would replace the entire project folder with this one file,
+containing the exact same HTML as it does right now.</p>
+
+<p>Git’s term for creating a snapshot is called <strong>staging</strong>
+because we can add or remove multiple files before actually committing it to
+the project history. Staging gives us the opportunity to group related changes
+into distinct snapshots—a practice that makes it possible to track the
+<em>meaningful</em> progression of a software project (instead of just
+arbitrary lines of code).</p>
+
+
+<h2 id="commit-the-snapshot">Commit the Snapshot</h2>
+
+<p>We have staged a snapshot, but we still need to <strong>commit</strong> it
+to the project history. The next command will open a text editor and prompt you
+to enter a message for the commit.</p>
+    
+<pre><code class="k">git</code> <code class="k">commit</code>
+</pre>
+
+
+<p>Type <code>Create index page</code> for the message, leave the remaining
+text, save the file, and exit the editor. You should see the message <code>1
+files changed</code> among a mess of rather ambiguous output. This changed file
+is our <code>index.html</code>.</p>
+
+<p>As we just demonstrated, saving a version of your project is a two step
+process:</p>
+
+<ol>
+    <li><strong>Staging.</strong> Telling Git what files to include in the next
+    commit.</li>
+    <li><strong>Committing.</strong> Recording the staged snapshot with a
+    descriptive message.</li>
+</ol>
+
+<p>Staging files with the <code>git add</code> command doesn’t actually
+affect the repository in any significant way—it just lets us get our
+files in order for the next commit. Only after executing <code>git
+commit</code> will our snapshot be recorded in the repository. Committed
+snapshots can be seen as “safe” versions of the project. Git will
+never change them, which means you can do almost anything you want to your
+project without losing those “safe” revisions. This is the
+principal goal of any version control system.</p>
+
+<figure>
+    <img src="media/1-1.png"/>
+
+    <figcaption>The stage/commit process</figcaption>
+
+</figure>
+
+
+<h2 id="view-the-repository-history">View the Repository History</h2>
+
+<p>Note that <code>git status</code> now tells us that there is <code>nothing
+to commit</code>, which means our current state matches what is stored in the
+repository. The <code>git status</code> command will <em>only</em> show us
+uncommitted changes—to view our project history, we need a new
+command:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code>
+</pre>
+
+
+<p>When you execute this command, Git will output information about our one and
+only commit, which should look something like this:</p>
+
+<pre><code class="k">commit</code> <code class="s">b650e4bd831aba05fa62d6f6d064e7ca02b5ee1b</code>
+<code class="nl">Author:</code> <code class="s">unknown &lt;user@computer.(none)&gt;</code>
+<code class="nl">Date:</code>   <code class="s">Wed Jan 11 00:45:10 2012 -0600</code>
+
+    Create index page
+</pre>
+
+
+<p>Let’s break this down. First, the commit is identified with a very
+large, very random-looking string (<code>b650e4b...</code>). This is an SHA-1
+checksum of the commit’s contents, which ensures that the commit will
+never be corrupted without Git knowing about it. All of your SHA-1 checksums
+will be different than those displayed in this tutorial due to the different
+dates and authors in your commits. In the next module, we’ll see how a
+checksum also serves as a unique ID for a commit.</p>
+
+<p>Next, Git displays the author of the commit. But since we haven’t told
+Git our name yet, it just displays <code>unknown</code> with a generated
+username. Git also outputs the date, time, and timezone (<code>-0600</code>) of
+when the commit took place. Finally, we see the commit message that was entered
+in the previous step.</p>
+
+
+<h2 id="configure-git">Configure Git</h2>
+
+<p>Before committing any more snapshots, we should probably tell Git who we
+are.  We can do this with the <code>git config</code> command:</p>
+
+<pre><code class="k">git</code> <code class="k">config</code> <code class="na">--global</code> <code class="n">user.name</code> <code class="s">&quot;Your Name&quot;</code>
+<code class="k">git</code> <code class="k">config</code> <code class="na">--global</code> <code class="n">user.email</code> <code class="n">your.email@example.com</code>
+</pre>
+
+
+<p>Be sure to replace <code>Your Name</code> and
+<code>your.email@example.com</code> with your actual name and email. The
+<code>--global</code> flag tells Git to use this configuration as a default for
+all of your repositories. Omitting it lets you specify different user
+information for individual repositories, which will come in handy later on.</p>
+
+
+<h2 id="create-new-html-files">Create New HTML Files</h2>
+
+<p>Let’s continue developing our website a bit. Start by creating a file
+called <code>orange.html</code> with the following content.</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Orange Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>The Orange Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Orange is so great it has a
+  <code class="nt">&lt;span</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>fruit<code class="nt">&lt;/span&gt;</code> named after it.<code class="nt">&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+<p>Then, add a <code>blue.html</code> page:</p>
+
+<pre><code class="cp">&lt;!DOCTYPE html&gt;</code>
+<code class="nt">&lt;html</code> <code class="na">lang=</code><code class="s">&quot;en&quot;</code><code class="nt">&gt;</code>
+<code class="nt">&lt;head&gt;</code>
+  <code class="nt">&lt;title&gt;</code>The Blue Page<code class="nt">&lt;/title&gt;</code>
+  <code class="nt">&lt;meta</code> <code class="na">charset=</code><code class="s">&quot;utf-8&quot;</code> <code class="nt">/&gt;</code>
+<code class="nt">&lt;/head&gt;</code>
+<code class="nt">&lt;body&gt;</code>
+  <code class="nt">&lt;h1</code> <code class="na">style=</code><code class="s">&quot;color: #00F&quot;</code><code class="nt">&gt;</code>The Blue Page<code class="nt">&lt;/h1&gt;</code>
+  <code class="nt">&lt;p&gt;</code>Blue is the color of the sky.<code class="nt">&lt;/p&gt;</code>
+<code class="nt">&lt;/body&gt;</code>
+<code class="nt">&lt;/html&gt;</code>
+</pre>
+
+
+
+<h2 id="stage-the-new-files">Stage the New Files</h2>
+
+<p>Next, we can stage the files the same way we created the first snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">add</code> <code class="n">orange.html</code> <code class="n">blue.html</code>
+<code class="k">git</code> <code class="k">status</code>
+</pre>
+
+
+<p>Notice that we can pass more than one file to <code>git add</code>. After
+adding the files, your status output should look like the following:</p>
+
+<pre><code class="c">#</code> <code class="c">On branch </code><code class="cs">master</code>
+<code class="c"># </code><code class="cs">Changes to be committed:</code>
+<code class="c">#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</code>
+<code class="c">#</code>
+<code class="c">#       </code><code class="cs">new file:   blue.html</code>
+<code class="c">#       </code><code class="cs">new file:   orange.html</code>
+</pre>
+
+
+<p>Try running <code>git log</code>. It only outputs the first commit, which
+tells us that <code>blue.html</code> and <code>orange.html</code> have not yet
+been added to the repository’s history. Remember, we can see
+<em>staged</em> changes with <code>git status</code>, but not with <code>git
+log</code>. The latter is used only for <em>committed</em> changes.</p>
+
+<figure>
+    <img src="media/1-2.png"/>
+
+    <figcaption>Status output vs. Log output</figcaption>
+
+</figure>
+
+<h2 id="commit-the-new-files">Commit the New Files</h2>
+
+<p>Let’s commit our staged snapshot:</p>
+
+<pre><code class="k">git</code> <code class="k">commit</code>
+</pre>
+
+
+<p>Use <code>Create blue and orange pages</code> as the commit message, then
+save and close the file. Now, <code>git log</code> should output two commits,
+the second of which reflects our name/email configuration. This project history
+can be visualized as:</p>
+
+<figure>
+    <img src="media/1-3.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+<p>Each circle represents a commit, the red circle designates the commit
+we’re currently viewing, and the arrow points to the preceding commit.
+This last part may seem counterintuitive, but it reflects the underlying
+relationship between commits (that is, a new commit refers to its parent
+commit). You’ll see this type of diagram many, many times throughout this
+tutorial.</p>
+
+
+<h2 id="modify-the-html-pages">Modify the HTML Pages</h2>
+
+<p>The <code>git add</code> command we’ve been using to stage
+<em>new</em> files can also be used to stage <em>modified</em> files. Add the
+following to the bottom of <code>index.html</code>, right before the closing
+<code>&lt;/body&gt;</code> tag:</p>
+
+<pre><code class="nt">&lt;h2&gt;</code>Navigation<code class="nt">&lt;/h2&gt;</code>
+<code class="nt">&lt;ul&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #F90&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;orange.html&quot;</code><code class="nt">&gt;</code>The Orange Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+  <code class="nt">&lt;li</code> <code class="na">style=</code><code class="s">&quot;color: #00F&quot;</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;a</code> <code class="na">href=</code><code class="s">&quot;blue.html&quot;</code><code class="nt">&gt;</code>The Blue Page<code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/li&gt;</code>
+<code class="nt">&lt;/ul&gt;</code>
+</pre>
+
+
+<p>Next, add a home page link to the bottom of <code>orange.html</code> and
+<code>blue.html</code> (again, before the <code>&lt;/body&gt;</code> line):</p>
+
+<pre><code class="nt">&lt;p&gt;&lt;a</code> <code class="na">href=</code><code class="s">&quot;index.html&quot;</code><code class="nt">&gt;</code>Return to home page<code class="nt">&lt;/a&gt;&lt;/p&gt;</code>
+</pre>
+
+
+<p>You can now navigate between pages when viewing them in a web browser.</p>
+
+
+<h2 id="stage-and-commit-the-snapshot">Stage and Commit the Snapshot</h2>
+
+<p>Once again, we’ll stage the modifications, then commit the
+snapshot.</p>
+
+<pre><code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">add</code> <code class="n">index.html</code> <code class="n">orange.html</code> <code class="n">blue.html</code>
+<code class="k">git</code> <code class="k">status</code>
+<code class="k">git</code> <code class="k">commit</code> <code class="na">-m</code> <code class="s">&quot;Add navigation links&quot;</code>
+</pre>
+
+
+<p>The <code>-m</code> option lets you specify a commit message on the command
+line instead of opening a text editor. This is just a convenient shortcut (it
+has the exact same effect as our previous commits).</p>
+
+<p>Our history can now be represented as the following. Note that the red
+circle, which represents the current commit, automatically moves forward every
+time we commit a new snapshot.</p>
+
+<figure>
+    <img src="media/1-4.png"/>
+
+    <figcaption>Current project history</figcaption>
+
+</figure>
+
+
+<h2 id="explore-the-repository">Explore the Repository<span class="apo">’</span>s History</h2>
+
+<p>The <code>git log</code> command comes with a lot of formatting options, a
+few of which will be introduced throughout this tutorial. For now, we’ll
+just use the convenient <code>--oneline</code> flag:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code>
+</pre>
+
+
+<p>Condensing output to a single line is a great way to get a high-level
+overview of a repository. Another useful configuration is to pass a filename to
+<code>git log</code>:</p>
+
+<pre><code class="k">git</code> <code class="k">log</code> <code class="na">--oneline</code> <code class="n">blue.html</code>
+</pre>
+
+
+<p>This displays only the <code>blue.html</code> history. Notice that the
+initial <code>Create index page</code> commit is missing, since
+<code>blue.html</code> didn’t exist in that snapshot.</p>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this module, we introduced the fundamental Git workflow: edit files,
+stage a snapshot, and commit the snapshot. We also had some hands-on experience
+with the components involved in this process:</p>
+
+<figure>
+    <img src="media/1-5.png"/>
+
+    <figcaption>The fundamental Git workflow</figcaption>
+
+</figure>
+
+<p>The distinction between the working directory, the staged snapshot, and
+committed snapshots is at the very core of Git version control. Nearly all
+other Git commands manipulate one of these components in some way, so
+understanding the interplay between them is a fantastic foundation for
+mastering Git.</p>
+
+<p>The next module puts our existing project history to work by reverting to
+previous snapshots. This is all you need to start using Git as a simple
+versioning tool for your own projects.</p>
+
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<dl>
+    <dt><code>git init</code></dt>
+    <dd>Create a Git repository in the current folder.</dd>
+
+    <dt><code>git status</code></dt>
+    <dd>View the status of each file in a repository.</dd>
+
+    <dt><code>git add &lt;file&gt;</code></dt>
+    <dd>Stage a file for the next commit.</dd>
+
+    <dt><code>git commit</code></dt>
+    <dd>Commit the staged files with a descriptive message.</dd>
+
+    <dt><code>git log</code></dt>
+    <dd>View a repository’s commit history.</dd>
+
+    <dt><code>git config --global user.name "&lt;name&gt;"</code></dt>
+    <dd>Define the author name to be used in all repositories.</dd>
+
+    <dt><code>git config --global user.email &lt;email&gt;</code></dt>
+    <dd>Define the author email to be used in all repositories.</dd>
+</dl>
+
+
+</div>
+    </div>
+  </body>
+</html>

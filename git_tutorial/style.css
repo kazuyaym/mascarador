@@ -1,0 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+article, section, nav, header, footer, figure, figcaption {
+  display: block;
+}
+body {
+	line-height: 1.3em;
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1em;
+}
+h1 {
+  font-size: 2.3em;
+  margin-bottom: .3em;
+  margin-top: 0;
+}
+h2 {
+  font-size: 1.5em;
+}
+h2, h3 {
+  margin-top: 1.3em;
+  margin-bottom: .3em;
+}
+h3, h4, h5, h6 {
+  font-size: 1em;
+}
+h4 {
+	font-style: italic;
+}
+p {
+  text-align: left;
+  margin-bottom: 1em;
+}
+a {
+  color: #006bf0;
+  text-decoration: none;
+}
+a:visited {
+  color: #0050b4;
+  text-decoration: none;
+}
+a:hover {
+  color: #308cff;
+  text-decoration: underline;
+}
+a img {
+  border: none;
+}
+pre, code {
+	font-family: monospace;
+}
+pre {
+  font-size: .9em;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  padding-top: .7em;
+  padding-bottom: .7em;
+  padding-left: 1em;
+  border: 1px solid #ccc;
+  /*overflow: auto;*/
+  white-space: pre-wrap;
+}
+ul, ol {
+  margin-bottom: 1em;
+  margin-left: 2em;
+}
+dl {
+  margin-bottom: 1em;
+}
+dt {
+  margin-top: .6em;
+  margin-bottom: .1em;
+}
+dt:first-child {
+  margin-top: .5em;
+}
+table {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-right: auto;
+	margin-left: auto;
+	overflow: auto;
+}
+th {
+	text-align: left;
+	padding-right: 1.3em;
+}
+td {
+	padding-right: 1em;
+}
+td.center {
+	text-align: center;
+}
+table.multiline th {
+	padding-bottom: .3em;
+}
+table.multiline td {
+	vertical-align: top;
+	padding-bottom: .5em;
+}
+figure {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+figcaption {
+	margin-top: .5em;
+	font-style: italic;
+}
+figcaption em {
+	font-style: normal;
+}
+figure img {
+  border: 1px solid #999;
+}
+
+.icon-text img {
+	display: none;
+}
+
