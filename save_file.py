@@ -11,6 +11,7 @@ import binascii
 import random
 import time
 import base64
+import os
 from Crypto.Cipher import AES
 from Crypto import Random
 
@@ -179,8 +180,10 @@ for row in reader:
 		elif(command == 7): row[i] = cipher.encrypt_random(row[i])
 		elif(command == 8): row[i] = cipher.decrypt_random(row[i])
 	writer.writerow(row)
+
 f.close()
 fout.close()
+os.remove("files/" + filename)
 
 print("""Content-type:text/html
 
@@ -193,5 +196,10 @@ print("""Content-type:text/html
 
 <body>
 <h1>Arquivo salvo com sucesso!</h1>
+
+<form action="download_file.py">""")
+print('<input type="text" name="filename" value="masked_' + filename + '" class="desaparece noshow"/>\n')
+print("""<input type="submit" value="Download"/>
+</form>
 </body>
 </html>""")
