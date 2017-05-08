@@ -92,14 +92,14 @@ def hidel4(text):
 #############################################################################
 
 filename        = str(form.getvalue("filename"))
-outfile         = str(form.getvalue("output_filename"))
 header          = str(form.getvalue("header"))
 opcao_saveLines = int(form.getvalue("opcao_saveLines"))
 lines_from      = int(form.getvalue("lines_from"))
 lines_until     = int(form.getvalue("lines_until"))
 random_lines    = int(form.getvalue("random_lines"))
 
-f = open(filename, 'r')
+f = open("files/" + filename, 'r')
+outfile = "files/masked_" + filename
 reader = csv.reader(f)
 
 col_count = len(next(reader))
@@ -126,7 +126,7 @@ a_qc = str(form.getvalue("quotingchar"))
 if(   a_qc == 'qc1'): a_quotechar = '"'
 else:                 a_quotechar = "'"
 
-fout = open("/tmp/" + outfile, 'w')
+fout = open(outfile, 'w')
 writer = csv.writer(fout, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting)
 
 # Quais linhas serao salvas

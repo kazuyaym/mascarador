@@ -13,8 +13,17 @@ import hashlib
 import re
 import binascii
 import base64
+import os, sys
+try: # Windows needs stdio set for binary mode.
+    import msvcrt
+    msvcrt.setmode (0, os.O_BINARY) # stdin  = 0
+    msvcrt.setmode (1, os.O_BINARY) # stdout = 1
+except ImportError:
+    pass
+
 from Crypto.Cipher import AES
 from Crypto import Random
+
 
 class AESCipher:
 	def __init__(self, key):
@@ -115,7 +124,25 @@ a_s = str(form.getvalue("skipspace"))
 if(a_s == 'on'): a_skip = True
 else: a_skip = False
 
-f = open(str(form.getvalue("filename")), 'r')
+# Upload file!!
+def fbuffer(f, chunk_size=10000):
+	while True:
+		chunk = f.read(chunk_size)
+		if not chunk: break
+		yield chunk
+
+fileitem = form["filename1"]
+fn = ""
+if fileitem.filename:
+	fn = os.path.basename(fileitem.filename)
+	f = open('files/' + fn, 'wb', 10000)
+
+	# Read the file in chunks
+	for chunk in fbuffer(fileitem.file):
+		f.write(chunk)
+	f.close()
+
+f = open('files/' + fn, 'r')
 reader = csv.reader(f, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting, skipinitialspace=a_skip)
 
 col_count = len(next(reader))
@@ -134,8 +161,7 @@ file_name = re.search( r'\/([^/]+)$', str(form.getvalue("filename")), flags=0)
 
 print('<form action="save_file.py" method="post">\n')
 print('<h2>Information about the file:</h2>\n')
-print('Input file: ~'+ str(str(form.getvalue("filename"))) +'<br>\n')
-print('Output file: ~/tmp/<input type="text" name="output_filename" value="masked_' + file_name.group(1) + '"/><br>\n');
+print('Input file: '+ fn +'<br>\n')
 print('Number of lines: '+str(row_count)+'<br>\n')
 print('Number of columns: '+ str(col_count)+'<br>\n')
 
@@ -148,7 +174,7 @@ print('Option 2:<input type="radio" name="opcao_saveLines" value="2"> ')
 print('<input type="number" name="random_lines" style="width: 7em" maxlength="9" max="'+str(row_count)+'" min="1" value="'+str(row_count)+'"/> random lines<br>')
 
 print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
-print('<input type="text" name="filename" value="' + str(form.getvalue("filename")) + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="filename" value="' + fn + '" class="desaparece noshow"/>\n')
 print('<input type="text" name="header" value="' + str(form.getvalue("header")) + '" class="desaparece noshow"/>\n')
 
 print('<div style="overflow:auto">\n')
