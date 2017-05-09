@@ -165,13 +165,24 @@ print('Input file: '+ fn +'<br>\n')
 print('Number of lines: '+str(row_count)+'<br>\n')
 print('Number of columns: '+ str(col_count)+'<br>\n')
 
-print('Number of lines to write. ')
-print('Choose: ')
-print('Option 1:<input type="radio" name="opcao_saveLines" value="1" checked> From ')
-print('<input type="number" name="lines_from" maxlength="9" max="'+str(row_count)+'" min="1" value="1" style="width: 7em"/> until')
-print('<input type="number" name="lines_until" maxlength="9" max="'+str(row_count)+'" min="1" style="width: 7em" value="'+str(row_count)+'"/> / ')
-print('Option 2:<input type="radio" name="opcao_saveLines" value="2"> ')
-print('<input type="number" name="random_lines" style="width: 7em" maxlength="9" max="'+str(row_count)+'" min="1" value="'+str(row_count)+'"/> random lines<br>')
+
+print('<div id="block_container">')
+print("""Lines to write:
+<select id="opcao_saveLines" name="opcao_saveLines" onchange=lines_option()>
+<option value="lAll">All lines</option>
+<option value="lSubset">Subset</option>
+<option value="lRandom">Random</option>
+</select>""")
+
+print('<div id="subset_lines">')
+print('From <input type="number" id="lf" name="lines_from" maxlength="9" max="' + str(row_count) + '" min="1" value="1" style="width: 7em"/> until')
+print('<input type="number" id="lu" name="lines_until" maxlength="9" max="' + str(row_count) + '" min="1" style="width: 7em" value="' + str(row_count) + '"/>')
+print('</div>')
+
+print('<div id="random_lines">')
+print('<input type="number" name="random_lines" style="width: 7em" maxlength="9" max="' + str(row_count) + '" min="1" value="' + str(row_count) + '"/> random lines<br>')
+print('</div>')
+print('</div>')
 
 print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
 print('<input type="text" name="filename" value="' + fn + '" class="desaparece noshow"/>\n')

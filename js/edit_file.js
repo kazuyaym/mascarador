@@ -2,6 +2,8 @@ window.onload = function init(){
     $('input[type=checkbox]').removeAttr('checked');
     $('[name="start"]').removeAttr('disabled');
     $('#psw1').removeClass('sgreen').addClass('sred');
+
+    lines_option();
 }
 
 function check_button_start(){
@@ -71,4 +73,22 @@ function status_pwd(){
         $('#psw1').removeClass('sgreen').addClass('sred');
     }
     check_button_start();
+}
+
+function lines_option(){
+    if(document.getElementById('opcao_saveLines').value == "lSubset") {
+        $('#subset_lines').show();
+        $('#random_lines').hide();
+    } 
+    else if(document.getElementById('opcao_saveLines').value == "lRandom") {
+        $('#random_lines').show();
+        $('#subset_lines').hide();
+    }
+    else {  
+        $('#random_lines').hide();
+        $('#subset_lines').hide();
+
+        $('#lf').val(1);        
+        $('#lu').val($('#lu').attr("max"));
+    }
 }

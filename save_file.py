@@ -94,7 +94,7 @@ def hidel4(text):
 
 filename        = str(form.getvalue("filename"))
 header          = str(form.getvalue("header"))
-opcao_saveLines = int(form.getvalue("opcao_saveLines"))
+opcao_saveLines = str(form.getvalue("opcao_saveLines"))
 lines_from      = int(form.getvalue("lines_from"))
 lines_until     = int(form.getvalue("lines_until"))
 random_lines    = int(form.getvalue("random_lines"))
@@ -131,7 +131,7 @@ fout = open(outfile, 'w')
 writer = csv.writer(fout, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting)
 
 # Quais linhas serao salvas
-if(opcao_saveLines == 2):
+if(opcao_saveLines == 'lRandom'):
 	lines = random.sample(range(1, row_count+1), random_lines)
 	lines.sort()
 else: lines = list(range(lines_from, lines_until+1))

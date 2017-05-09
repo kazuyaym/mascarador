@@ -1,38 +1,3 @@
-/*
-body {
-        background: PeachPuff;
-        font-family: Sans-serif;
-}
-
-table {
-    font-family: Sans-serif;
-    border-collapse: collapse;
-}
-
-td, th, .th {
-    border: 1px solid black;
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even) {
-    background-color: Azure;
-}
-
-tr:nth-child(odd) {
-    background-color: LightGreen ;
-}
-
-th {
-    background-color: DarkSlateGrey ;
-    color: white;
-}
-
-fieldset {
-    border: 0;
-}
-*/
-
 .table-striped>tbody>tr:nth-child(odd)>td {
    background-color: #f2dede;
  }
@@ -66,4 +31,10 @@ fieldset {
 .sgreen {
 	color: green;
 	font-weight: bold;
+}
+
+
+#subset_lines, #random_lines
+{
+    display:inline;
 }

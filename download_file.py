@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+#
 #############################################################################
 import cgi, os
 import cgitb; cgitb.enable()
