@@ -1,10 +1,5 @@
 #!/usr/bin/python3
-#
-#
-#
-#
-#
-#############################################################################
+
 import cgi
 import cgitb; cgitb.enable()
 import csv
@@ -51,10 +46,6 @@ class AESCipher:
 	    aes = AES.new(self.key, AES.MODE_CFB, IV)
 	    return base64.b64encode(IV + aes.encrypt(message)).decode('utf-8')
 
-#
-#
-#
-#############################################################################
 def md5(string):
 	if(len(string) == 0): return ""
 
@@ -70,37 +61,32 @@ def md5(string):
 	m.update(string.encode('utf-8'))
 	return m.hexdigest()
 
-#
-#	Funcao que transforma todos os elementos  
-#	alpha-numericos de uma string em X
-#
-#############################################################################
 def hide(string):
 	return re.sub(r'[0-9a-zA-Z]', "X", string)
 
-#
-#############################################################################
 def hidel4(string):
 	return string[-4:].rjust(len(string), "*")
 
-#############################################################################
-jquery = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
-print('Content-type:text/html\r\n\r\n')
 
-############## Head ##############
-print("""<head>
-<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-<meta content="utf-8" http-equiv="encoding">
-<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
-<link rel="stylesheet" type="text/css" href="css/mascarador.css">
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/edit_file.js"></script>
-</head>""")
+def print_HEAD():
+	print('Content-type:text/html\r\n\r\n')
+	print("""<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+	<link rel="stylesheet" type="text/css" href="css/mascarador.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/edit_file.js"></script>
+	</head>""")
 
 ############## Body ##############
-print('<body>\n')
-print('<div class="container">\n')
+def fbuffer(f, chunk_size=10000):
+	while True:
+		chunk = f.read(chunk_size)
+		if not chunk: break
+		yield chunk
+
 form = cgi.FieldStorage()
 
 a_quo = str(form.getvalue("quoting"))
@@ -125,12 +111,6 @@ if(a_s == 'on'): a_skip = True
 else: a_skip = False
 
 # Upload file!!
-def fbuffer(f, chunk_size=10000):
-	while True:
-		chunk = f.read(chunk_size)
-		if not chunk: break
-		yield chunk
-
 fileitem = form["filename1"]
 fn = ""
 if fileitem.filename:
@@ -159,6 +139,10 @@ else:
 
 file_name = re.search( r'\/([^/]+)$', str(form.getvalue("filename")), flags=0)
 
+print_HEAD()
+
+print('<body>\n')
+print('<div class="container">\n')
 print('<form action="save_file.py" method="post">\n')
 print('<h2>Information about the file:</h2>\n')
 print('Input file: '+ fn +'<br>\n')
@@ -186,7 +170,13 @@ print('</div>')
 
 print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
 print('<input type="text" name="filename" value="' + fn + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="header" value="' + str(form.getvalue("header")) + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="header"           value="' + str(form.getvalue("header"))           + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="quoting_open"     value="' + str(form.getvalue("quoting"))     + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="delimiter_open"   value="' + str(form.getvalue("delimiter"))   + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="quotingchar_open" value="' + str(form.getvalue("quotingchar")) + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="skipspace_open"   value="' + str(form.getvalue("skipspace"))   + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="otherDelimiter_open" value="' + str(form.getvalue("otherDelimiter")) + '" class="desaparece noshow"/>\n')
+print('<input type="text" name="otherQuote_open"     value="' + str(form.getvalue("otherQuote"))     + '" class="desaparece noshow"/>\n')
 
 print('<div style="overflow:auto">\n')
 print('<table class="table table-striped table-bordered table-condensed">\n')
@@ -268,5 +258,4 @@ print(
 </div>
 </body>
 </html>""")
-
 f.close()

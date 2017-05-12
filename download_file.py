@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#
+
 #############################################################################
 import cgi, os
 import cgitb; cgitb.enable()
@@ -12,10 +12,8 @@ print("Content-Disposition: attachment; filename=" + filename)
 print()
 
 fo = open("files/" + filename, "r")
-while True:
-	str = fo.read(10000);
-	if not str: break
-	print(str)
+str = fo.read()
+print(str)
 fo.close()
 
 os.remove("files/" + filename)

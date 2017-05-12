@@ -43,11 +43,17 @@ class AESCipher:
 		cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
 		return base64.b64encode(cipher.encrypt(text)).decode()
 
-	def decrypt( self, text ):
+	def decrypt( self, inputText ):
+		text = inputText
 		if(len(text) == 0): return ""
 		text = base64.b64decode(text.encode())
 		cipher = AES.new(self.key, AES.MODE_CBC, self.iv )
-		return self.__unpad(cipher.decrypt(text).decode("utf-8"))
+		try: de = self.__unpad(cipher.decrypt(text).decode("utf-8"))
+		except: 
+			time.sleep(1)
+			de = inputText
+		return de
+		
 
 	def encrypt_random(self, text):
 		if(len(text) == 0): return ""
@@ -55,12 +61,19 @@ class AESCipher:
 		aes = AES.new(self.key, AES.MODE_CFB, IV)
 		return base64.b64encode(IV + aes.encrypt(text)).decode('utf-8')
 
-	def decrypt_random(self, text):
+	def decrypt_random(self, inputText):
+		text = inputText
 		if(len(text) == 0): return ""
 		text = base64.b64decode(text.encode('utf-8'))
 		IV = text[:16]
 		aes = AES.new(self.key, AES.MODE_CFB, IV)
-		return aes.decrypt(text[16:]).decode('utf-8')
+		try: de = aes.decrypt(text[16:]).decode('utf-8')
+		except: 
+			time.sleep(1)
+			de = inputText
+		return de
+
+		
 
 #
 #
@@ -99,9 +112,29 @@ lines_from      = int(form.getvalue("lines_from"))
 lines_until     = int(form.getvalue("lines_until"))
 random_lines    = int(form.getvalue("random_lines"))
 
+a_quo = str(form.getvalue("quoting_open"))
+if(a_quo == 'q0'): 	a_quoting = csv.QUOTE_MINIMAL
+elif(a_quo == 'q1'): a_quoting = csv.QUOTE_NONNUMERIC
+elif(a_quo == 'q2'): a_quoting = csv.QUOTE_NONE
+
+a_del = str(form.getvalue("delimiter_open"))
+if(a_del == 'd1'): a_delimiter = ','
+elif(a_del == 'd2'): a_delimiter = '|'
+elif(a_del == 'd3'): a_delimiter = ';'
+elif(a_del == 'd4'): a_delimiter = '\t'
+else: a_delimiter = str(form.getvalue("otherDelimiter_open"))
+
+a_qc = str(form.getvalue("quotingchar_open"))
+if(a_qc == 'qc1'): a_quotechar = '"'
+elif(a_qc == 'qc2'): a_quotechar = "'"
+else: a_quotechar = str(form.getvalue("otherQuote_open"))
+
+a_s = str(form.getvalue("skipspace_open"))
+if(a_s == 'on'): a_skip = True
+else: a_skip = False
+
 f = open("files/" + filename, 'r')
-outfile = "files/masked_" + filename
-reader = csv.reader(f)
+reader = csv.reader(f, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting, skipinitialspace=a_skip)
 
 col_count = len(next(reader))
 row_count = sum(1 for row in reader) + 1
@@ -127,7 +160,8 @@ a_qc = str(form.getvalue("quotingchar"))
 if(   a_qc == 'qc1'): a_quotechar = '"'
 else:                 a_quotechar = "'"
 
-fout = open(outfile, 'w')
+outfile = "files/masked_" + filename
+fout = open(outfile, 'w', newline='')
 writer = csv.writer(fout, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting)
 
 # Quais linhas serao salvas
@@ -162,11 +196,26 @@ writer.writerow(title)
 key = str(form.getvalue("psw1"))
 cipher = AESCipher(key)
 
+print("""Content-type:text/html
+
+
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<link rel="stylesheet" type="text/css" href="css/mascarador.css">
+</head>
+
+<body>
+<h1>Arquivo salvo com sucesso!</h1>
+
+<form action="download_file.py">""")
+
 k = 0
 for row in reader:
 	k += 1
 	if(not lines): break
 	if(lines[0] != k): continue
+	if not row: continue
 
 	lines.pop(0)
 	for i in range(col_count-1,-1, -1):
@@ -185,19 +234,7 @@ f.close()
 fout.close()
 os.remove("files/" + filename)
 
-print("""Content-type:text/html
 
-
-<head>
-<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-<meta content="utf-8" http-equiv="encoding">
-<link rel="stylesheet" type="text/css" href="css/mascarador.css">
-</head>
-
-<body>
-<h1>Arquivo salvo com sucesso!</h1>
-
-<form action="download_file.py">""")
 print('<input type="text" name="filename" value="masked_' + filename + '" class="desaparece noshow"/>\n')
 print("""<input type="submit" value="Download"/>
 </form>
