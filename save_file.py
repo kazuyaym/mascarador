@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 #############################################################################
 import cgi
 import cgitb; cgitb.enable()
@@ -72,8 +71,6 @@ class AESCipher:
 			time.sleep(1)
 			de = inputText
 		return de
-
-		
 
 #
 #

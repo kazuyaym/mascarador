@@ -15,6 +15,8 @@ try: # Windows needs stdio set for binary mode.
     msvcrt.setmode (1, os.O_BINARY) # stdout = 1
 except ImportError:
     pass
+import os
+import errno
 
 from Crypto.Cipher import AES
 from Crypto import Random
@@ -80,6 +82,127 @@ def print_HEAD():
 	<script type="text/javascript" src="js/edit_file.js"></script>
 	</head>""")
 
+def print_initBody(fn, row_count, col_count):
+	print('<body>\n')
+	print('<div class="container">\n')
+	print('<form action="save_file.py" method="post">\n')
+	print('<h2>Information about the file:</h2>\n')
+	print('Input file: '+ fn +'<br>\n')
+	print('Number of lines: '+str(row_count)+'<br>\n')
+	print('Number of columns: '+ str(col_count)+'<br>\n')
+
+def print_LINES(row_count, col_count):
+	print('<div id="block_container">')
+	print("""Lines to write:
+	<select id="opcao_saveLines" name="opcao_saveLines" onchange=lines_option()>
+	<option value="lAll">All lines</option>
+	<option value="lSubset">Subset</option>
+	<option value="lRandom">Random</option>
+	</select>""")
+
+	print('<div id="subset_lines">')
+	print('From <input type="number" id="lf" name="lines_from" maxlength="9" max="' + str(row_count) + '" min="1" value="1" style="width: 7em"/> until')
+	print('<input type="number" id="lu" name="lines_until" maxlength="9" max="' + str(row_count) + '" min="1" style="width: 7em" value="' + str(row_count) + '"/>')
+	print('</div>')
+
+	print('<div id="random_lines">')
+	print('<input type="number" name="random_lines" style="width: 7em" maxlength="9" max="' + str(row_count) + '" min="1" value="' + str(row_count) + '"/> random lines<br>')
+	print('</div>')
+	print('</div>')
+
+def print_hideForm(fn, form):
+	print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
+	print('<input type="text" name="filename" value="' + fn + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="header"           value="' + str(form.getvalue("header"))           + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="quoting_open"     value="' + str(form.getvalue("quoting"))     + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="delimiter_open"   value="' + str(form.getvalue("delimiter"))   + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="quotingchar_open" value="' + str(form.getvalue("quotingchar")) + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="skipspace_open"   value="' + str(form.getvalue("skipspace"))   + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="otherDelimiter_open" value="' + str(form.getvalue("otherDelimiter")) + '" class="desaparece noshow"/>\n')
+	print('<input type="text" name="otherQuote_open"     value="' + str(form.getvalue("otherQuote"))     + '" class="desaparece noshow"/>\n')
+
+def print_table(reader, row, row_count):
+	print('<div style="overflow:auto">\n')
+	print('<table class="table table-striped table-bordered table-condensed">\n')
+	col = 1
+	print('<tr>\n')
+	for element in row:
+		print('<th style="white-space:nowrap;">\n')
+		print('<input id="chek' + str(col) + '" type="checkbox" name="chek' + str(col) + '" onclick="show_modo(' + str(col) + ')">\n')
+		print('<select id="sel' + str(col) + '" name="mask'+str(col)+'" class="desaparece" onchange="change_modo(' + str(col) + ')">\n')
+		print('		<option value="m1">Hash MD5</option>\n')
+		print('		<option value="m2">AES Encrypt</option>\n')
+		print('		<option value="m5">AES Decrypt</option>\n')
+		print('		<option value="m7">AES Random Encrypt</option>\n')
+		print('		<option value="m8">AES Random Decrypt</option>\n')
+		print('		<option value="m3">Hide Value</option>\n')
+		print('		<option value="m6">Credit Card</option>\n')
+		print('		<option value="m4">Delete Column</option>\n')
+		print('</select>\n')
+		print('<input type="text" name="name'+str(col)+'" value="'+str(element)+'">\n')
+		print('</th>\n')
+		col += 1
+	print('</tr>\n')
+
+	e = AESCipher('#teste0123456789')
+	lin = 1
+	for row in reader:
+		print('<tr>\n')
+		col = 1
+		for element in row:
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm0" >' + element + '</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm1" class="desaparece">' + md5(element) + '1</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm2" class="desaparece">' + e.encrypt(element) + '</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm5" class="desaparece">Decrypt("'+element+'")</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm7" class="desaparece">' + e.encrypt_random(element) + '</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm8" class="desaparece">Decrypt_random("'+element+'")</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm3" class="desaparece">' + hide(element) + '</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm6" class="desaparece">' + hidel4(element) + '</td>\n')
+			print('<td id="l' + str(lin) + 'c' + str(col) + 'm4" class="desaparece"></td>\n')
+			col += 1
+		print('</tr>\n')
+		lin += 1
+		if lin > 10: break
+
+	print('</table>\n')
+	print('</div>')
+	print('<input type="hidden" value="' + str(row_count) + '" name="numeroLinhas" />\n')
+
+	print(
+	"""<p><strong>Type a password containing 16 caracter for AES Crypt or for salt usage in MD5 Hashing:</strong>
+	<input type="text" id="psw1" name="psw1" value="" onkeyup="status_pwd()"><br>
+
+	<strong>Choose the delimiter to separate fields:</strong>
+	<select id="delimiter" name="delimiter">
+			<option value="d1">, (Comma)     </option>
+			<option value="d2">| (Pipe)      </option>
+			<option value="d3">; (Semicolon) </option>
+			<option value="d4">(Tab)         </option>
+	</select><br>
+
+	<strong>Quoting method:</strong>
+	<select id="quoting" name="quoting">
+			<option value="q0">Minimal     </option>
+			<option value="q1">All         </option>
+			<option value="q2">Non-numeric </option>
+			<option value="q3">None        </option>
+	</select>
+
+	<select id="quotingchar" name="quotingchar">
+			<option value="qc1">"value" </option>
+			<option value="qc2">'value' </option>
+	</select>
+	<br>MINIMAL: Only quote fields which contain special characters such as delimiter or quotechar.
+	<br>ALL: Quote all fields.
+	<br>NON-NUMERIC: Quote all non-numeric fields.
+	<br>NONE: Never quote fields.
+
+	<p><input type="submit" name="start" value="Save file" disabled /></p>
+	</form>
+	</div>
+	</body>
+	</html>""")
+
 ############## Body ##############
 def fbuffer(f, chunk_size=10000):
 	while True:
@@ -87,33 +210,45 @@ def fbuffer(f, chunk_size=10000):
 		if not chunk: break
 		yield chunk
 
+def make_sure_path_exists(path):
+	try:
+		os.makedirs(path)
+	except OSError as exception:
+		if exception.errno != errno.EEXIST:
+			raise
+
+def a_quoting(form):
+	if  (str(form.getvalue("quoting")) == 'q0'): return csv.QUOTE_MINIMAL
+	elif(str(form.getvalue("quoting")) == 'q1'): return csv.QUOTE_NONNUMERIC
+	elif(str(form.getvalue("quoting")) == 'q2'): return csv.QUOTE_NONE
+
+def a_delimiter(form):
+	if  (str(form.getvalue("delimiter")) == 'd1'): return ','
+	elif(str(form.getvalue("delimiter")) == 'd2'): return '|'
+	elif(str(form.getvalue("delimiter")) == 'd3'): return ';'
+	elif(str(form.getvalue("delimiter")) == 'd4'): return '\t'
+	else:                                          return str(form.getvalue("otherDelimiter"))
+
+def a_quotechar(form):
+	if  (str(form.getvalue("quotingchar")) == 'qc1'): return '"'
+	elif(str(form.getvalue("quotingchar")) == 'qc2'): return "'"
+	else:                                             return str(form.getvalue("otherQuote"))
+
+def a_skip(form):
+	if(str(form.getvalue("skipspace")) == 'on'): return True
+	else:                                        return False
+
+def is_safeName(fileitem):
+	t = re.compile("[a-zA-Z0-9.,_-]")
+	for ch in fileitem.filename:
+		if not t.match(ch):
+			return False
+	return True
+	
 form = cgi.FieldStorage()
-
-a_quo = str(form.getvalue("quoting"))
-if(a_quo == 'q0'): 	a_quoting = csv.QUOTE_MINIMAL
-elif(a_quo == 'q1'): a_quoting = csv.QUOTE_NONNUMERIC
-elif(a_quo == 'q2'): a_quoting = csv.QUOTE_NONE
-
-a_del = str(form.getvalue("delimiter"))
-if(a_del == 'd1'): a_delimiter = ','
-elif(a_del == 'd2'): a_delimiter = '|'
-elif(a_del == 'd3'): a_delimiter = ';'
-elif(a_del == 'd4'): a_delimiter = '\t'
-else: a_delimiter = str(form.getvalue("otherDelimiter"))
-
-a_qc = str(form.getvalue("quotingchar"))
-if(a_qc == 'qc1'): a_quotechar = '"'
-elif(a_qc == 'qc2'): a_quotechar = "'"
-else: a_quotechar = str(form.getvalue("otherQuote"))
-
-a_s = str(form.getvalue("skipspace"))
-if(a_s == 'on'): a_skip = True
-else: a_skip = False
-
-# Upload file!!
 fileitem = form["filename1"]
-fn = ""
-if fileitem.filename:
+		
+if fileitem.filename and is_safeName(fileitem):
 	fn = os.path.basename(fileitem.filename)
 	f = open('files/' + fn, 'wb', 10000)
 
@@ -122,140 +257,26 @@ if fileitem.filename:
 		f.write(chunk)
 	f.close()
 
-f = open('files/' + fn, 'r')
-reader = csv.reader(f, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting, skipinitialspace=a_skip)
+	f = open('files/' + fn, 'r')
+	reader = csv.reader(f, delimiter=a_delimiter(), quotechar=a_quotechar(), quoting=a_quoting(), skipinitialspace=a_skip())
 
-col_count = len(next(reader))
-row_count = sum(1 for row in reader) + 1
-f.seek(0)
+	col_count = len(next(reader))
+	row_count = sum(1 for row in reader) + 1
+	f.seek(0)
 
-if(form.getvalue("header") == 'y'):
-	row = next(reader)
-	row_count -= 1
-else:
-	row = []
-	for col in range(1, col_count+1):
-		row.append("Col"+str(col))
+	if(form.getvalue("header") == 'y'):
+		row = next(reader)
+		row_count -= 1
+	else:
+		row = []
+		for col in range(1, col_count+1):
+			row.append("Col"+str(col))
 
-file_name = re.search( r'\/([^/]+)$', str(form.getvalue("filename")), flags=0)
+	file_name = re.search( r'\/([^/]+)$', str(form.getvalue("filename")), flags=0)
 
-print_HEAD()
-
-print('<body>\n')
-print('<div class="container">\n')
-print('<form action="save_file.py" method="post">\n')
-print('<h2>Information about the file:</h2>\n')
-print('Input file: '+ fn +'<br>\n')
-print('Number of lines: '+str(row_count)+'<br>\n')
-print('Number of columns: '+ str(col_count)+'<br>\n')
-
-
-print('<div id="block_container">')
-print("""Lines to write:
-<select id="opcao_saveLines" name="opcao_saveLines" onchange=lines_option()>
-<option value="lAll">All lines</option>
-<option value="lSubset">Subset</option>
-<option value="lRandom">Random</option>
-</select>""")
-
-print('<div id="subset_lines">')
-print('From <input type="number" id="lf" name="lines_from" maxlength="9" max="' + str(row_count) + '" min="1" value="1" style="width: 7em"/> until')
-print('<input type="number" id="lu" name="lines_until" maxlength="9" max="' + str(row_count) + '" min="1" style="width: 7em" value="' + str(row_count) + '"/>')
-print('</div>')
-
-print('<div id="random_lines">')
-print('<input type="number" name="random_lines" style="width: 7em" maxlength="9" max="' + str(row_count) + '" min="1" value="' + str(row_count) + '"/> random lines<br>')
-print('</div>')
-print('</div>')
-
-print('<h2>Select the columns you wish to change (mask or delet): </h2>\n')
-print('<input type="text" name="filename" value="' + fn + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="header"           value="' + str(form.getvalue("header"))           + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="quoting_open"     value="' + str(form.getvalue("quoting"))     + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="delimiter_open"   value="' + str(form.getvalue("delimiter"))   + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="quotingchar_open" value="' + str(form.getvalue("quotingchar")) + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="skipspace_open"   value="' + str(form.getvalue("skipspace"))   + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="otherDelimiter_open" value="' + str(form.getvalue("otherDelimiter")) + '" class="desaparece noshow"/>\n')
-print('<input type="text" name="otherQuote_open"     value="' + str(form.getvalue("otherQuote"))     + '" class="desaparece noshow"/>\n')
-
-print('<div style="overflow:auto">\n')
-print('<table class="table table-striped table-bordered table-condensed">\n')
-col = 1
-print('<tr>\n')
-for element in row:
-	print('<th style="white-space:nowrap;">\n')
-	print('<input id="chek' + str(col) + '" type="checkbox" name="chek' + str(col) + '" onclick="show_modo(' + str(col) + ')">\n')
-	print('<select id="sel' + str(col) + '" name="mask'+str(col)+'" class="desaparece" onchange="change_modo(' + str(col) + ')">\n')
-	print('		<option value="m1">Hash MD5</option>\n')
-	print('		<option value="m2">AES Encrypt</option>\n')
-	print('		<option value="m5">AES Decrypt</option>\n')
-	print('		<option value="m7">AES Random Encrypt</option>\n')
-	print('		<option value="m8">AES Random Decrypt</option>\n')
-	print('		<option value="m3">Hide Value</option>\n')
-	print('		<option value="m6">Credit Card</option>\n')
-	print('		<option value="m4">Delete Column</option>\n')
-	print('</select>\n')
-	print('<input type="text" name="name'+str(col)+'" value="'+str(element)+'">\n')
-	print('</th>\n')
-	col += 1
-print('</tr>\n')
-
-e = AESCipher('#teste0123456789')
-lin = 1
-for row in reader:
-	print('<tr>\n')
-	col = 1
-	for element in row:
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm0" >' + element + '</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm1" class="desaparece">' + md5(element) + '1</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm2" class="desaparece">' + e.encrypt(element) + '</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm5" class="desaparece">Decrypt("'+element+'")</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm7" class="desaparece">' + e.encrypt_random(element) + '</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm8" class="desaparece">Decrypt_random("'+element+'")</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm3" class="desaparece">' + hide(element) + '</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm6" class="desaparece">' + hidel4(element) + '</td>\n')
-		print('<td id="l' + str(lin) + 'c' + str(col) + 'm4" class="desaparece"></td>\n')
-		col += 1
-	print('</tr>\n')
-	lin += 1
-	if lin > 10: break
-
-print('</table>\n')
-print('</div>')
-print('<input type="hidden" value="' + str(row_count) + '" name="numeroLinhas" />\n')
-
-print(
-"""<p><strong>Type a password containing 16 caracter for AES Crypt or for salt usage in MD5 Hashing:</strong>
-<input type="text" id="psw1" name="psw1" value="" onkeyup="status_pwd()"><br>
-
-<strong>Choose the delimiter to separate fields:</strong>
-<select id="delimiter" name="delimiter">
-		<option value="d1">, (Comma)     </option>
-		<option value="d2">| (Pipe)      </option>
-		<option value="d3">; (Semicolon) </option>
-		<option value="d4">(Tab)         </option>
-</select><br>
-
-<strong>Quoting method:</strong>
-<select id="quoting" name="quoting">
-		<option value="q0">Minimal     </option>
-		<option value="q1">All         </option>
-		<option value="q2">Non-numeric </option>
-		<option value="q3">None        </option>
-</select>
-
-<select id="quotingchar" name="quotingchar">
-		<option value="qc1">"value" </option>
-		<option value="qc2">'value' </option>
-</select>
-<br>MINIMAL: Only quote fields which contain special characters such as delimiter or quotechar.
-<br>ALL: Quote all fields.
-<br>NON-NUMERIC: Quote all non-numeric fields.
-<br>NONE: Never quote fields.
-
-<p><input type="submit" name="start" value="Save file" disabled /></p>
-</form>
-</div>
-</body>
-</html>""")
-f.close()
+	print_HEAD()
+	print_initBody(fn, row_count, col_count)
+	print_LINES(fn, row_count, col_count)
+	print_hideForm(fn, form)
+	print_table(reader, row, row_count)
+	f.close()
