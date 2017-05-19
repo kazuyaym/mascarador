@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-#############################################################################
 import cgi
 import cgitb; cgitb.enable()
 import csv
@@ -14,19 +13,20 @@ import os
 from Crypto.Cipher import AES
 from Crypto import Random
 
-form = cgi.FieldStorage()
-
+##################################################################
 #
 #
+#                                                     MASK METHODS
 #
-#############################################################################
+#
+##################################################################
 class AESCipher:
 	def __init__(self, key):
 		self.key = key
-		self.iv = bytes(key[0:16], 'utf-8')
+		self.iv  = bytes(key[0:16], 'utf-8')
 
 	def __pad(self, text):
-		text_length = len(text)
+		text_length   = len(text)
 		amount_to_pad = AES.block_size - (text_length % AES.block_size)
 		if amount_to_pad == 0: amount_to_pad = AES.block_size
 		pad = chr(amount_to_pad)
@@ -45,14 +45,14 @@ class AESCipher:
 	def decrypt( self, inputText ):
 		text = inputText
 		if(len(text) == 0): return ""
-		text = base64.b64decode(text.encode())
-		cipher = AES.new(self.key, AES.MODE_CBC, self.iv )
-		try: de = self.__unpad(cipher.decrypt(text).decode("utf-8"))
+		try: 
+			text   = base64.b64decode(text.encode())
+			cipher = AES.new(self.key, AES.MODE_CBC, self.iv )
+			de     = self.__unpad(cipher.decrypt(text).decode("utf-8"))
 		except: 
 			time.sleep(1)
 			de = inputText
 		return de
-		
 
 	def encrypt_random(self, text):
 		if(len(text) == 0): return ""
@@ -63,19 +63,16 @@ class AESCipher:
 	def decrypt_random(self, inputText):
 		text = inputText
 		if(len(text) == 0): return ""
-		text = base64.b64decode(text.encode('utf-8'))
-		IV = text[:16]
-		aes = AES.new(self.key, AES.MODE_CFB, IV)
-		try: de = aes.decrypt(text[16:]).decode('utf-8')
+		try: 	
+			text = base64.b64decode(text.encode('utf-8'))
+			IV   = text[:16]
+			aes  = AES.new(self.key, AES.MODE_CFB, IV)
+			de   = aes.decrypt(text[16:]).decode('utf-8')
 		except: 
 			time.sleep(1)
 			de = inputText
 		return de
 
-#
-#
-#
-#############################################################################
 def md5(key, text):
 	if(len(text) == 0): return ""
 	m = hashlib.md5()
@@ -90,17 +87,58 @@ def md5_randomSalt(text):
 	m.update(text.encode('utf-8'))
 	return m.hexdigest()
 
-#
-#	Funcao que transforma todos os elementos  
-#	alpha-numericos de uma text em X
-#
-#############################################################################
 def hide(text):
 	return re.sub(r'[0-9a-zA-Z]', "X", text)
-#############################################################################
+
 def hidel4(text):
 	return text[-4:].rjust(len(text), "*")
-#############################################################################
+
+##################################################################
+#
+#
+#                                                             BODY
+#
+#
+##################################################################
+def a_delimiter_open(form):
+	if  (str(form.getvalue("delimiter_open")) == 'd1'): return ','
+	elif(str(form.getvalue("delimiter_open")) == 'd2'): return '|'
+	elif(str(form.getvalue("delimiter_open")) == 'd3'): return ';'
+	elif(str(form.getvalue("delimiter_open")) == 'd4'): return '\t'
+	else: return str(form.getvalue("otherDelimiter_open"))
+
+def a_quotechar_open(form):
+	if  (str(form.getvalue("quotingchar_open")) == 'qc1'): return '"'
+	elif(str(form.getvalue("quotingchar_open")) == 'qc2'): return "'"
+	else: return str(form.getvalue("otherQuote_open"))
+
+def a_quoting_open(form):
+	if  (str(form.getvalue("quoting_open")) == 'q0'): return csv.QUOTE_MINIMAL
+	elif(str(form.getvalue("quoting_open")) == 'q1'): return csv.QUOTE_NONNUMERIC
+	elif(str(form.getvalue("quoting_open")) == 'q2'): return csv.QUOTE_NONE
+
+def a_skip_open(form):
+	if(str(form.getvalue("skipspace_open")) == 'on'): return True
+	else: return False
+
+def a_quoting(form):
+	if  (str(form.getvalue("quoting")) == 'q0'): return csv.QUOTE_MINIMAL
+	elif(str(form.getvalue("quoting")) == 'q1'): return csv.QUOTE_ALL
+	elif(str(form.getvalue("quoting")) == 'q2'): return csv.QUOTE_NONE
+	else: return csv.QUOTE_NONE
+
+def a_delimiter(form):
+	if  (str(form.getvalue("delimiter")) == 'd1'): return ','
+	elif(str(form.getvalue("delimiter")) == 'd2'): return '|'
+	elif(str(form.getvalue("delimiter")) == 'd3'): return ';'
+	else: return '\t'
+
+def a_quotechar(form):
+	if(str(form.getvalue("quotingchar")) == 'qc1'): return '"'
+	else: return "'"
+
+form = cgi.FieldStorage()
+print('Content-type:text/html\r\n\r\n')
 
 filename        = str(form.getvalue("filename"))
 header          = str(form.getvalue("header"))
@@ -109,57 +147,19 @@ lines_from      = int(form.getvalue("lines_from"))
 lines_until     = int(form.getvalue("lines_until"))
 random_lines    = int(form.getvalue("random_lines"))
 
-a_quo = str(form.getvalue("quoting_open"))
-if(a_quo == 'q0'): 	a_quoting = csv.QUOTE_MINIMAL
-elif(a_quo == 'q1'): a_quoting = csv.QUOTE_NONNUMERIC
-elif(a_quo == 'q2'): a_quoting = csv.QUOTE_NONE
-
-a_del = str(form.getvalue("delimiter_open"))
-if(a_del == 'd1'): a_delimiter = ','
-elif(a_del == 'd2'): a_delimiter = '|'
-elif(a_del == 'd3'): a_delimiter = ';'
-elif(a_del == 'd4'): a_delimiter = '\t'
-else: a_delimiter = str(form.getvalue("otherDelimiter_open"))
-
-a_qc = str(form.getvalue("quotingchar_open"))
-if(a_qc == 'qc1'): a_quotechar = '"'
-elif(a_qc == 'qc2'): a_quotechar = "'"
-else: a_quotechar = str(form.getvalue("otherQuote_open"))
-
-a_s = str(form.getvalue("skipspace_open"))
-if(a_s == 'on'): a_skip = True
-else: a_skip = False
-
 f = open("files/" + filename, 'r')
-reader = csv.reader(f, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting, skipinitialspace=a_skip)
-
+reader = csv.reader(f, delimiter=a_delimiter_open(form), quotechar=a_quotechar_open(form), quoting=a_quoting_open(form), skipinitialspace=a_skip_open(form))
 col_count = len(next(reader))
 row_count = sum(1 for row in reader) + 1
 f.seek(0)
 
-if(form.getvalue("header") == 'y'):
-	row = next(reader)
+if(form.getvalue("header") == 'y'):	
+	title = next(reader)
 	row_count -= 1
-
-a_quo = str(form.getvalue("quoting"))
-if(   a_quo == 'q0'): a_quoting = csv.QUOTE_MINIMAL
-elif( a_quo == 'q1'): a_quoting = csv.QUOTE_ALL
-elif( a_quo == 'q2'): a_quoting = csv.QUOTE_NONE
-else:                 a_quoting = csv.QUOTE_NONE
-
-a_del = str(form.getvalue("delimiter"))
-if(   a_del == 'd1'): a_delimiter = ','
-elif( a_del == 'd2'): a_delimiter = '|'
-elif( a_del == 'd3'): a_delimiter = ';'
-else:                 a_delimiter = '\t'
-
-a_qc = str(form.getvalue("quotingchar"))
-if(   a_qc == 'qc1'): a_quotechar = '"'
-else:                 a_quotechar = "'"
 
 outfile = "files/masked_" + filename
 fout = open(outfile, 'w', newline='')
-writer = csv.writer(fout, delimiter=a_delimiter, quotechar=a_quotechar, quoting=a_quoting)
+writer = csv.writer(fout, delimiter=a_delimiter(form), quotechar=a_quotechar(form), quoting=a_quoting(form))
 
 # Quais linhas serao salvas
 if(opcao_saveLines == 'lRandom'):
@@ -193,10 +193,7 @@ writer.writerow(title)
 key = str(form.getvalue("psw1"))
 cipher = AESCipher(key)
 
-print("""Content-type:text/html
-
-
-<head>
+print("""<head>
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
 <link rel="stylesheet" type="text/css" href="css/mascarador.css">
@@ -230,7 +227,6 @@ for row in reader:
 f.close()
 fout.close()
 os.remove("files/" + filename)
-
 
 print('<input type="text" name="filename" value="masked_' + filename + '" class="desaparece noshow"/>\n')
 print("""<input type="submit" value="Download"/>

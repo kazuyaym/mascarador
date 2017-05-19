@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import cgi
 import cgitb; cgitb.enable()
 import csv
@@ -10,18 +9,24 @@ import binascii
 import base64
 import os, sys
 try: # Windows needs stdio set for binary mode.
-    import msvcrt
-    msvcrt.setmode (0, os.O_BINARY) # stdin  = 0
-    msvcrt.setmode (1, os.O_BINARY) # stdout = 1
+	import msvcrt
+	msvcrt.setmode (0, os.O_BINARY) # stdin  = 0
+	msvcrt.setmode (1, os.O_BINARY) # stdout = 1
 except ImportError:
-    pass
+	pass
 import os
 import errno
 
 from Crypto.Cipher import AES
 from Crypto import Random
 
-
+##################################################################
+#
+#
+#                                                     MASK METHODS
+#
+#
+##################################################################
 class AESCipher:
 	def __init__(self, key):
 		self.key = key
@@ -69,9 +74,70 @@ def hide(string):
 def hidel4(string):
 	return string[-4:].rjust(len(string), "*")
 
+##################################################################
+#
+#
+#                                                             BODY
+#
+#
+##################################################################
+def upload_file(fn, fileitem):
+	f = open('files/' + fn, 'wb', 10000)
+	for chunk in fbuffer(fileitem.file): 
+		f.write(chunk) # Read the file in chunks
+	f.close()
 
-def print_HEAD():
-	print('Content-type:text/html\r\n\r\n')
+def fbuffer(f, chunk_size=10000):
+	while True:
+		chunk = f.read(chunk_size)
+		if not chunk: break
+		yield chunk
+
+def make_sure_path_exists(path):
+	try:
+		os.makedirs(path)
+	except OSError as exception:
+		if exception.errno != errno.EEXIST:
+			raise
+
+def a_quoting(form):
+	if  (str(form.getvalue("quoting")) == 'q0'): return csv.QUOTE_MINIMAL
+	elif(str(form.getvalue("quoting")) == 'q1'): return csv.QUOTE_NONNUMERIC
+	elif(str(form.getvalue("quoting")) == 'q2'): return csv.QUOTE_NONE
+
+def a_delimiter(form):
+	if  (str(form.getvalue("delimiter")) == 'd1'): return ','
+	elif(str(form.getvalue("delimiter")) == 'd2'): return '|'
+	elif(str(form.getvalue("delimiter")) == 'd3'): return ';'
+	elif(str(form.getvalue("delimiter")) == 'd4'): return '\t'
+	else:                                          return str(form.getvalue("otherDelimiter"))
+
+def a_quotechar(form):
+	if  (str(form.getvalue("quotingchar")) == 'qc1'): return '"'
+	elif(str(form.getvalue("quotingchar")) == 'qc2'): return "'"
+	else:                                             return str(form.getvalue("otherQuote"))
+
+def a_skip(form):
+	if(str(form.getvalue("skipspace")) == 'on'): return True
+	else:                                        return False
+
+def header_file(form, reader, row_count, col_count):
+	if(form.getvalue("header") == 'y'):
+		title = next(reader)
+		row_count -= 1
+	else:
+		title = []
+		for col in range(1, col_count+1): title.append("Col"+str(col))
+	return title, row_count
+
+def is_safeName(fileitem):
+	t = re.compile("[a-zA-Z0-9.,_-]")
+	for ch in fileitem.filename:
+		if not t.match(ch):
+			return False
+	return True
+
+def print_head():
 	print("""<head>
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta content="utf-8" http-equiv="encoding">
@@ -91,7 +157,7 @@ def print_initBody(fn, row_count, col_count):
 	print('Number of lines: '+str(row_count)+'<br>\n')
 	print('Number of columns: '+ str(col_count)+'<br>\n')
 
-def print_LINES(row_count, col_count):
+def print_lines(row_count, col_count):
 	print('<div id="block_container">')
 	print("""Lines to write:
 	<select id="opcao_saveLines" name="opcao_saveLines" onchange=lines_option()>
@@ -121,12 +187,12 @@ def print_hideForm(fn, form):
 	print('<input type="text" name="otherDelimiter_open" value="' + str(form.getvalue("otherDelimiter")) + '" class="desaparece noshow"/>\n')
 	print('<input type="text" name="otherQuote_open"     value="' + str(form.getvalue("otherQuote"))     + '" class="desaparece noshow"/>\n')
 
-def print_table(reader, row, row_count):
+def print_table(reader, title, row_count):
 	print('<div style="overflow:auto">\n')
 	print('<table class="table table-striped table-bordered table-condensed">\n')
 	col = 1
 	print('<tr>\n')
-	for element in row:
+	for element in title:
 		print('<th style="white-space:nowrap;">\n')
 		print('<input id="chek' + str(col) + '" type="checkbox" name="chek' + str(col) + '" onclick="show_modo(' + str(col) + ')">\n')
 		print('<select id="sel' + str(col) + '" name="mask'+str(col)+'" class="desaparece" onchange="change_modo(' + str(col) + ')">\n')
@@ -203,80 +269,33 @@ def print_table(reader, row, row_count):
 	</body>
 	</html>""")
 
-############## Body ##############
-def fbuffer(f, chunk_size=10000):
-	while True:
-		chunk = f.read(chunk_size)
-		if not chunk: break
-		yield chunk
-
-def make_sure_path_exists(path):
-	try:
-		os.makedirs(path)
-	except OSError as exception:
-		if exception.errno != errno.EEXIST:
-			raise
-
-def a_quoting(form):
-	if  (str(form.getvalue("quoting")) == 'q0'): return csv.QUOTE_MINIMAL
-	elif(str(form.getvalue("quoting")) == 'q1'): return csv.QUOTE_NONNUMERIC
-	elif(str(form.getvalue("quoting")) == 'q2'): return csv.QUOTE_NONE
-
-def a_delimiter(form):
-	if  (str(form.getvalue("delimiter")) == 'd1'): return ','
-	elif(str(form.getvalue("delimiter")) == 'd2'): return '|'
-	elif(str(form.getvalue("delimiter")) == 'd3'): return ';'
-	elif(str(form.getvalue("delimiter")) == 'd4'): return '\t'
-	else:                                          return str(form.getvalue("otherDelimiter"))
-
-def a_quotechar(form):
-	if  (str(form.getvalue("quotingchar")) == 'qc1'): return '"'
-	elif(str(form.getvalue("quotingchar")) == 'qc2'): return "'"
-	else:                                             return str(form.getvalue("otherQuote"))
-
-def a_skip(form):
-	if(str(form.getvalue("skipspace")) == 'on'): return True
-	else:                                        return False
-
-def is_safeName(fileitem):
-	t = re.compile("[a-zA-Z0-9.,_-]")
-	for ch in fileitem.filename:
-		if not t.match(ch):
-			return False
-	return True
-	
+##################################################################
+#
+#
+#                                                             MAIN
+#
+#
+##################################################################
 form = cgi.FieldStorage()
 fileitem = form["filename1"]
-		
+print('Content-type:text/html\r\n\r\n')
+
 if fileitem.filename and is_safeName(fileitem):
 	fn = os.path.basename(fileitem.filename)
-	f = open('files/' + fn, 'wb', 10000)
 
-	# Read the file in chunks
-	for chunk in fbuffer(fileitem.file):
-		f.write(chunk)
-	f.close()
+	upload_file(fn, fileitem)
 
 	f = open('files/' + fn, 'r')
-	reader = csv.reader(f, delimiter=a_delimiter(), quotechar=a_quotechar(), quoting=a_quoting(), skipinitialspace=a_skip())
-
+	reader = csv.reader(f, delimiter=a_delimiter(form), quotechar=a_quotechar(form), quoting=a_quoting(form), skipinitialspace=a_skip(form))
 	col_count = len(next(reader))
 	row_count = sum(1 for row in reader) + 1
 	f.seek(0)
 
-	if(form.getvalue("header") == 'y'):
-		row = next(reader)
-		row_count -= 1
-	else:
-		row = []
-		for col in range(1, col_count+1):
-			row.append("Col"+str(col))
-
-	file_name = re.search( r'\/([^/]+)$', str(form.getvalue("filename")), flags=0)
-
-	print_HEAD()
+	title, row_count = header_file(form, reader, row_count, col_count)
+	print_head()
 	print_initBody(fn, row_count, col_count)
-	print_LINES(fn, row_count, col_count)
+	print_lines(row_count, col_count)
 	print_hideForm(fn, form)
-	print_table(reader, row, row_count)
+	print_table(reader, title, row_count)
+
 	f.close()
